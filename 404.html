@@ -85,8 +85,13 @@
 <p><b>404.</b>
     <ins>That’s an error.</ins>
 </p>
-<p>The requested URL <code>/error</code> was not found on this server.
+<p>The requested URL <code id="page_name">/404</code> was not found on this server.
     <ins>That’s all we know.</ins>
 </p>
 </body>
 </html>
+
+<script>
+    var page_name = document.getElementById('page_name');
+    page_name.innerHTML = window.location.pathname;
+</script>
