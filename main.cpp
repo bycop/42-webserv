@@ -54,9 +54,18 @@ int main(int argc, char const *argv[]) {
 		s_index = ss.str();
 	}
 
-	std::string p_json = "HTTP/1.1 404 Not Found\nContent-Type: application/json\n\n" + s_json;
-	std::string p_404 = "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\n" + s_404;
-	std::string p_index = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n" + s_index;
+	std::ifstream f_jpeg("test.png"); //taking file as inputstream
+	std::string s_jpeg;
+	if (f_jpeg) {
+		std::ostringstream ss;
+		ss << f_jpeg.rdbuf(); // reading data
+		s_jpeg = ss.str();
+	}
+
+	std::string p_json = "HTTP/1.1 200 OK\nContent-Type: application/json\nContent-Length: " + std::to_string(s_json.length()) + "\n\n" + s_json;
+	std::string p_404 = "HTTP/1.1 404 Not Found\nContent-Type: text/html\nContent-Length: " + std::to_string(s_404.length()) +"\n\n" + s_404;
+	std::string p_index = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + std::to_string(s_index.length()) +"\n\n" + s_index;
+	std::string p_jpeg = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: " + std::to_string(s_jpeg.length()) +"\n\n" + s_jpeg;
 
 	// Creating socket file descriptor
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -94,6 +103,8 @@ int main(int argc, char const *argv[]) {
 			write(new_socket, ft_toChar(p_index), ft_strlen(p_index));
 		else if (test.find("GET /json ") != std::string::npos)
 			write(new_socket, ft_toChar(p_json), ft_strlen(p_json));
+		else if (test.find("GET /test.png ") != std::string::npos)
+			write(new_socket, ft_toChar(p_jpeg), ft_strlen(p_jpeg));
 		else
 			write(new_socket, ft_toChar(p_404), ft_strlen(p_404));
 
