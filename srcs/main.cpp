@@ -2,11 +2,20 @@
 // Created by Quentin Robert de beauchamp on 1/13/22.
 //
 
-#include "socket.hpp"
+#include "global.hpp"
 
-#define PORT 8080
+//size_t ft_strlen(std::string str) {
+//    return (str.length());
+//}
+//
+//char *ft_toChar(std::string str) {
+//    char *c = const_cast<char *>(str.c_str());
+//    return (c);
+//};
 
-int main(int argc, char const *argv[]) {
 
+
+int main() {
+    ft_createSocket();
 	return 0;
 }

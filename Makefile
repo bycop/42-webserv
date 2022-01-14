@@ -2,9 +2,9 @@ NAME            = webserv
 
 
 FILES_PARSING    =
-FILES            = autoindex.cpp main.cpp socket.cpp
+FILES            = request.cpp main.cpp socket.cpp
 
-INC_FILES        = socket.hpp
+INC_FILES        = socket.hpp request.hpp global.hpp
 
 INC_PATH        = ./includes
 INC             = $(addprefix ${INC_PATH}/, ${INC_FILES})
