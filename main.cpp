@@ -45,6 +45,9 @@ int main() {
 
 	memset(address.sin_zero, '\0', sizeof address.sin_zero);
 
+	int enable = 1;
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+		perror("setsockopt(SO_REUSEADDR) failed");
 	if (bind(server_fd, (struct sockaddr *) &address, sizeof(address)) < 0) {
 		perror("In bind");
 		exit(EXIT_FAILURE);
@@ -61,13 +64,11 @@ int main() {
 		}
 		// GET REQUEST HEADERS
 		parsing_request(new_socket);
-//		if (test.find("GET / ") != std::string::npos || test.find("GET /index ") != std::string::npos)
-//		write(new_socket, ft_toChar(p_index), ft_strlen(p_index));
-//		std::cout << test << std::endl;
+		// RETURN THE INDEX.HTML
+		write(new_socket, p_index.c_str(), p_index.length());
 		printf("------------------Hello message sent-------------------");
-		close(new_socket);
-		close(server_fd);
-		exit(1);
 	}
+	close(new_socket);
+	close(server_fd);
 	return 0;
 }
