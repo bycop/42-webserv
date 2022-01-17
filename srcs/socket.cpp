@@ -21,6 +21,7 @@ int ft_createSocket(void) {
 	int server_fd, new_socket;
 	struct sockaddr_in address;
 	int addrlen = sizeof(address);
+	int enable = 1;
 
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
 		perror("In socket");
@@ -30,6 +31,8 @@ int ft_createSocket(void) {
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(PORT);
 	memset(address.sin_zero, '\0', sizeof address.sin_zero);
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+		perror("setsockopt(SO_REUSEADDR) failed");
 	if (bind(server_fd, (struct sockaddr *) &address, sizeof(address)) < 0) {
 		perror("In bind");
 		exit(EXIT_FAILURE);

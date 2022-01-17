@@ -18,6 +18,7 @@
 #include <map>
 #include "socket.hpp"
 #include "request.hpp"
+#include <dirent.h>
 
 #define PORT 8080
 
