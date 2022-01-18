@@ -27,26 +27,22 @@ std::string ft_openFile(std::string path, std::string status, std::string conten
     return (NULL);
 }
 
-int ft_autoindex(int new_socket, std::map<std::string, std::string> request){
+int ft_autoindex(int new_socket, std::map<std::string, std::string> request, int autoindex){
     std::string file;
     std::map<std::string, std::string>::iterator it = request.begin();
     std::string status = "200 OK\n";
 	DIR *dir;
-	struct dirent *ent;
-
-	if ((dir = opendir(const_cast<char *>(("." + it->second).c_str()))) != NULL) {
-		while ((ent = readdir(dir)) != NULL) {
-			std::cout << ent->d_name << std::endl;
+	if (autoindex) {
+		if ((dir = opendir(const_cast<char *>(("." + it->second).c_str()))) != NULL) {
+			file = create_page(dir, it->second);
 		}
-		closedir (dir);
-	} else {
-		if (it->second == "/" || it->second == "/index" || it->second == "/index.html")
-			file = ft_openFile("./pages/index.html", status, "text/html\n");
-		else if (it->second == "/test.png" || it->second == "/fuck.jpg")
-			file = ft_openFile("./pages" + it->second, status, "image/png\n");
-		else
-			file = ft_openFile("./pages/404.html", "404 Not Found\n", "text/html\n");
 	}
+	if (it->second == "/" || it->second == "/index" || it->second == "/index.html")
+		file = ft_openFile("./pages/index.html", status, "text/html\n");
+	else if (it->second == "/test.png" || it->second == "/fuck.jpg")
+		file = ft_openFile("./pages" + it->second, status, "image/png\n");
+	else
+		file = ft_openFile("./pages/404.html", "404 Not Found\n", "text/html\n");
 	if (!file.empty()) {
         return (write(new_socket, const_cast<char *>(file.c_str()), file.length()));
     }

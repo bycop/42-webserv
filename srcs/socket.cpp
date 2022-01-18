@@ -5,7 +5,7 @@
 #include "global.hpp"
 
 std::map<std::string, std::string> ft_request(int new_socket){
-    char buffer[30000] = {0};
+	char buffer[30000] = {0};
     long valread;
     valread = read(new_socket, buffer, 30000);
     std::string line;
@@ -47,7 +47,7 @@ int ft_createSocket(void) {
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
-        ft_autoindex(new_socket, ft_request(new_socket));
+        ft_autoindex(new_socket, ft_request(new_socket), 1);
 		close(new_socket);
 	}
 }
