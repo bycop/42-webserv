@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <cstring>
-
+#include <cstdlib>
 
 // PARSING REQUEST
 std::multimap<std::string, std::string> parsing_request(int fd);

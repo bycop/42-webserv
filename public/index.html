@@ -15,22 +15,27 @@
   </style>
 </head>
 <body>
-<h1>Welcome to WarningServer!</h1>
-<img src="https://media.giphy.com/media/3o85xt08p2Y0hanhwQ/giphy.gif"/>
-<p>If you see this page, the Warning web server is successfully installed and
-  working. Further configuration is required.</p>
+  <h1>Welcome to WarningServer!</h1>
+  <img src="https://media.giphy.com/media/3o85xt08p2Y0hanhwQ/giphy.gif"/>
+  <p>If you see this page, the Warning web server is successfully installed and
+    working. Further configuration is required.</p>
 
-<p>For online documentation and support please refer to
-  <a href="https://github.com/alafrance/webserv/">warningserver.org</a>.<br/>
-</p>
-<p><em>Thank you for using WarningServer</em></p>
-
-<form action="./form.php" method="post">
-  <label for="fname">First name:</label><br>
-  <input type="text" id="fname" name="fname"><br>
-  <label for="lname">Last name:</label><br>
-  <input type="text" id="lname" name="lname">
-  <input type="submit" value="Submit">
-</form>
+  <p>For online documentation and support please refer to
+    <a href="https://github.com/alafrance/webserv/">warningserver.org</a>.<br/>
+  </p>
+  <p><em>Thank you for using WarningServer</em></p>
+  <form action="./form.php" method="post">
+    <label for="fname">First name:</label><br>
+    <input type="text" id="fname" name="fname"><br>
+    <label for="lname">Last name:</label><br>
+    <input type="text" id="lname" name="lname"><br>
+    <input type="radio" id="contactChoice3"
+           name="contact" value="courrier">
+    <label for="contactChoice3">Courrier</label><br>
+    <input type="file"
+    id="avatar" name="file"
+    accept="image/png, image/jpeg">
+    <input type="submit" value="Submit">
+  </form>
 </body>
 </html>
