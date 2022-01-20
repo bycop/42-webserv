@@ -15,7 +15,7 @@
 #include <netinet/in.h>
 #include <cstring>
 #include <cstdlib>
-
+using namespace std;
 // PARSING REQUEST
-std::multimap<std::string, std::string> parsing_request(int fd);
+std::pair<multimap<string, string>, map<string, string> > parsing_request(int fd);
 #endif //WEBSERV_WEBSERV_HPP
