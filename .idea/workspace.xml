@@ -18,15 +18,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="775e284f-adfe-43ce-a2db-9dee86c19f43" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/srcs/create_html.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Webserv.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/create_html.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/create_html.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/includes/global.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/global.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/includes/request.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/request.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/auto_index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/srcs/request.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/srcs/request.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/request.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/send_page.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/socket.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/socket.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/srcs/create_html.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/srcs/create_html.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/srcs/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/srcs/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/srcs/request.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/srcs/send_page.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/srcs/socket.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/srcs/socket.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,11 +94,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Makefile Application.all">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Webserv" TARGET_NAME="all" CONFIG_NAME="all" version="1" RUN_PATH="$PROJECT_DIR$/webserv">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -119,7 +114,7 @@
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration name="re" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Webserv" TARGET_NAME="re" CONFIG_NAME="re" version="1">
+    <configuration name="re" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Webserv" TARGET_NAME="re" CONFIG_NAME="re" version="1" RUN_PATH="$PROJECT_DIR$/webserv">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
@@ -132,6 +127,11 @@
     <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <list>
@@ -153,7 +153,8 @@
       <updated>1642420091178</updated>
       <workItem from="1642420093896" duration="2588000" />
       <workItem from="1642430334894" duration="1151000" />
-      <workItem from="1642495320605" duration="11025000" />
+      <workItem from="1642495320605" duration="11385000" />
+      <workItem from="1642668946989" duration="13359000" />
     </task>
     <servers />
   </component>

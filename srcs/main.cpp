@@ -4,18 +4,11 @@
 
 #include "global.hpp"
 
-//size_t ft_strlen(std::string str) {
-//    return (str.length());
-//}
-//
-//char *ft_toChar(std::string str) {
-//    char *c = const_cast<char *>(str.c_str());
-//    return (c);
-//};
-
-
-
 int main() {
-    ft_createSocket();
+	int server_socket;
+	struct sockaddr_in address;
+
+    create_socket(server_socket, address);
+	receiving_information(server_socket, address);
 	return 0;
 }

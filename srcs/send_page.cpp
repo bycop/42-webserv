@@ -4,9 +4,11 @@
 
 #include "global.hpp"
 
-//std::string ft_content_type(){
-//	return ();
-//}
+int 	checkError(std::string &path){
+	if (path.find("//") != std::string::npos)
+		return (1);
+	return (0);
+}
 
 std::string ft_header(int length, std::string s, std::string content_type){
     std::string status = "HTTP/1.1 " + s;
@@ -18,33 +20,26 @@ std::string ft_header(int length, std::string s, std::string content_type){
 std::string ft_openFile(std::string path, std::string status, std::string content_type){
     std::ifstream ifs(path);
     std::string page;
+	std::cout << path << std::endl;
     if (ifs) {
         std::ostringstream oss;
         oss << ifs.rdbuf();
         std::string file = oss.str();
         return(ft_header(file.length(), status, content_type) + file);
     }
-    return (NULL);
+    return (page);
 }
 
-int ft_autoindex(int new_socket, std::map<std::string, std::string> request, int autoindex){
+int display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex){
     std::string file;
     std::map<std::string, std::string>::iterator it = request.begin();
     std::string status = "200 OK\n";
 	DIR *dir;
-	if (autoindex) {
-		if ((dir = opendir(const_cast<char *>(("." + it->second).c_str()))) != NULL) {
-			file = create_page(dir, it->second);
-		}
-	}
-	if (it->second == "/" || it->second == "/index" || it->second == "/index.html")
-		file = ft_openFile("./pages/index.html", status, "text/html\n");
-	else if (it->second == "/test.png" || it->second == "/fuck.jpg")
-		file = ft_openFile("./pages" + it->second, status, "image/png\n");
-	else
+	if (checkError(it->second))
 		file = ft_openFile("./pages/404.html", "404 Not Found\n", "text/html\n");
-	if (!file.empty()) {
-        return (write(new_socket, const_cast<char *>(file.c_str()), file.length()));
-    }
-    return (-1);
+	else if (autoindex && (dir = opendir(const_cast<char *>(("." + it->second).c_str()))) != NULL)
+		file = create_indexing_page(dir, it->second);
+	else
+		file = create_existing_page(it->second, status);
+	return (write(new_socket, const_cast<char *>(file.c_str()), file.length()));
 }

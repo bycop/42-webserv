@@ -2,9 +2,9 @@ NAME            = webserv
 
 
 FILES_PARSING    =
-FILES            = request.cpp main.cpp socket.cpp create_html.cpp
+FILES            = send_page.cpp main.cpp socket.cpp create_html.cpp
 
-INC_FILES        = socket.hpp request.hpp global.hpp create_html.hpp
+INC_FILES        = socket.hpp send_page.hpp global.hpp create_html.hpp
 
 INC_PATH        = ./includes
 INC             = $(addprefix ${INC_PATH}/, ${INC_FILES})
@@ -17,7 +17,7 @@ BIN             = $(SRC:%.cpp=$(BIN_PATH)/%.o)
 
 CC                = clang++
 RM                = rm -rf
-FLAGS            = -std=c++98 -Wall -Wextra  -Werror #-fsanitize=address -g3
+FLAGS            = -std=c++98 -Wall -Wextra  -Werror -fsanitize=address -g3
 
 all:             ${NAME}
 
