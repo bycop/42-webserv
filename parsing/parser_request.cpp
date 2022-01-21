@@ -23,7 +23,7 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 }
 
 // FIRST_LINE
-void parse_first_line_request(std::istringstream & is, multimap<string, string> &request) {
+void parse_first_line_request(std::istringstream & is, map<string, string> &request) {
 	string part, first_line;
 	size_t start = 0;
 
@@ -58,38 +58,51 @@ string readBody(int fd, int length) {
 }
 
 
-// THE MAIN OF PARSER : PARSING BODY AND HEADER
-map<string, string> parsing_body(string const& body, multimap<string, string> const& request) {
-	map<string, string> request_body;
-	string content_type =  request.find("Content-Type")->second;
-	size_t pos_del;
-
-	if (content_type == "application/x-www-form-urlencoded" || content_type == "text/plain") {
-		size_t start = 0;
-		string part;
-		cout << body << endl;
-		char delimiter = (content_type == "text/plain") ? '\n' : '&';
-		while(!(part = splitPartsByParts(body, delimiter, &start)).empty()) {
-			pos_del = part.find('=');
-			// SPLIT FNAME=A INTO FNAME AND A
-			request_body.insert(make_pair(part.substr(0, pos_del),
-										  part.substr(pos_del + 1, part.length() - (pos_del + 1))));
-		}
-	}
-	// multipart/form-data
-	else {
-		cout << "multipassss" << endl;
-//		for (int i = 0; i < 1000; ++i) {
-//			cout << body[i];
+// PARSING BODY (FOR NOW WHITOUT THE CGI I DON'T KNOW IF I NEED TO PARSE THE BODY)
+//void cut_content_type_multipart(map<string, string> &request) {
+//	if (request.find("Content-Type") == request.end())
+//		return ;
+//	size_t pos = 0;
+//	string &content = request.find("Content-Type")->second, content2;
+//	if (content.find("multipart/form-data") != string::npos){
+//		splitPartsByParts(content, ';', &pos);
+//		content2 = splitPartsByParts(content, ';', &pos);
+//		content2.erase(0, 1); // ERASE FIRST WHITESPACE
+//		pos = content2.find('=') + 1;
+//		request.insert(make_pair("boundary", splitPartsByParts(content2, '=',&pos)));
+//		content = "multipart/form-data"; // Delete boundary to content
+//	}
+//}
+//map<string, string> parsing_body(string const& body, map<string, string> &request) {
+//	map<string, string> request_body;
+//	string content_type =  request.find("Content-Type")->second;
+//	size_t pos_del;
+//
+//	cout << body << endl;
+//	if (content_type == "application/x-www-form-urlencoded" || content_type == "text/plain") {
+//		size_t start = 0;
+//		string part;
+//		cout << body << endl;
+//		char delimiter = (content_type == "text/plain") ? '\n' : '&';
+//		while(!(part = splitPartsByParts(body, delimiter, &start)).empty()) {
+//			pos_del = part.find('=');
+//			// SPLIT FNAME=A INTO FNAME AND A
+//			request_body.insert(make_pair(part.substr(0, pos_del),
+//										  part.substr(pos_del + 1, part.length() - (pos_del + 1))));
 //		}
-		cout << body << endl;
-		cout << endl;
-	}
-	return (request_body);
-}
-std::pair<multimap<string, string>, map<string, string> > parsing_request(int fd) {
-	multimap<string, string> request_header;
-	map<string, string> request_body;
+//	}
+//	// multipart/form-data
+//	else {
+//		cut_content_type_multipart(request);
+//	}
+//	return (request_body);
+//}
+
+
+// THE MAIN FCT OF THE PARSING
+std::pair<map<string, string>, string > parsing_request(int fd) {
+	map<string, string> request_header;
+	string request_body;
 	std::istringstream is(readHeader(fd));
 	std::string line, body;
 	size_t pos_del;
@@ -105,8 +118,12 @@ std::pair<multimap<string, string>, map<string, string> > parsing_request(int fd
 	}
 	// PARSING BODY
 	if (request_header.find("method")->second == "POST") {
-		int length = stoi(request_header.find("Content-Length")->second);
-		request_body = parsing_body(readBody(fd, length), request_header);
+		if (request_header.find("Content-Length") == request_header.end()) {
+			cerr << "Impossible to parse POST" << endl;
+		} else {
+			int length = stoi(request_header.find("Content-Length")->second);
+			request_body = readBody(fd, length);
+		}
 	}
 	return (make_pair(request_header, request_body));
 }

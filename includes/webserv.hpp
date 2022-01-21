@@ -17,5 +17,5 @@
 #include <cstdlib>
 using namespace std;
 // PARSING REQUEST
-std::pair<multimap<string, string>, map<string, string> > parsing_request(int fd);
+std::pair<map<string, string>, string > parsing_request(int fd);
 #endif //WEBSERV_WEBSERV_HPP
