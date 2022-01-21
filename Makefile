@@ -1,32 +1,32 @@
-NAME            = webserv
+NAME			= webserv
 
+FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp parser_request.cpp
 
-FILES_PARSING    =
-FILES            = send_page.cpp main.cpp socket.cpp create_html.cpp
+INC_PATH		= includes
+INC_FILES		= webserv.hpp create_html.hpp global.hpp send_page.hpp socket.hpp
+INC				= $(addprefix ${INC_PATH}/, ${INC_FILES})
 
-INC_FILES        = socket.hpp send_page.hpp global.hpp create_html.hpp
+SRC_PATH		= srcs
+SRC				= $(addprefix ${SRC_PATH}/, ${FILES})
 
-INC_PATH        = ./includes
-INC             = $(addprefix ${INC_PATH}/, ${INC_FILES})
+BIN_PATH		= bin
+BIN 			= $(SRC:%.cpp=$(BIN_PATH)/%.o)
 
-SRC_PATH        = ./srcs
-SRC               = $(addprefix ${SRC_PATH}/, ${FILES})
+CC				= clang++
+RM				= rm -rf
+FLAGS			= -std=c++98 -Wall -Wextra  -Werror -fsanitize=address -g3
 
-BIN_PATH        = bin
-BIN             = $(SRC:%.cpp=$(BIN_PATH)/%.o)
+all: 			${NAME}
 
-CC                = clang++
-RM                = rm -rf
-FLAGS            = -std=c++98 -Wall -Wextra  -Werror -fsanitize=address -g3
-
-all:             ${NAME}
+init:
+				@$(shell mkdir -p $(BIN_PATH))
 
 $(BIN): $(BIN_PATH)/%.o: %.cpp ${INC}
 				@mkdir -p $(@D)
 				@$(CC) $(FLAGS) -I ${INC_PATH} -o $@ -c $<
-				@printf "\e[?25l\e[J $(NAME) : \e[92m$(notdir $<)\e[0m\r"
+				@printf "\e[?25l\e[JWEBSERV : \e[92m$(notdir $<)\e[0m\r"
 
-${NAME}:         init ${BIN}
+${NAME}:		init ${BIN}
 				@${CC} ${FLAGS} ${BIN} -o ${NAME} -I ${INC_PATH}
 				@printf '\033[?25l\033[J$(NAME) \033[92m✔ \033[0m\033[?25h\n'
 
@@ -39,6 +39,6 @@ fclean:
 				@${RM} ${NAME}
 				@printf '\033[?25l\033[J$(NAME) DELETED \033[92m✔ \033[0m\033[?25h\n'
 
-re:                fclean all
+re:				fclean all
 
 .PHONY: all clean fclean re bonus init
