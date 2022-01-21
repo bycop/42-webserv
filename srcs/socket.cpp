@@ -4,19 +4,6 @@
 
 #include "webserv.hpp"
 
-std::map<std::string, std::string> ft_request(int new_socket){
-	char buffer[30000] = {0};
-    long valread;
-    valread = read(new_socket, buffer, 30000);
-    std::string line;
-    std::istringstream is(buffer);
-    std::getline(is, line);
-    std::map<std::string, std::string> request;
-    request[line.substr(0, line.find_first_of(" "))] = line.substr(line.find_first_of(" ") + 1, line.find_last_of(' ') - (line.find_first_of(" ") + 1));
-    std::cout << buffer << std::endl;
-    return (request);
-}
-
 void create_socket(int &server_socket, sockaddr_in &address) {
 	int enable = 1;
 
