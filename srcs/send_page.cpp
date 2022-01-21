@@ -2,7 +2,7 @@
 // Created by Quentin Robert de beauchamp on 1/13/22.
 //
 
-#include "global.hpp"
+#include "webserv.hpp"
 
 int 	checkError(std::string &path){
 	if (path.find("//") != std::string::npos)
@@ -32,14 +32,14 @@ std::string ft_openFile(std::string path, std::string status, std::string conten
 
 int display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex){
     std::string file;
-    std::map<std::string, std::string>::iterator it = request.begin();
+    string path = request["path"];
     std::string status = "200 OK\n";
 	DIR *dir;
-	if (checkError(it->second))
+	if (checkError(path))
 		file = ft_openFile("./pages/404.html", "404 Not Found\n", "text/html\n");
-	else if (autoindex && (dir = opendir(const_cast<char *>(("." + it->second).c_str()))) != NULL)
-		file = create_indexing_page(dir, it->second);
+	else if (autoindex && (dir = opendir(const_cast<char *>(("." + path).c_str()))) != NULL)
+		file = create_indexing_page(dir, path);
 	else
-		file = create_existing_page(it->second, status);
+		file = create_existing_page(path, status);
 	return (write(new_socket, const_cast<char *>(file.c_str()), file.length()));
 }

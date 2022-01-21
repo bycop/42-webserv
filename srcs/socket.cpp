@@ -2,7 +2,7 @@
 // Created by Quentin Robert de beauchamp on 1/13/22.
 //
 
-#include "global.hpp"
+#include "webserv.hpp"
 
 std::map<std::string, std::string> ft_request(int new_socket){
 	char buffer[30000] = {0};
@@ -39,6 +39,7 @@ void create_socket(int &server_socket, sockaddr_in &address) {
 void receiving_information(int &server_socket, sockaddr_in &address){
 	int new_socket;
 	int addrlen = sizeof(address);
+	std::pair<map<string, string>, string> request;
 
 	if (listen(server_socket, 10) < 0) {
 		perror("In listen");
@@ -50,7 +51,8 @@ void receiving_information(int &server_socket, sockaddr_in &address){
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
-		display_page(new_socket, ft_request(new_socket), 1);
+		request = parsing_request(new_socket);
+		display_page(new_socket, request.first, 1);
 		close(new_socket);
 	}
 }
