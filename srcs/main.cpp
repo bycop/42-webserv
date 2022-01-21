@@ -2,7 +2,7 @@
 // Created by Quentin Robert de beauchamp on 1/13/22.
 //
 
-#include "global.hpp"
+#include "webserv.hpp"
 
 int main() {
 	int server_socket;

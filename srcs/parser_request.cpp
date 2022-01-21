@@ -23,7 +23,7 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 }
 
 // FIRST_LINE
-void parse_first_line_request(std::istringstream & is, map<string, string> &request) {
+void parse_first_line_request(std::istringstream &is, map<string, string> &request) {
 	string part, first_line;
 	size_t start = 0;
 
@@ -33,7 +33,6 @@ void parse_first_line_request(std::istringstream & is, map<string, string> &requ
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start))); // TODO:  DONT TAKE TWO LAST CHARS
 }
-
 
 // MY READER YEAAAAH
 string readHeader(int fd) {

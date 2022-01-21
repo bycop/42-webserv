@@ -2,7 +2,7 @@
 // Created by Quentin Robert de beauchamp on 1/18/22.
 //
 
-#include "global.hpp"
+#include "webserv.hpp"
 
 std::string create_indexing_page(DIR *dir, std::string path){
 	std::ostringstream mypage;

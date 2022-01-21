@@ -15,7 +15,15 @@
 #include <netinet/in.h>
 #include <cstring>
 #include <cstdlib>
+#include "socket.hpp"
+#include "create_html.hpp"
+#include "send_page.hpp"
+
+#define PORT 8080
+
 using namespace std;
+
 // PARSING REQUEST
 std::pair<map<string, string>, string > parsing_request(int fd);
+
 #endif //WEBSERV_WEBSERV_HPP
