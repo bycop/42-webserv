@@ -23,7 +23,11 @@
 
 using namespace std;
 
-// PARSING REQUEST
-std::pair<map<string, string>, string > parsing_request(int fd);
+// PARSER_REQUEST.CPP
+map<string, string> parsing_request_header(int fd);
+string parsing_request_body(int fd, map<string, string> const& request_header);
+
+// BACKEND.CPP
+string backend_page(map<string, string> & request_header, string & request_body);
 
 #endif //WEBSERV_WEBSERV_HPP
