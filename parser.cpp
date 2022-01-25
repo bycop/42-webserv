@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "data.hpp"
+#define _countof(a) (sizeof(a) / sizeof(*(a)))
 
 void setters(std::string newdata, int type, Data *data) {
   switch (type) {
@@ -61,13 +62,14 @@ void location_loop(std::ifstream &file, Server *server) {
   std::string line;
   std::string locationvars[4] = {"autoindex", "index", "root", "allow_methods"};
   bool find;
+  std::cout << _countof(locationvars) << std::endl;
 
   while (std::getline(file, line)) {
     std::string original = line;
 
     find = false;
     line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < _countof(locationvars); i++)
       if (line.find(locationvars[i] + ":", 0) == 0) {
         line = &line[locationvars[i].length() + 1];
         location_setters(line, i, &location);
@@ -95,7 +97,7 @@ void server_loop(std::ifstream &file, Data *data) {
 
     find = false;
     line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < _countof(servervars); i++)
       if (line.find(servervars[i] + ":", 0) == 0) {
         line = &line[servervars[i].length() + 1];
         server_setters(line, i, &server);
@@ -138,7 +140,7 @@ int main(int ac, char **av) {
     std::string original = line;
     find = false;
     line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-    for (int i = 0; i < 3 && !find; i++)
+    for (int i = 0; i < _countof(vars) && !find; i++)
       if (line.find(vars[i] + ":", 0) == 0) {
         line = &line[vars[i].length() + 1];
         setters(line, i, &data);
