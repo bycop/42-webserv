@@ -11,9 +11,9 @@ public:
 	~Location() {};
 
 	void print() {
-		std::cout << "host: " << this->autoindex << std::endl;
-		std::cout << "port: " << this->index << std::endl;
-		std::cout << "server_name: " << this->root << std::endl;
+		std::cout << "autoindex: " << this->autoindex << std::endl;
+		std::cout << "index: " << this->index << std::endl;
+		std::cout << "root: " << this->root << std::endl;
 		std::cout << "default_pages: " << this->allow_methods << std::endl;
 	};
 

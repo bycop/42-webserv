@@ -5,6 +5,7 @@
 # include <string>
 # include "server.hpp"
 # include <vector>
+# include <algorithm>
 
 class Data
 {
