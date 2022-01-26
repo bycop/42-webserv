@@ -3,7 +3,6 @@
 //
 
 #include "webserv.hpp"
-
 int main() {
 	int server_socket;
 	struct sockaddr_in address;

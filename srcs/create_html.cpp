@@ -35,6 +35,8 @@ std::string		create_existing_page(std::string &path, std::string &status) {
 		file = ft_openFile("./pages/index.html", status, "text/html\n");
 	else if (path == "/pages/form.html")
 		file = ft_openFile("./pages/form.html", status, "text/html\n");
+	else if (path == "/pages/file.html")
+		file = ft_openFile("./pages/file.html", status, "text/html\n");
 	else if (path == "/pages/test.png" || path == "/pages/fuck.jpg")
 		file = ft_openFile("." + path, status, "image/png\n");
 	else

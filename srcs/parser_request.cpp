@@ -22,15 +22,40 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 	return (part);
 }
 
+std::string parse_query_string(std::string & path) {
+	std::string query;
+	std::string path_tmp = path;
+	if (path.find('?') < path.length()) {
+		size_t start = 0;
+		path = splitPartsByParts(path_tmp, '?', &start);
+		query = splitPartsByParts(path_tmp, '?', &start);
+	}
+	return (query);
+}
+
+std::pair<string, string> get_path_info_and_translated(string const& path) {
+	std::pair<string, string> path_info_and_translated;
+	size_t pos_split_path = path.rfind('/');
+	if (path.find('.') < pos_split_path) {
+		path_info_and_translated.first = path.substr(pos_split_path, path.length() - pos_split_path); // GET PATH INFO / INTO THE END
+		path_info_and_translated.second = path.substr(0, pos_split_path); // GET PATH TRANSLATED BEGINNING INTO THE /
+	}
+	return(path_info_and_translated);
+}
+
 // FIRST_LINE
 void parse_first_line_request(std::istringstream &is, map<string, string> &request) {
 	string part, first_line;
 	size_t start = 0;
-
+	std::pair<string, string> path_info_translated;
 	getline(is, first_line);
 	cout << first_line << endl; // TODO: TEST
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
+	path_info_translated = get_path_info_and_translated(request["path"]);
+	request.insert(make_pair("path_info", path_info_translated.first));
+	request.insert(make_pair("path_translated", path_info_translated.second));
+	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start))); // TODO:  DONT TAKE TWO LAST CHARS
 }
 
@@ -56,23 +81,6 @@ string readBody(int fd, int length) {
 	return (body);
 }
 
-
-// PARSING BODY (FOR NOW WHITOUT THE CGI I DON'T KNOW IF I NEED TO PARSE THE BODY)
-//void cut_content_type_multipart(map<string, string> &request) {
-//	if (request.find("Content-Type") == request.end())
-//		return ;
-//	size_t pos = 0;
-//	string &content = request.find("Content-Type")->second, content2;
-//	if (content.find("multipart/form-data") != string::npos){
-//		splitPartsByParts(content, ';', &pos);
-//		content2 = splitPartsByParts(content, ';', &pos);
-//		content2.erase(0, 1); // ERASE FIRST WHITESPACE
-//		pos = content2.find('=') + 1;
-//		request.insert(make_pair("boundary", splitPartsByParts(content2, '=',&pos)));
-//		content = "multipart/form-data"; // Delete boundary to content
-//	}
-//}
-
 // THE MAIN FCT OF THE PARSING
 map<string, string> parsing_request_header(int fd) {
 	map<string, string> request_header;
@@ -89,6 +97,7 @@ map<string, string> parsing_request_header(int fd) {
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
+
 	return (request_header);
 }
 
