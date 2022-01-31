@@ -23,7 +23,7 @@ void create_socket(int &server_socket, sockaddr_in &address) {
 	}
 }
 
-void receiving_information(int &server_socket, sockaddr_in &address){
+void receiving_information(int &server_socket, sockaddr_in &address, Response &response){
 	int new_socket;
 	int addrlen = sizeof(address);
 	std::pair<map<string, string>, string> request;
@@ -39,7 +39,7 @@ void receiving_information(int &server_socket, sockaddr_in &address){
 			exit(EXIT_FAILURE);
 		}
 		request = parsing_request(new_socket);
-		display_page(new_socket, request.first, 1);
+		display_page(new_socket, request.first, 1, response);
 		close(new_socket);
 	}
 }
