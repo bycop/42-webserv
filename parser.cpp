@@ -16,13 +16,7 @@ void display_error(std::string type, std::string key) {
 void setters(std::string newdata, int type, Data *data) {
 	switch (type) {
 		case 0:
-			data->user = newdata;
-			break;
-		case 1:
-			data->pid = newdata;
-			break;
-		case 2:
-			data->error_log = newdata;
+			data->workers = newdata;
 			break;
 	}
 }
@@ -42,7 +36,16 @@ void server_setters(std::string newdata, int type, Server *server) {
 			server->default_pages = newdata;
 			break;
 		case 4:
-			server->size_limit = newdata;
+			server->client_max_body_size = newdata;
+			break;
+		case 5:
+			server->redirect = newdata;
+			break;
+		case 6:
+			if (newdata == "on")
+				server->autoindex = true;
+			else
+				server->autoindex = false;
 			break;
 	}
 }
@@ -50,18 +53,12 @@ void server_setters(std::string newdata, int type, Server *server) {
 void location_setters(std::string newdata, int type, Location *location) {
 	switch (type) {
 		case 0:
-			if (newdata == "on")
-				location->autoindex = true;
-			else
-				location->autoindex = false;
-			break;
-		case 1:
 			location->index = newdata;
 			break;
-		case 2:
+		case 1:
 			location->root = newdata;
 			break;
-		case 3:
+		case 2:
 			location->allow_methods = newdata;
 			break;
 	}
@@ -84,7 +81,7 @@ std::string location_path(std::string line) {
 void location_loop(std::ifstream &file, Server *server, std::string path) {
 	Location location;
 	std::string line;
-	std::string locationvars[4] = {"autoindex", "index", "root", "allow_methods"};
+	std::string locationvars[3] = {"index", "root", "allow_methods"};
 	bool find;
 
 	location.path = path;
@@ -110,8 +107,8 @@ void location_loop(std::ifstream &file, Server *server, std::string path) {
 void server_loop(std::ifstream &file, Data *data) {
 	Server server;
 	std::string line;
-	std::string servervars[6] = {"host", "port", "server_name", "default_pages",
-								 "size_limit", "redirect"};
+	std::string servervars[7] = {"host", "port", "server_name", "default_pages",
+								 "client_max_body_size", "redirect", "autoindex"};
 	bool find;
 	while (std::getline(file, line)) {
 		std::string original = line;
@@ -155,7 +152,7 @@ int main(int ac, char **av) {
 	std::string line;
 	bool find;
 
-	std::string vars[3] = {"user", "pid", "error_log"};
+	std::string vars[1] = {"workers"};
 
 	while (std::getline(file, line)) {
 		std::string original = line;
@@ -172,7 +169,7 @@ int main(int ac, char **av) {
 		else if (!find && line != "")
 			display_error("main", original);
 	}
-	if (error)
+	if (error || !data.mandatory())
 		std::cout << "Error: Exiting program" << std::endl;
 	else
 		data.print();

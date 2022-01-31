@@ -17,8 +17,9 @@ public:
 		std::cout << "port: " << this->port << std::endl;
 		std::cout << "server_name: " << this->server_name << std::endl;
 		std::cout << "default_pages: " << this->default_pages << std::endl;
-		std::cout << "size_limit: " << this->size_limit << std::endl;
+		std::cout << "client_max_body_size: " << this->client_max_body_size << std::endl;
 		std::cout << "redirect: " << this->redirect << std::endl;
+		std::cout << "autoindex: " << this->autoindex << std::endl;
 
 		for (int i = 0; i < locations.size(); i++)
 		{
@@ -27,12 +28,18 @@ public:
 			locations[i].print();
 		}
 	};
+	bool mandatory(int index = -1) {
+		if (host.empty() || server_name.empty() || (index == 0 && port.empty()))
+			return (false);
+		return (true);
+	}
 
+	bool autoindex;
 	std::string host;
 	std::string port;
 	std::string server_name;
 	std::string default_pages;
-	std::string size_limit;
+	std::string client_max_body_size;
 	std::string redirect;
 	std::vector<Location> locations;
 };

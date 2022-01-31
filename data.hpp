@@ -16,9 +16,7 @@ public:
 	void print() {
 		std::cout << std::endl;
 		std::cout << "[BASE]" << std::endl;
-		std::cout << "user: " << user << std::endl;
-		std::cout << "pid: " << pid << std::endl;
-		std::cout << "error_log: " << error_log << std::endl;
+		std::cout << "workers: " << workers << std::endl;
 
 		for (int i = 0; i < servers.size(); i++)
 		{
@@ -27,9 +25,13 @@ public:
 			servers[i].print();
 		}
 	};
-	std::string user;
-	std::string pid;
-	std::string error_log;
+	bool mandatory() {
+		for (int i = 0; i < servers.size(); i++)
+			if (!servers[i].mandatory(i))
+				return (false);
+		return (true);
+	};
+	std::string workers;
 	std::vector<Server> servers;
 
 private:
