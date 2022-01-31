@@ -5,6 +5,7 @@
 #include "Response.hpp"
 
 Response::Response() : status("HTTP/1.1 "), contentType("Content-Type: "), contentLength("Content-Length: "), header(status + contentType + contentLength) {
+	setMapType();
 }
 
 Response::~Response() {
@@ -22,15 +23,48 @@ Response &Response::operator=(const Response &cpy) {
     return (*this);
 }
 
-string Response::fillHeader(string file, string stat, string content_type){
-    status = stat + "\n";
-    contentType =  content_type + "\n";
+void 	Response::setMapType() {
+
+}
+
+void Response::setContentType(string extension){
+	if (extension == "html")
+		contentType = "text/html\n";
+	if (extension == "png" || extension == "jpg")
+		contentType = "image/png\n";
+}
+
+string Response::getResponse() {
+	return (header + body);
+}
+
+size_t Response::getLength(){
+	return (header.length() + body.length());
+}
+
+void Response::fillHeader(string file, string extension){
+	setContentType(extension);
     contentLength =  to_string(file.length());
     header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
-    return (header);
+	body = file;
 }
 
 string Response::getHeader() {
     return (header);
+}
+
+string Response::getBody() {
+	return (body);
+}
+
+void Response::setBody(string file) {
+	body = file;
+}
+
+void		Response::setStatus(string stat) {
+	status = stat + "\n";
+}
+string		Response::getStatus(void) {
+	return (status);
 }
 
