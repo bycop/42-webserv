@@ -81,6 +81,41 @@ string readBody(int fd, int length) {
 	return (body);
 }
 
+string read_body_chunk(int fd) {
+	string body, len_buffer;
+	int len = -1;
+	char buffer[2];
+	bzero(buffer, 2);
+	while (len != 0) {
+//		cout << "Buffer len: ";
+		while(len_buffer.find("\r\n") > len_buffer.length()) {
+			read(fd, buffer, 1);
+//			cout << buffer;
+			len_buffer += buffer[0];
+		}
+//		cout << endl;
+		len = atoi(len_buffer.c_str());
+		len_buffer.clear();
+		if (len < 0) {
+			cerr << "Negative chunk's len's" << endl;
+			return (body);
+		}
+//		cout << "body read : ";
+		for (int i = 0; i < len; i++) {
+			read(fd, buffer, 1);
+//			cout << buffer;
+			body += buffer[0];
+		}
+//		cout << endl;
+		for (int i = 0; i < 2; ++i) { // READ THE \r\n
+			read(fd, buffer, 1);
+//			cout << "skip" << endl;
+		}
+	}
+	return (body);
+}
+
+
 // THE MAIN FCT OF THE PARSING
 map<string, string> parsing_request_header(int fd) {
 	map<string, string> request_header;
@@ -101,17 +136,19 @@ map<string, string> parsing_request_header(int fd) {
 	return (request_header);
 }
 
-// PARSING BODY
 string parsing_request_body(int fd, map<string, string> const& request_header) {
 	string request_body;
 
 	if (request_header.find("method")->second == "POST") {
-		if (request_header.find("Content-Length") == request_header.end()) {
-			cerr << "Impossible to parse POST" << endl;
-		} else {
+		if (request_header.find("Transfer-Encoding") != request_header.end() &&
+			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
+			request_body = read_body_chunk(fd);
+		else if (request_header.find("Content-Length") != request_header.end()) { // CLASSIC WAY TO READ BODY
 			int length = stoi(request_header.find("Content-Length")->second);
 			request_body = readBody(fd, length);
-		}
+		} else
+			cerr << "Impossible to parse POST" << endl;
 	}
+	cout << "BODY : " << request_body << endl;
 	return (request_body);
 }
