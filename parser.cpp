@@ -88,8 +88,8 @@ void location_loop(std::ifstream &file, Server *server) {
 void server_loop(std::ifstream &file, Data *data) {
   Server server;
   std::string line;
-  std::string servervars[5] = {"host", "port", "server_name", "default_pages",
-                               "size_limit"};
+  std::string servervars[6] = {"host", "port", "server_name", "default_pages",
+                               "size_limit", "redirect"};
   bool find;
 
   while (std::getline(file, line)) {

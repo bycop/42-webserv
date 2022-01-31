@@ -18,6 +18,7 @@ public:
 		std::cout << "server_name: " << this->server_name << std::endl;
 		std::cout << "default_pages: " << this->default_pages << std::endl;
 		std::cout << "size_limit: " << this->size_limit << std::endl;
+		std::cout << "redirect: " << this->redirect << std::endl;
 
 		for (int i = 0; i < locations.size(); i++)
 		{
@@ -32,6 +33,7 @@ public:
 	std::string server_name;
 	std::string default_pages;
 	std::string size_limit;
+	std::string redirect;
 	std::vector<Location> locations;
 };
 
