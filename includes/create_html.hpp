@@ -6,7 +6,7 @@
 #define WEBSERV_CREATE_HTML_HPP
 #include <dirent.h>
 
-std::string create_indexing_page(DIR *dir, std::string path, Response &response);
-std::string	create_existing_page(std::string &path, std::string &status, Response &response);
+void create_indexing_page(DIR *dir, std::string path, Response &response);
+void create_existing_page(std::string &path, Response &response);
 
 #endif //WEBSERV_CREATE_HTML_HPP

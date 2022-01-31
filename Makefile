@@ -1,6 +1,6 @@
 NAME			= webserv
 
-FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp parser_request.cpp Response.cpp
+FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp Response.cpp parser_request.cpp
 
 INC_PATH		= includes
 INC_FILES		= webserv.hpp create_html.hpp send_page.hpp socket.hpp Response.hpp

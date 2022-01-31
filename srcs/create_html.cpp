@@ -4,7 +4,7 @@
 
 #include "webserv.hpp"
 
-std::string create_indexing_page(DIR *dir, std::string path, Response &response){
+void create_indexing_page(DIR *dir, std::string path, Response &response){
 	std::ostringstream mypage;
 	std::string dir_p = ".";
 	std::string status = "200 OK";
@@ -26,19 +26,16 @@ std::string create_indexing_page(DIR *dir, std::string path, Response &response)
 	}
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";
-    return (response.fillHeader(mypage.str(), status, content_type) + mypage.str());
-//	return (ft_header(mypage.str().length(), status, content_type) + mypage.str());
+    response.fillHeader(mypage.str(), "html");
 }
 
-std::string		create_existing_page(std::string &path, std::string &status, Response &response) {
-	std::string file;
+void		create_existing_page(std::string &path, std::string &status, Response &response) {
 	if (path == "/" || path == "/pages/index.html")
-		file = ft_openFile("./pages/index.html", status, "text/html", response);
+		ft_openFile("./pages/index.html", "text/html", response);
 	else if (path.find("test.png") != string::npos)
-		file = ft_openFile("./pages/test.png", status, "image/png", response);
+		ft_openFile("./pages/test.png", "image/png", response);
     else if (path == "/pages/fuck.jpg")
-        file = ft_openFile("./pages/fuck.jpg", status, "image/png", response);
+        ft_openFile("./pages/fuck.jpg", "image/png", response);
     else
-		file = ft_openFile("./pages/404.html", "404 Not Found", "text/html", response);
-	return (file);
+		ft_openFile("./pages/404.html", "text/html", response);
 }
