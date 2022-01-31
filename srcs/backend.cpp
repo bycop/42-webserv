@@ -51,7 +51,7 @@ void setenv_cgi(map<string, string> & request_header) {
 void launch_backend_file(map<string, string> &request_header) {
 	std::string filename = request_header["path"];
 	filename.erase(0, 1);
-	std::string command = "python3";
+	std::string command = "python";
 	command += " " + filename;
 	system(command.c_str());
 }

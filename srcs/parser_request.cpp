@@ -87,30 +87,22 @@ string read_body_chunk(int fd) {
 	char buffer[2];
 	bzero(buffer, 2);
 	while (len != 0) {
-//		cout << "Buffer len: ";
-		while(len_buffer.find("\r\n") > len_buffer.length()) {
+		while (len_buffer.find("\r\n") > len_buffer.length()) {
 			read(fd, buffer, 1);
-//			cout << buffer;
 			len_buffer += buffer[0];
 		}
-//		cout << endl;
 		len = atoi(len_buffer.c_str());
 		len_buffer.clear();
 		if (len < 0) {
 			cerr << "Negative chunk's len's" << endl;
 			return (body);
 		}
-//		cout << "body read : ";
 		for (int i = 0; i < len; i++) {
 			read(fd, buffer, 1);
-//			cout << buffer;
 			body += buffer[0];
 		}
-//		cout << endl;
-		for (int i = 0; i < 2; ++i) { // READ THE \r\n
+		for (int i = 0; i < 2; ++i) // READ THE \r\n
 			read(fd, buffer, 1);
-//			cout << "skip" << endl;
-		}
 	}
 	return (body);
 }
@@ -149,6 +141,6 @@ string parsing_request_body(int fd, map<string, string> const& request_header) {
 		} else
 			cerr << "Impossible to parse POST" << endl;
 	}
-	cout << "BODY : " << request_body << endl;
+//	cout << "BODY : " << request_body << endl;
 	return (request_body);
 }
