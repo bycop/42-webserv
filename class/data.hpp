@@ -27,7 +27,7 @@ public:
 				return (false);
 		return (true);
 	};
-	std::string workers;
+	std::string workers; // int
 	std::vector<Server> servers;
 
 private:

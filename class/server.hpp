@@ -32,12 +32,13 @@ public:
 	}
 
 	bool autoindex;
-	std::string host;
-	std::string port;
-	std::string server_name;
-	std::string default_pages;
-	std::string client_max_body_size;
-	std::string redirect;
+	std::string host; // string
+	std::string port; // int[]
+	std::string server_name; // string[]
+	std::string default_pages; // string
+	std::string client_max_body_size; // int
+	std::string redirect_status; // 301 : int
+	std::string redirect; // https://localhost:8080  string
 	std::vector<Location> locations;
 };
 
