@@ -14,16 +14,23 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <cstring>
+#include <cctype>
 #include <cstdlib>
+#include <vector>
 #include "socket.hpp"
 #include "create_html.hpp"
 #include "send_page.hpp"
+#include "../class/Data.hpp"
+#include "../class/Location.hpp"
+#include "../class/Server.hpp"
 
 #define PORT 8080
 
 using namespace std;
 
 // PARSING REQUEST
-std::pair<map<string, string>, string > parsing_request(int fd);
+pair<map<string, string>, string > parsing_request(int fd);
 
+// PARSER_CONF
+int parser_conf(Data &data, string const& file_path);
 #endif //WEBSERV_WEBSERV_HPP
