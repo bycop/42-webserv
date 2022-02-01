@@ -35,4 +35,4 @@ public:
 //	string getContentType(void);
 };
 
-#endif //WEBSERV_HEADERRESPONSE_H
+#endif //WEBSERV_HEADERRESPOc NSE_H
