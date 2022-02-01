@@ -33,14 +33,14 @@ std::string parse_query_string(std::string & path) {
 	return (query);
 }
 
-std::pair<string, string> get_path_info_and_translated(string const& path) {
-	std::pair<string, string> path_info_and_translated;
-	size_t pos_split_path = path.rfind('/');
-	if (path.find('.') < pos_split_path) {
-		path_info_and_translated.first = path.substr(pos_split_path, path.length() - pos_split_path); // GET PATH INFO / INTO THE END
-		path_info_and_translated.second = path.substr(0, pos_split_path); // GET PATH TRANSLATED BEGINNING INTO THE /
+string get_path_info_and_del_to_path(string &path) {
+	string path_info;
+	size_t pos_split_path = path.find('/', path.find("."));
+	if (path.find('.') < pos_split_path && pos_split_path != string::npos) {
+		path_info = path.substr(pos_split_path, path.length() - pos_split_path); // GET PATH INFO / INTO THE END
+		path = path.substr(0, pos_split_path); // GET PATH TRANSLATED BEGINNING INTO THE /
 	}
-	return(path_info_and_translated);
+	return(path_info);
 }
 
 // FIRST_LINE
@@ -49,12 +49,11 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	size_t start = 0;
 	std::pair<string, string> path_info_translated;
 	getline(is, first_line);
-	cout << first_line << endl; // TODO: TEST
+//	cout << first_line << endl; // TODO: TEST
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
-	path_info_translated = get_path_info_and_translated(request["path"]);
-	request.insert(make_pair("path_info", path_info_translated.first));
-	request.insert(make_pair("path_translated", path_info_translated.second));
+	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
+	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start))); // TODO:  DONT TAKE TWO LAST CHARS
 }
@@ -64,10 +63,19 @@ string readHeader(int fd) {
 	string str_buffer;
 	string line;
 	char buffer[2];
+	int i = 0;
 	while (str_buffer.find("\n\r\n") == std::string::npos) {
 		read(fd, buffer, 1);
 		str_buffer += buffer[0];
+		cout << buffer[0];
+		if (i == 1000) {
+			cout << "I STOP" << endl;
+			return (str_buffer);
+		}
+		i++;
+
 	}
+	cout << endl;
 	return (str_buffer);
 }
 
@@ -115,16 +123,17 @@ map<string, string> parsing_request_header(int fd) {
 	std::string line, body;
 	size_t pos_del;
 
+	cout << "BEGIN FIRST LINE" << endl;
 	parse_first_line_request(is, request_header);
 
 	// PARSING HEADER
+	cout << "BEGIN PARSE HEADER" << endl;
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
-		cout << line << endl; // TODO: TEST
+//		cout << line << endl; // TODO: TEST
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
-
 	return (request_header);
 }
 

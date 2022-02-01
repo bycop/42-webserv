@@ -3,11 +3,12 @@
 //
 
 #include "webserv.hpp"
+
 int main() {
 	int server_socket;
 	struct sockaddr_in address;
 
-    create_socket(server_socket, address);
+	create_socket(server_socket, address);
 	receiving_information(server_socket, address);
 	return 0;
 }

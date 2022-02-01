@@ -20,7 +20,6 @@ std::string ft_header(int length, std::string s, std::string content_type){
 std::string ft_openFile(std::string path, std::string status, std::string content_type){
     std::ifstream ifs(path);
     std::string page;
-	std::cout << path << std::endl;
     if (ifs) {
         std::ostringstream oss;
         oss << ifs.rdbuf();

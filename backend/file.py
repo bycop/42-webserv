@@ -1,11 +1,5 @@
 import cgi, base, os
 
-form = cgi.FieldStorage()
-
-upload_files = form['file']
-content = ''
-check_list = type(upload_files) is list
-
 def upload_file(file):
     filename = file.filename
     extension_file = os.path.splitext(filename)[1]
@@ -17,13 +11,21 @@ def upload_file(file):
         return '<p>The file ' + filename + ' was uploaded successfully</p>'
     else:
         return '<p>The file ' + filename + ' has a error</p>'
+form = cgi.FieldStorage()
 
-
-if check_list:
-    for file in upload_files:
-        content += upload_file(file)
+if "file" not in form or form["file"].value == '':
+    content = "<p>Error upload file. Try again</p>"
 else:
-    content = upload_file(upload_files)
+    upload_files = form['file']
+    content = ''
+    check_list = type(upload_files) is list
+    os.mkdir("upload_file")
+
+    if check_list:
+        for file in upload_files:
+            content += upload_file(file)
+    else:
+        content = upload_file(upload_files)
 
 content += "<a href=\"/pages/file.html\"> Upload a another file</a>"
 base.print_base(content)

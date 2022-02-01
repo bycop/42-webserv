@@ -20,7 +20,6 @@
 #include "send_page.hpp"
 
 #define PORT 8080
-
 using namespace std;
 
 // PARSER_REQUEST.CPP
