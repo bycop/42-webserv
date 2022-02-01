@@ -12,24 +12,25 @@ int 	checkError(std::string &path, Response &response){
 	return (0);
 }
 
-void ft_openFile(std::string path, std::string content_type, Response &response){
+void openFile(std::string path, Response &response){
     std::ifstream ifs(path);
     std::string page;
     if (ifs) {
         std::ostringstream oss;
         oss << ifs.rdbuf();
         std::string file = oss.str();
-        response.fillHeader(file, response.getStatus(), content_type);
-		response.setBody(file);
+		response.setStatus("200 OK");
+        response.fillHeader(file, path);
     }
+	else
+		response.setStatus("404 Not Found");
 }
 
 void display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex, Response &response){
     string path = request["path"];
-//    std::string status = "200 OK ";
 	DIR *dir;
 	if (checkError(path, response))
-		ft_openFile("./pages/404.html", "text/html", response);
+
 	else if (autoindex && (dir = opendir(const_cast<char *>(("." + path).c_str()))) != NULL)
 		create_indexing_page(dir, path, response);
 	else

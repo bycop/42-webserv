@@ -26,16 +26,16 @@ void create_indexing_page(DIR *dir, std::string path, Response &response){
 	}
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";
-    response.fillHeader(mypage.str(), "html");
+    response.fillHeader(mypage.str(), path);
 }
 
-void		create_existing_page(std::string &path, std::string &status, Response &response) {
+void		create_existing_page(std::string &path, Response &response) {
 	if (path == "/" || path == "/pages/index.html")
-		ft_openFile("./pages/index.html", "text/html", response);
+		openFile("./pages/index.html", response);
 	else if (path.find("test.png") != string::npos)
-		ft_openFile("./pages/test.png", "image/png", response);
+		openFile("./pages/test.png", response);
     else if (path == "/pages/fuck.jpg")
-        ft_openFile("./pages/fuck.jpg", "image/png", response);
+        openFile("./pages/fuck.jpg", response);
     else
-		ft_openFile("./pages/404.html", "text/html", response);
+		openFile("./pages/404.html",  response);
 }

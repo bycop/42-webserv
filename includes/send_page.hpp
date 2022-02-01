@@ -7,7 +7,7 @@
 #include "Response.hpp"
 
 void display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex, Response &response);
-void ft_openFile(std::string path, std::string content_type, Response &response);
+void openFile(std::string path, Response &response);
 std::string ft_header(int length, std::string s, std::string content_type);
 
 #endif //WEBSERV_SEND_PAGE_HPP
