@@ -22,11 +22,13 @@ public:
 			cout << allow_methods[i] << " ";
 		cout << endl;
 		cout << "path: " << this->path << endl;
+		cout << "upload_store: " << this->upload_store << endl;
 	};
 	vector <string> index;
 	string root;
 	vector <string> allow_methods;
 	string path;
+	string upload_store;
 };
 
 #endif

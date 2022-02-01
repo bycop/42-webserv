@@ -140,6 +140,11 @@ bool location_setters(string const &newdata, const int type, Location &location)
 				return (true);
 			location.allow_methods = split_string(newdata);
 			break;
+		case 3:
+			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
+				return (true);
+			location.upload_store = newdata;
+			break;
 	}
 	return (false);
 }
@@ -161,7 +166,7 @@ string location_path(string const &line) {
 void location_loop(std::ifstream &file, Server &server, string const &path) {
 	Location location;
 	string line;
-	string locationvars[3] = {"index", "root", "allow_methods"};
+	string locationvars[4] = {"index", "root", "allow_methods", "upload_store"};
 	bool find;
 
 	location.path = path;
