@@ -3,43 +3,52 @@
 
 # include "Location.hpp"
 
+using namespace std;
+
 class Server {
 public:
-	Server() {};
+	Server() : autoindex(false), client_max_body_size(0), redirect_status(0) {};
 
 	~Server() {};
 
 	void print() {
-		std::cout << "host: " << this->host << std::endl;
-		std::cout << "port: " << this->port << std::endl;
-		std::cout << "server_name: " << this->server_name << std::endl;
-		std::cout << "default_pages: " << this->default_pages << std::endl;
-		std::cout << "client_max_body_size: " << this->client_max_body_size << std::endl;
-		std::cout << "redirect: " << this->redirect << std::endl;
-		std::cout << "autoindex: " << this->autoindex << std::endl;
+		cout << "host: " << this->host << endl;
+		cout << "ports: ";
+		for (unsigned long i = 0; i < ports.size(); i++)
+			cout << ports[i] << " ";
+		cout << endl;
+		cout << "server_names: ";
+		for (unsigned long i = 0; i < server_name.size(); i++)
+			cout << server_name[i] << " ";
+		cout << endl;
+		cout << "default_pages: " << this->default_pages << endl;
+		cout << "client_max_body_size: " << this->client_max_body_size << endl;
+		cout << "redirect_status: " << this->redirect_status << endl;
+		cout << "redirect: " << this->redirect << endl;
+		cout << "autoindex: " << this->autoindex << endl;
 
-		for (unsigned long i = 0; i < locations.size(); i++)
-		{
-			std::cout << std::endl;
-			std::cout << "[LOCATION " << i << "]" << std::endl;
+		for (unsigned long i = 0; i < locations.size(); i++) {
+			cout << endl;
+			cout << "[LOCATION " << i << "]" << endl;
 			locations[i].print();
 		}
 	};
+
 	bool mandatory(int index = -1) {
-		if (host.empty() || server_name.empty() || (index == 0 && port.empty()))
+		if (host.empty() || server_name.empty() || (index == 0 && ports.empty()))
 			return (false);
 		return (true);
 	}
 
 	bool autoindex;
-	std::string host; // string
-	std::string port; // int[]
-	std::string server_name; // string[]
-	std::string default_pages; // string
-	std::string client_max_body_size; // int
-	std::string redirect_status; // 301 : int
-	std::string redirect; // https://localhost:8080  string
-	std::vector<Location> locations;
+	string host;
+	vector <string> server_name;
+	string default_pages;
+	int client_max_body_size;
+	int redirect_status;
+	string redirect;
+	vector <Location> locations;
+	vector <int> ports;
 };
 
 #endif

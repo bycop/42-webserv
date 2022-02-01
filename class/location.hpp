@@ -3,6 +3,8 @@
 
 #include "webserv.hpp"
 
+using namespace std;
+
 class Location {
 public:
 	Location() {};
@@ -10,15 +12,21 @@ public:
 	~Location() {};
 
 	void print() {
-		std::cout << "index: " << this->index << std::endl;
-		std::cout << "root: " << this->root << std::endl;
-		std::cout << "default_pages: " << this->allow_methods << std::endl;
-		std::cout << "path: " << this->path << std::endl;
+		cout << "indexs: ";
+		for (unsigned long i = 0; i < index.size(); i++)
+			cout << index[i] << " ";
+		cout << endl;
+		cout << "root: " << this->root << endl;
+		cout << "allow_methods: ";
+		for (unsigned long i = 0; i < allow_methods.size(); i++)
+			cout << allow_methods[i] << " ";
+		cout << endl;
+		cout << "path: " << this->path << endl;
 	};
-	std::string index; // string[]
-	std::string root; // string
-	std::string allow_methods; // string[]
-	std::string path; // string
+	vector <string> index;
+	string root;
+	vector <string> allow_methods;
+	string path;
 };
 
 #endif

@@ -3,32 +3,34 @@
 
 # include "Server.hpp"
 
-class Data
-{
+using namespace std;
 
+class Data {
 public:
-	Data(){};
-	~Data(){};
-	void print() {
-		std::cout << std::endl;
-		std::cout << "[BASE]" << std::endl;
-		std::cout << "workers: " << workers << std::endl;
+	Data() {};
 
-		for (unsigned long i = 0; i < servers.size(); i++)
-		{
-			std::cout << std::endl;
-			std::cout << "[SERVER " << i << "]" << std::endl;
+	~Data() {};
+
+	void print() {
+		cout << endl;
+		cout << "[BASE]" << endl;
+		cout << "workers: " << workers << endl;
+
+		for (unsigned long i = 0; i < servers.size(); i++) {
+			cout << endl;
+			cout << "[SERVER " << i << "]" << endl;
 			servers[i].print();
 		}
 	};
+
 	bool mandatory() {
 		for (unsigned long i = 0; i < servers.size(); i++)
 			if (!servers[i].mandatory(i))
 				return (false);
 		return (true);
 	};
-	std::string workers; // int
-	std::vector<Server> servers;
+	int workers;
+	vector <Server> servers;
 
 private:
 
