@@ -50,8 +50,8 @@ bool checkTypes(int type, string line, string allowed_chars = "") {
 	return (true);
 }
 
-vector <string> split_string(string const &line) {
-	vector <string> strings;
+vector<string> split_string(string const &line) {
+	vector<string> strings;
 	istringstream f(line);
 	string s;
 	while (getline(f, s, ',')) {
@@ -66,7 +66,7 @@ bool main_setters(string const &newdata, const int type, Data &data) {
 		case 0:
 			if (!checkTypes(INT, newdata))
 				return (true);
-			data.workers = stoi(newdata);
+			data.setWorkers(stoi(newdata));
 			break;
 	}
 	return (false);
@@ -77,46 +77,46 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 		case 0:
 			if (!checkTypes(STRING, newdata))
 				return (true);
-			server.host = newdata;
+			server.setHost(newdata);
 			break;
 		case 1: {
 			if (!checkTypes(INT_A, newdata))
 				return (true);
-			vector <string> strings = split_string(newdata);
+			vector<string> strings = split_string(newdata);
 			for (unsigned long i = 0; i < strings.size(); i++)
-				server.ports.push_back(stoi(strings[i]));
+				server.getPorts().push_back(stoi(strings[i]));
 			break;
 		}
 		case 2:
 			if (!checkTypes(STRING_A, newdata, "._-*"))
 				return (true);
-			server.server_name = split_string(newdata);
+			server.setServerName(split_string(newdata));
 			break;
 		case 3:
 			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
 				return (true);
-			server.default_pages = newdata;
+			server.setDefaultPages(newdata);
 			break;
 		case 4:
 			if (!checkTypes(INT, newdata))
 				return (true);
-			server.client_max_body_size = stoi(newdata);
+			server.setClientMaxBodySize(stoi(newdata));
 			break;
 		case 5: {
-			vector <string> strings = split_string(newdata);
+			vector<string> strings = split_string(newdata);
 			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], ":/"))
 				return (true);
-			server.redirect_status = stoi(strings[0]);
-			server.redirect = strings[1];
+			server.setRedirectStatus(stoi(strings[0]));
+			server.setRedirect(strings[1]);
 			break;
 		}
 		case 6:
 			if (!checkTypes(RESTRICT_CHARS, newdata, "onf"))
 				return (true);
 			if (newdata == "on")
-				server.autoindex = true;
+				server.setAutoindex(true);
 			else if (newdata == "off")
-				server.autoindex = false;
+				server.setAutoindex(false);
 			else
 				return (true);
 			break;
@@ -129,26 +129,27 @@ bool location_setters(string const &newdata, const int type, Location &location)
 		case 0:
 			if (!checkTypes(STRING_A, newdata, "."))
 				return (true);
-			location.index = split_string(newdata);
+			location.setIndex(split_string(newdata));
 			break;
 		case 1:
 			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
 				return (true);
-			location.root = newdata;
+			location.setRoot(newdata);
 			break;
 		case 2: {
 			if (!checkTypes(STRING_A, newdata))
 				return (true);
-			location.allow_methods = split_string(newdata);
-			for (unsigned long i = 0; i < location.allow_methods.size(); i++)
-				if (location.allow_methods[i] != "GET" && location.allow_methods[i] != "POST" && location.allow_methods[i] != "DELETE")
+			location.setAllowMethods(split_string(newdata));
+			for (unsigned long i = 0; i < location.getAllowMethods().size(); i++)
+				if (location.getAllowMethods()[i] != "GET" && location.getAllowMethods()[i] != "POST" &&
+					location.getAllowMethods()[i] != "DELETE")
 					return (true);
 			break;
 		}
 		case 3:
 			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
 				return (true);
-			location.upload_store = newdata;
+			location.setUploadStore(newdata);
 			break;
 	}
 	return (false);
@@ -174,7 +175,7 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 	string locationvars[4] = {"index", "root", "allow_methods", "upload_store"};
 	bool find;
 
-	location.path = path;
+	location.setPath(path);
 	while (std::getline(file, line)) {
 		string original = line;
 
@@ -194,7 +195,7 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 		else if (!find && line != "")
 			display_error("location", original);
 	}
-	server.locations.push_back(location);
+	server.getLocations().push_back(location);
 }
 
 void server_loop(std::ifstream &file, Data &data) {
@@ -224,7 +225,7 @@ void server_loop(std::ifstream &file, Data &data) {
 			display_error("server", original);
 
 	}
-	data.servers.push_back(server);
+	data.getServers().push_back(server);
 }
 
 int parser_conf(Data &data, string const &file_path) {
