@@ -102,8 +102,7 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 				return (true);
 			server.client_max_body_size = stoi(newdata);
 			break;
-		case 5:
-		{
+		case 5: {
 			vector <string> strings = split_string(newdata);
 			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], ":/"))
 				return (true);
@@ -116,8 +115,10 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 				return (true);
 			if (newdata == "on")
 				server.autoindex = true;
-			else
+			else if (newdata == "off")
 				server.autoindex = false;
+			else
+				return (true);
 			break;
 	}
 	return (false);
@@ -135,11 +136,15 @@ bool location_setters(string const &newdata, const int type, Location &location)
 				return (true);
 			location.root = newdata;
 			break;
-		case 2:
+		case 2: {
 			if (!checkTypes(STRING_A, newdata))
 				return (true);
 			location.allow_methods = split_string(newdata);
+			for (unsigned long i = 0; i < location.allow_methods.size(); i++)
+				if (location.allow_methods[i] != "GET" && location.allow_methods[i] != "POST" && location.allow_methods[i] != "DELETE")
+					return (true);
 			break;
+		}
 		case 3:
 			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
 				return (true);
