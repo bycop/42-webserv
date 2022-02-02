@@ -1,9 +1,9 @@
 NAME			= webserv
 
-FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp Response.cpp parser_request.cpp
+FILES			= main.cpp send_page.cpp socket.cpp create_page.cpp Response.cpp parser_request.cpp
 
 INC_PATH		= includes
-INC_FILES		= webserv.hpp create_html.hpp send_page.hpp socket.hpp Response.hpp
+INC_FILES		= webserv.hpp create_page.hpp send_page.hpp socket.hpp Response.hpp
 INC				= $(addprefix ${INC_PATH}/, ${INC_FILES})
 
 SRC_PATH		= srcs

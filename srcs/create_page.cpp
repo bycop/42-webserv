@@ -7,7 +7,6 @@
 void create_indexing_page(DIR *dir, std::string path, Response &response){
 	std::ostringstream mypage;
 	std::string dir_p = ".";
-	std::string status = "200 OK";
 	std::string content_type = "text/html";
 	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Index of " << path << "</title>\n</head>\n" << std::endl;
 	mypage << "<body><h1>Index of " << path << "\n</h1><hr/><br>";
@@ -26,16 +25,13 @@ void create_indexing_page(DIR *dir, std::string path, Response &response){
 	}
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";
+	response.setStatus("200 OK");
     response.fillHeader(mypage.str(), path);
 }
 
-void		create_existing_page(std::string &path, Response &response) {
-	if (path == "/" || path == "/pages/index.html")
-		openFile("./pages/index.html", response);
-	else if (path.find("test.png") != string::npos)
-		openFile("./pages/test.png", response);
-    else if (path == "/pages/fuck.jpg")
-        openFile("./pages/fuck.jpg", response);
-    else
-		openFile("./pages/404.html",  response);
+void 		create_error_page(std::string &path, Response &response) {
+	std::ostringstream mypage;
+	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << response.getStatus() << "</title>\n</head>\n" << std::endl;
+	mypage << "<body><h1>Error " << response.getStatus() << "\n</h1></body></html>";
+	response.fillHeader(mypage.str(), path);
 }

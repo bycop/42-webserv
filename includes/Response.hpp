@@ -12,14 +12,14 @@ using namespace std;
 
 class Response {
 private:
-    string	status;
+	string	status;
     string	contentType;
     string	contentLength;
     string	header;
     string	body;
 	string	response;
 	size_t	length;
-	map<string, string>	type;
+	map<string, string>	types;
 	void setMapType(void);
 public:
     Response();
@@ -34,9 +34,8 @@ public:
 	void	setStatus(string);
 	void	setBody(string);
 	void	setContentType(string path);
-    void	fillHeader(string file, string path);
+    void	fillHeader(string file, string &path);
 	string	findExtension(string path);
-	void
 };
 
 #endif //WEBSERV_HEADERRESPOc NSE_H
