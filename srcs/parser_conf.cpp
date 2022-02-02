@@ -75,7 +75,7 @@ bool main_setters(string const &newdata, const int type, Data &data) {
 bool server_setters(string const &newdata, const int type, Server &server) {
 	switch (type) {
 		case 0:
-			if (!checkTypes(STRING, newdata))
+			if (!checkTypes(STRING, newdata, "."))
 				return (true);
 			server.setHost(newdata);
 			break;
