@@ -1,6 +1,6 @@
 NAME			= webserv
 
-FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp parser_request.cpp parser_conf.cpp
+FILES			= main.cpp send_page.cpp socket.cpp create_html.cpp parser_request.cpp backend.cpp parser_conf.cpp
 
 INC_PATH		= includes
 INC_FILES		= webserv.hpp create_html.hpp send_page.hpp socket.hpp
@@ -14,7 +14,7 @@ BIN 			= $(SRC:%.cpp=$(BIN_PATH)/%.o)
 
 CC				= clang++
 RM				= rm -rf
-FLAGS			= -std=c++98 -Wall -Wextra  -Werror -fsanitize=address -g3
+FLAGS			= -std=c++98 -Wall -Wextra  -Werror #-fsanitize=address -g3
 
 all: 			${NAME}
 

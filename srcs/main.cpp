@@ -12,7 +12,7 @@ int main(int ac, char **av) {
 
 	if (parser_conf(data, file_path))
 		return (1);
-	data.print();
+//	data.print();
     create_socket(server_socket, address);
 	receiving_information(server_socket, address);
 	return 0;

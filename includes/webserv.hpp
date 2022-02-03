@@ -25,11 +25,14 @@
 #include "../class/Server.hpp"
 
 #define PORT 8080
-
 using namespace std;
 
-// PARSING REQUEST
-pair<map<string, string>, string > parsing_request(int fd);
+// PARSER_REQUEST.CPP
+map<string, string> parsing_request_header(int fd);
+string parsing_request_body(int fd, map<string, string> const& request_header);
+
+// BACKEND.CPP
+string backend_page(map<string, string> & request_header, string & request_body);
 
 // PARSER_CONF
 int parser_conf(Data &data, string const& file_path);
