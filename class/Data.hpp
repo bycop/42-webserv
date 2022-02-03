@@ -24,9 +24,15 @@ public:
 	};
 
 	bool mandatory() {
+		if (_servers.empty()) {
+			cerr << "\e[91m[ERROR]\e[0m Mandatory key is missing " << endl;
+			return (false);
+		}
 		for (unsigned long i = 0; i < _servers.size(); i++)
-			if (!_servers[i].mandatory(i))
+			if (!_servers[i].mandatory(i)) {
+				cerr << "\e[91m[ERROR]\e[0m Mandatory key is missing " << endl;
 				return (false);
+			}
 		return (true);
 	}
 
