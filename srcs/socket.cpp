@@ -23,7 +23,7 @@ void create_socket(int &server_socket, sockaddr_in &address) {
 	}
 }
 
-void receiving_information(int &server_socket, sockaddr_in &address){
+void receiving_information(int &server_socket, sockaddr_in &address, Response &response){
 	int new_socket;
 	int addrlen = sizeof(address);
 	map<string, string> request_header;
@@ -40,19 +40,9 @@ void receiving_information(int &server_socket, sockaddr_in &address){
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
-		cout << "ACCEPT DONE" << endl;
 		request_header = parsing_request_header(new_socket);
-		cout << "PARSING REQUEST DONE" << endl;
 		request_body = parsing_request_body(new_socket, request_header);
-		cout << "PARSING REQUEST BODY DONE" << endl;
-		if (request_header["path"].find(".py") < request_header["path"].length()) {
-			html_content = backend_page(request_header, request_body);
-			std::string content = ft_header(html_content.length(), "200", "text/html") + html_content;
-			write(new_socket, content.c_str(), content.length());
-		}
-		else
-			display_page(new_socket, request_header, true);
-		cout << "DISPLAY PAGE DONE" << endl;
+		display_page(new_socket, request_header, true, response, request_body);
 		close(new_socket);
 	}
 	close(server_socket);

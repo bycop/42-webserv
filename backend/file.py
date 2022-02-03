@@ -19,7 +19,7 @@ else:
     upload_files = form['file']
     content = ''
     check_list = type(upload_files) is list
-    os.mkdir("upload_file")
+    # os.mkdir("upload_file")
 
     if check_list:
         for file in upload_files:

@@ -5,6 +5,7 @@
 #include "webserv.hpp"
 
 int main(int ac, char **av) {
+	Response response;
 	int server_socket;
 	struct sockaddr_in address;
 	string file_path = (ac == 2) ? av[1] : "webserv.conf";
@@ -14,6 +15,6 @@ int main(int ac, char **av) {
 		return (1);
 //	data.print();
     create_socket(server_socket, address);
-	receiving_information(server_socket, address);
+	receiving_information(server_socket, address, response);
 	return 0;
 }

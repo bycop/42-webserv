@@ -4,9 +4,9 @@
 
 #ifndef WEBSERV_SEND_PAGE_HPP
 #define WEBSERV_SEND_PAGE_HPP
+#include "Response.hpp"
 
-int display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex);
-std::string ft_openFile(std::string path, std::string status, std::string content_type);
-std::string ft_header(int length, std::string s, std::string content_type);
+void display_page(int new_socket, std::map<std::string, std::string> request_header, bool autoindex, Response &response, string &request_body);
+void openFile(std::string path, Response &response);
 
 #endif //WEBSERV_SEND_PAGE_HPP

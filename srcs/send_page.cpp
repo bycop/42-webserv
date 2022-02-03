@@ -4,41 +4,39 @@
 
 #include "webserv.hpp"
 
-int 	checkError(std::string &path){
-	if (path.find("//") != std::string::npos)
+int 	checkError(std::string &path, Response &response){
+	if (path.find("//") != std::string::npos) {
+		response.setStatus("404 Not Found");
 		return (1);
+	}
 	return (0);
 }
 
-std::string ft_header(int length, std::string s, std::string content_type){
-    std::string status = "HTTP/1.1 " + s;
-    std::string content = "Content-Type: " + content_type;
-    std::string contlength = "Content-Length: " + std::to_string(length);
-    return (status + content + contlength + "\n\n");
-}
-
-std::string ft_openFile(std::string path, std::string status, std::string content_type){
+void openFile(std::string path, Response &response){
     std::ifstream ifs(path);
     std::string page;
     if (ifs) {
         std::ostringstream oss;
         oss << ifs.rdbuf();
         std::string file = oss.str();
-        return(ft_header(file.length(), status, content_type) + file);
+		response.setStatus("200 OK");
+        response.fillHeader(file, path);
     }
-    return (page);
+	else
+		response.setStatus("404 Not Found");
 }
 
-int display_page(int new_socket, std::map<std::string, std::string> request, bool autoindex){
-    std::string file;
-    string path = request["path"];
-    std::string status = "200 OK\n";
+void display_page(int new_socket, std::map<std::string, std::string> request_header, bool autoindex, Response &response, string &request_body){
+    string path = request_header["path"];
+	cout << path << endl;
 	DIR *dir;
-	if (checkError(path))
-		file = ft_openFile("./pages/404.html", "404 Not Found\n", "text/html\n");
+	if (checkError(path, response))
+		create_error_page(path, response);
+	else if (path.find(".py") != string::npos)
+		response.fillHeader(backend_page(request_header, request_body), (string &) "oui.html");
 	else if (autoindex && (dir = opendir(const_cast<char *>(("." + path).c_str()))) != NULL)
-		file = create_indexing_page(dir, path);
+		create_indexing_page(dir, path, response);
 	else
-		file = create_existing_page(path, status);
-	return (write(new_socket, const_cast<char *>(file.c_str()), file.length()));
+		openFile("." + path, response);
+	write(new_socket, const_cast<char *>(response.getResponse().c_str()), response.getLength());
 }

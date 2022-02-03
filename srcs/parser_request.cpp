@@ -1,5 +1,5 @@
 //
-// Created by Alexis Lafrance on 1/13/22.
+// Created by Alexis Lafrancette on 1/13/22.
 //
 
 #include "webserv.hpp"
@@ -36,7 +36,7 @@ std::string parse_query_string(std::string & path) {
 string get_path_info_and_del_to_path(string &path) {
 	string path_info;
 	size_t pos_split_path = path.find('/', path.find("."));
-	if (path.find('.') < pos_split_path && pos_split_path != string::npos) {
+	if (path.find_last_of('.') < pos_split_path && pos_split_path != string::npos) {
 		path_info = path.substr(pos_split_path, path.length() - pos_split_path); // GET PATH INFO / INTO THE END
 		path = path.substr(0, pos_split_path); // GET PATH TRANSLATED BEGINNING INTO THE /
 	}
