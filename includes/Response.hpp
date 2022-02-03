@@ -34,6 +34,7 @@ public:
 	void	setStatus(string);
 	void	setBody(string);
 	void	setContentType(string path);
+	void 	fillHeaderCGI(string &ficelle);
     void	fillHeader(string file, string &path);
 	string	findExtension(string path);
 };

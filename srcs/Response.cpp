@@ -88,8 +88,12 @@ void Response::setContentType(string path){
 	}
 }
 
+void Response::fillHeaderCGI(string &ficelle){
+	header = "HTTP/1.1 " + status;
+}
+
 void Response::fillHeader(string file, string &path){
-	setContentType(path);
+	setContentTypePath(path);
 	contentLength =  to_string(file.length());
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;
