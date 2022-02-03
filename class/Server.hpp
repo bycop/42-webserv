@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include "Location.hpp"
+# include <map>
 
 using namespace std;
 
@@ -21,7 +22,9 @@ public:
 		for (unsigned long i = 0; i < _server_name.size(); i++)
 			cout << _server_name[i] << " ";
 		cout << endl;
-		cout << "default_pages: " << _default_pages << endl;
+		cout << "default_pages: " << endl;
+		for (map<int, string>::iterator it = _default_pages.begin(); it != _default_pages.end(); ++it)
+			cout << "              " << it->first << " " << it->second << endl;
 		cout << "client_max_body_size: " << _client_max_body_size << endl;
 		cout << "redirect_status: " << _redirect_status << endl;
 		cout << "redirect: " << _redirect << endl;
@@ -46,7 +49,7 @@ public:
 
 	vector<string> &getServerName() { return _server_name; }
 
-	const string &getDefaultPages() const { return _default_pages; }
+	map<int, string> &getDefaultPages() { return _default_pages; }
 
 	int getClientMaxBodySize() const { return _client_max_body_size; }
 
@@ -65,7 +68,7 @@ public:
 
 	void setServerName(const vector<string> &serverName) { _server_name = serverName; }
 
-	void setDefaultPages(const string &defaultPages) { _default_pages = defaultPages; }
+	void setDefaultPages(const map<int, string> &defaultPages) { _default_pages = defaultPages; }
 
 	void setClientMaxBodySize(int clientMaxBodySize) { _client_max_body_size = clientMaxBodySize; }
 
@@ -81,7 +84,7 @@ private:
 	bool _autoindex;
 	string _host;
 	vector<string> _server_name;
-	string _default_pages;
+	map<int, string> _default_pages;
 	int _client_max_body_size;
 	int _redirect_status;
 	string _redirect;

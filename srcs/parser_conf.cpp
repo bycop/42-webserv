@@ -92,11 +92,15 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 				return (true);
 			server.setServerName(split_string(newdata));
 			break;
-		case 3:
-			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
+		case 3: {
+			vector<string> strings = split_string(newdata);
+			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], "./_-=*!~+"))
 				return (true);
-			server.setDefaultPages(newdata);
+			pair<std::map<int, string>::iterator, bool> ret_val = server.getDefaultPages().insert(make_pair(stoi(strings[0]), strings[1]));
+			if (!ret_val.second)
+				return (true);
 			break;
+		}
 		case 4:
 			if (!checkTypes(INT, newdata))
 				return (true);
@@ -201,7 +205,7 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 void server_loop(std::ifstream &file, Data &data) {
 	Server server;
 	string line;
-	string servervars[7] = {"host", "port", "server_name", "default_pages",
+	string servervars[7] = {"host", "port", "server_name", "default",
 							"client_max_body_size", "redirect", "autoindex"};
 	bool find;
 	while (std::getline(file, line)) {
