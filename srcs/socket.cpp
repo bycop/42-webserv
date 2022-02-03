@@ -26,20 +26,34 @@ void create_socket(int &server_socket, sockaddr_in &address) {
 void receiving_information(int &server_socket, sockaddr_in &address){
 	int new_socket;
 	int addrlen = sizeof(address);
-	std::pair<map<string, string>, string> request;
+	map<string, string> request_header;
+	string request_body;
+	string html_content;
 
 	if (listen(server_socket, 10) < 0) {
 		perror("In listen");
 		exit(EXIT_FAILURE);
 	}
-	while (1) {
+	while (1) { //TODO: CHOOSE A WAY TO STOP OUR SERVER DIFFERENTLY
 		printf("\n+++++++ Waiting for new connection ++++++++\n\n");
 		if ((new_socket = accept(server_socket, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) < 0) {
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
-		request = parsing_request(new_socket);
-		display_page(new_socket, request.first, 1);
+		cout << "ACCEPT DONE" << endl;
+		request_header = parsing_request_header(new_socket);
+		cout << "PARSING REQUEST DONE" << endl;
+		request_body = parsing_request_body(new_socket, request_header);
+		cout << "PARSING REQUEST BODY DONE" << endl;
+		if (request_header["path"].find(".py") < request_header["path"].length()) {
+			html_content = backend_page(request_header, request_body);
+			std::string content = ft_header(html_content.length(), "200", "text/html") + html_content;
+			write(new_socket, content.c_str(), content.length());
+		}
+		else
+			display_page(new_socket, request_header, true);
+		cout << "DISPLAY PAGE DONE" << endl;
 		close(new_socket);
 	}
+	close(server_socket);
 }
