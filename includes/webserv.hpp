@@ -18,11 +18,10 @@
 #include <cstdlib>
 #include <vector>
 #include "socket.hpp"
-#include "create_html.hpp"
+#include "create_page.hpp"
 #include "send_page.hpp"
+#include "Response.hpp"
 #include "../class/Data.hpp"
-#include "../class/Location.hpp"
-#include "../class/Server.hpp"
 
 #define PORT 8080
 using namespace std;
