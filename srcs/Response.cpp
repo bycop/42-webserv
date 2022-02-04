@@ -2,11 +2,10 @@
 // Created by Codage on 25/01/2022.
 //
 
-#include "Response.hpp"
 #include "webserv.hpp"
 
 ///COPLIEN FORM
-Response::Response() :  status("200 OK\n"), contentType("text/plain\n"){
+Response::Response() : status("200 OK\n"), contentType("text/plain\n") {
 	setMapType();
 }
 
@@ -50,13 +49,12 @@ string Response::getResponse() {
 	return (response);
 }
 
-size_t Response::getLength(){
-	return (length);
-}
-
 ///SETTERS
 void Response::setStatus(string stat) {
 	status = stat + "\n";
+	stringstream ss;
+	ss << status;
+	ss >> stat;
 }
 
 void Response::setMapType() {
@@ -88,18 +86,23 @@ void Response::setContentType(string path){
 	}
 }
 
-void Response::fillHeaderCGI(string &ficelle){
+void Response::fillHeaderCGI(void){
 	header = "HTTP/1.1 " + status;
 }
 
 void Response::fillHeader(string file, string &path){
-	setContentTypePath(path);
+	setContentType(path);
 	contentLength =  to_string(file.length());
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;
 	response = header + body;
-	length = header.length() + body.length();
-	cout << header << endl;
 }
 
-
+void 	Response::resetResponse(){
+	status = "200 OK\n";
+	contentType = "text/plain\n";
+	contentLength = string();
+	header = string();
+	body = string();
+	response = string();
+}

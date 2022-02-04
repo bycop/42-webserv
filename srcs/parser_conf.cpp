@@ -96,7 +96,7 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 			vector<string> strings = split_string(newdata);
 			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], "./_-=*!~+"))
 				return (true);
-			pair<std::map<int, string>::iterator, bool> ret_val = server.getDefaultPages().insert(make_pair(stoi(strings[0]), strings[1]));
+			pair<std::map<string, string>::iterator, bool> ret_val = server.getDefaultPages().insert(make_pair(strings[0], strings[1]));
 			if (!ret_val.second)
 				return (true);
 			break;

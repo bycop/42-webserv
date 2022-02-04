@@ -15,6 +15,6 @@ int main(int ac, char **av) {
 		return (1);
 //	data.print();
     create_socket(server_socket, address);
-	receiving_information(server_socket, address, response);
+	receiving_information(server_socket, address, response, data);
 	return 0;
 }

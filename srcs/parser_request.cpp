@@ -123,11 +123,9 @@ map<string, string> parsing_request_header(int fd) {
 	std::string line, body;
 	size_t pos_del;
 
-	cout << "BEGIN FIRST LINE" << endl;
 	parse_first_line_request(is, request_header);
 
 	// PARSING HEADER
-	cout << "BEGIN PARSE HEADER" << endl;
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
 //		cout << line << endl; // TODO: TEST

@@ -23,7 +23,7 @@ void create_socket(int &server_socket, sockaddr_in &address) {
 	}
 }
 
-void receiving_information(int &server_socket, sockaddr_in &address, Response &response){
+void receiving_information(int &server_socket, sockaddr_in &address, Response &response, Data &data){
 	int new_socket;
 	int addrlen = sizeof(address);
 	map<string, string> request_header;
@@ -42,7 +42,7 @@ void receiving_information(int &server_socket, sockaddr_in &address, Response &r
 		}
 		request_header = parsing_request_header(new_socket);
 		request_body = parsing_request_body(new_socket, request_header);
-		display_page(new_socket, request_header, true, response, request_body);
+		display_page(new_socket, request_header, true, response, request_body, data);
 		close(new_socket);
 	}
 	close(server_socket);

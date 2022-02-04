@@ -17,11 +17,11 @@
 #include <cctype>
 #include <cstdlib>
 #include <vector>
+#include "../class/Response.hpp"
+#include "../class/Data.hpp"
 #include "socket.hpp"
 #include "create_page.hpp"
 #include "send_page.hpp"
-#include "Response.hpp"
-#include "../class/Data.hpp"
 
 #define PORT 8080
 using namespace std;

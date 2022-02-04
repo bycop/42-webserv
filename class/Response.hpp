@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include "Data.hpp"
 
 using namespace std;
 
@@ -18,7 +19,6 @@ private:
     string	header;
     string	body;
 	string	response;
-	size_t	length;
 	map<string, string>	types;
 	void setMapType(void);
 public:
@@ -32,11 +32,11 @@ public:
 	string	getResponse();
 	size_t	getLength();
 	void	setStatus(string);
-	void	setBody(string);
 	void	setContentType(string path);
-	void 	fillHeaderCGI(string &ficelle);
+	void 	fillHeaderCGI(void);
     void	fillHeader(string file, string &path);
 	string	findExtension(string path);
+	void	resetResponse();
 };
 
 #endif //WEBSERV_HEADERRESPOc NSE_H

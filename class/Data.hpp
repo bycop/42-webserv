@@ -40,7 +40,6 @@ public:
 
 	int getWorkers() const { return _workers; }
 
-
 	void setServers(const vector<Server> &servers) { _servers = servers; }
 
 	void setWorkers(int workers) { _workers = workers; };
