@@ -34,7 +34,7 @@ public:
 	void	setStatus(const string&);
 	void	setBody(string);
 	void	setContentType(string path);
-    void	fillHeader(const string& file, string &path);
+    void	fillHeader(string& file, string &path);
 	void	fillHeaderCGI(const string& content);
 	string	findExtension(string path);
 };

@@ -96,6 +96,9 @@ void Response::fillHeaderCGI(const string& content) {
 
 void Response::fillHeader(const string& file, string &path){
 	setContentType(path);
+
+void Response::fillHeader(string file, string &path){
+	setContentTypePath(path);
 	contentLength =  to_string(file.length());
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;
@@ -103,5 +106,3 @@ void Response::fillHeader(const string& file, string &path){
 	length = header.length() + body.length();
 	cout << header << endl;
 }
-
-
