@@ -11,6 +11,7 @@ Response::Response() :  status("200 OK\n"), contentType("text/plain\n"){
 }
 
 Response::~Response() {
+
 }
 
 Response::Response(const Response &cpy) {
@@ -26,15 +27,15 @@ Response &Response::operator=(const Response &cpy) {
 }
 
 string Response::findExtension(string path) {
-	size_t pos = path.find_last_of(".");
+	size_t pos = path.find_last_of('.');
 	cout << path << endl;
-	if (path.find_last_of("/") == path.length() - 1)
+	if (path.find_last_of('/') == path.length() - 1)
 		return (string());
 	return (path.substr(pos + 1));
 }
 
 /// GETTERS
-string		Response::getStatus(void) {
+string		Response::getStatus() {
 	return (status);
 }
 
@@ -55,7 +56,7 @@ size_t Response::getLength(){
 }
 
 ///SETTERS
-void Response::setStatus(string stat) {
+void Response::setStatus(const string& stat) {
 	status = stat + "\n";
 }
 
@@ -65,7 +66,7 @@ void Response::setMapType() {
 	size_t pos;
 	if (ifs) {
 		while (getline(ifs, line)) {
-			pos = line.find(",");
+			pos = line.find(',');
 			types.insert(make_pair(line.substr(0, pos), line.substr(pos + 1, line.length() - (pos + 1))));
 		}
 	}
@@ -87,8 +88,13 @@ void Response::setContentType(string path){
 			contentType = "text/plain\n";
 	}
 }
+void Response::fillHeaderCGI(const string& content) {
+	header = "HTTP/1.1 " + status;
+	response = header + content;
+	cout << response << endl; // TODO: TEST
+}
 
-void Response::fillHeader(string file, string &path){
+void Response::fillHeader(const string& file, string &path){
 	setContentType(path);
 	contentLength =  to_string(file.length());
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";

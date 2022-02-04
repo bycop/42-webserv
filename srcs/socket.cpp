@@ -40,8 +40,10 @@ void receiving_information(int &server_socket, sockaddr_in &address, Response &r
 			perror("In accept");
 			exit(EXIT_FAILURE);
 		}
-		request_header = parsing_request_header(new_socket);
-		request_body = parsing_request_body(new_socket, request_header);
+		cout << "REQUEST:" << endl;
+		request_header = parsing_request_header(new_socket, response);
+		request_body = parsing_request_body(new_socket, request_header, response);
+		cout << "RESPONSE: " << endl;
 		display_page(new_socket, request_header, true, response, request_body);
 		close(new_socket);
 	}
