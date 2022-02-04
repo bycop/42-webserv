@@ -6,7 +6,7 @@
 
 int main(int ac, char **av) {
 	Response response;
-	int server_socket;
+	vector<int> server_socket;
 	struct sockaddr_in address;
 	string file_path = (ac == 2) ? av[1] : "webserv.conf";
 	Data data;
@@ -14,7 +14,7 @@ int main(int ac, char **av) {
 	if (parser_conf(data, file_path))
 		return (1);
 //	data.print();
-    create_socket(server_socket, address);
+    create_socket(server_socket, address, data.getServers());
 	receiving_information(server_socket, address, response);
 	return 0;
 }
