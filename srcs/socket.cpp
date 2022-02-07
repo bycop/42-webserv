@@ -49,6 +49,7 @@ void receiving_information(vector<int> &server_socket, sockaddr_in &address, Res
 			perror("In listen");
 			exit(EXIT_FAILURE);
 		}
+<<<<<<< HEAD
 
 	while (true) { //TODO: CHOOSE A WAY TO STOP OUR SERVER DIFFERENTLY
 
@@ -102,6 +103,14 @@ void receiving_information(vector<int> &server_socket, sockaddr_in &address, Res
 			}
 		}
 
+=======
+		cout << "REQUEST:" << endl;
+		request_header = parsing_request_header(new_socket, response);
+		request_body = parsing_request_body(new_socket, request_header, response);
+		cout << "RESPONSE: " << endl;
+		display_page(new_socket, request_header, true, response, request_body);
+		close(new_socket);
+>>>>>>> 9adb6d7f4a6d0ed6ed3b640d60676a360ab2a331
 	}
 	close(server_socket[0]);
 }

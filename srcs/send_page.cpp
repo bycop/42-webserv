@@ -33,10 +33,10 @@ void display_page(int new_socket, std::map<std::string, std::string> request_hea
 	if (checkError(path, response))
 		create_error_page(path, response);
 	else if (path.find(".py") != string::npos)
-		response.fillHeader(backend_page(request_header, request_body), (string &) "oui.html");
+		response.fillHeaderCGI(backend_page(request_header, request_body));
 	else if (autoindex && (dir = opendir(const_cast<char *>(("." + path).c_str()))) != NULL)
 		create_indexing_page(dir, path, response);
 	else
 		openFile("." + path, response);
-	write(new_socket, const_cast<char *>(response.getResponse().c_str()), response.getLength());
+	write(new_socket, const_cast<char *>(response.getResponse().c_str()), response.getResponse().length());
 }

@@ -34,5 +34,4 @@ void 		create_error_page(std::string &path, Response &response) {
 	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << response.getStatus() << "</title>\n</head>\n" << std::endl;
 	mypage << "<body><h1>Error " << response.getStatus() << "\n</h1></body></html>";
 	response.fillHeader(mypage.str(), path);
-
 }
