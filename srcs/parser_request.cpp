@@ -55,7 +55,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
 	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
-	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start))); // TODO:  DONT TAKE TWO LAST CHARS
+	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
+	request["version"].erase(request["version"].length() - 1, 2);
 }
 
 // MY READER YEAAAAH
@@ -128,7 +129,7 @@ map<string, string> parsing_request_header(int fd, Response &response) {
 	// PARSING HEADER
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
-		if (pos_del == string::npos) {
+		if (pos_del == string::npos && line.length() < 1) {
 			response.setStatus("400 Bad Request");
 			return (request_header);
 		}

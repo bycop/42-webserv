@@ -90,7 +90,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				request_header = parsing_request_header(event_fd, response);
 				request_body = parsing_request_body(event_fd, request_header, response);
 				cout << "RESPONSE: " << endl;
-				display_page(event_fd, request_header, true, response, request_body);
+				display_page(event_fd, request_header, true, response, request_body, data);
 //				close(event_fd); // Todo
 			}
 		}

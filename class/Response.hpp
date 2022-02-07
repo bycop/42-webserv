@@ -30,7 +30,6 @@ public:
     string	getHeader();
 	string	getBody();
 	string	getResponse();
-	size_t	getLength();
 	void	setStatus(const string&);
 	void	setContentType(string &path);
 	void 	fillHeaderCGI(const string& ficelle);

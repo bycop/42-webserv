@@ -24,9 +24,8 @@ Response &Response::operator=(const Response &cpy) {
     return (*this);
 }
 
-string Response::findExtension(string path) {
+string Response::findExtension(string &path) {
 	size_t pos = path.find_last_of('.');
-	cout << path << endl;
 	if (path.find_last_of('/') == path.length() - 1)
 		return (string());
 	return (path.substr(pos + 1));
@@ -52,9 +51,6 @@ string Response::getResponse() {
 ///SETTERS
 void Response::setStatus(const string& stat) {
 	status = stat + "\n";
-	stringstream ss;
-	ss << status;
-	ss >> stat;
 }
 
 void Response::setMapType() {
@@ -88,7 +84,7 @@ void Response::setContentType(string &path){
 
 void Response::fillHeaderCGI(const string &ficelle){
 	header = "HTTP/1.1 " + status;
-	response = header + content;
+	response = header + ficelle;
 	cout << response << endl; // TODO: TEST
 }
 
