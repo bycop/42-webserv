@@ -11,21 +11,31 @@ void ft_error(const char *err) {
 	exit(EXIT_FAILURE);
 }
 
+bool already_open(vector<int> &ports, int port) {
+	for (vector<int>::iterator it = ports.begin(); it != ports.end(); it++)
+		if (*it == port)
+			return (true);
+	return (false);
+}
+
 void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	int enable = 1;
 	struct sockaddr_in address;
+	vector<int> ports;
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	for (vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		for (vector<int>::iterator port_it = it->getPorts().begin(); port_it != it->getPorts().end(); port_it++) {
-			std::cout << "Server[" << it->getHost() << "] - Port[" << *port_it << "]" << std::endl;
+			std::cout << "Server[" << it->getHost() << "] - Port[" << it->getPort() << "]" << std::endl;
+
+			if (already_open(ports, it->getPort()))
+				continue;
 
 			int sock;
 			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 				ft_error("In socket");
 			server_socket.push_back(sock);
-			address.sin_port = htons(*port_it);
+			address.sin_port = htons(it->getPort());
 			memset(address.sin_zero, '\0', sizeof address.sin_zero);
 			if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
 				ft_error("setsockopt(SO_REUSEADDR) failed");
@@ -33,8 +43,9 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 				ft_error("In bind");
 			if (listen(sock, 10) < 0)
 				ft_error("In listen");
-		}
+			ports.push_back(it->getPort());
 	}
+
 }
 
 bool checkFd(vector<int> &server_socket, int event_fd) {
@@ -55,6 +66,33 @@ void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, in
 		EV_SET(&change_list[i], server_socket[i], EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
 	if (kevent(kq, change_list, server_socket.size(), NULL, 0, NULL) == -1)
 		ft_error("kevent");
+}
+
+
+Server findServerForHost(string header_host, Data &data, Response &response) {
+	int pos;
+	int port;
+
+	if ((pos = header_host.find(':')) == string::npos) { // IF WE HAVE LOCALHOST:8080
+		size_t start = 0;
+		string host = splitPartsByParts(header_host, ':', &start);
+		port = atoi(splitPartsByParts(header_host, ':', &start).c_str());
+		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
+			if (it->getPort() == port && it->getHost() == host )
+				return (*it);
+		}
+	}
+	else { // IF WE HAVE SERVER NAME
+		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
+			for (vector<string>::iterator it2 = it->getServerName().begin(); it2 != it->getServerName().end(); it2++) {
+				if (*it2 == header_host)
+					return (*it);
+			}
+		}
+	}
+	// IF WE HAVE A ERROR
+	response.setStatus("418 I'm a teapot");
+	return (Server());
 }
 
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
@@ -89,9 +127,9 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				cout << endl << "------- Processing the request -------" << endl << endl;
 				request_header = parsing_request_header(event_fd, response);
 				request_body = parsing_request_body(event_fd, request_header, response);
-				cout << "RESPONSE: " << endl;
+				Server server = findServerForHost(request_header["Host"], data);
 				display_page(event_fd, request_header, true, response, request_body);
-//				close(event_fd); // Todo
+				close(event_fd); // Todo
 			}
 		}
 	}

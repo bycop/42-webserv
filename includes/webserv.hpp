@@ -35,4 +35,6 @@ string backend_page(map<string, string> & request_header, string & request_body)
 
 // PARSER_CONF
 int parser_conf(Data &data, string const& file_path);
+
+string splitPartsByParts(string const& line, const char delimiter, size_t *start);
 #endif //WEBSERV_WEBSERV_HPP

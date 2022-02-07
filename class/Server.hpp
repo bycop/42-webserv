@@ -8,16 +8,13 @@ using namespace std;
 
 class Server {
 public:
-	Server() : _autoindex(false), _client_max_body_size(0), _redirect_status(0) {};
+	Server() : _autoindex(false), _client_max_body_size(0), _redirect_status(0), _port(-1) {};
 
 	~Server() {};
 
 	void print() {
 		cout << "host: " << this->_host << endl;
-		cout << "ports: ";
-		for (unsigned long i = 0; i < _ports.size(); i++)
-			cout << _ports[i] << " ";
-		cout << endl;
+		cout << "ports: " << this->_port << endl;
 		cout << "server_names: ";
 		for (unsigned long i = 0; i < _server_name.size(); i++)
 			cout << _server_name[i] << " ";
@@ -38,7 +35,7 @@ public:
 	};
 
 	bool mandatory(int index = -1) {
-		if (_host.empty() || _server_name.empty() || (index == 0 && _ports.empty()))
+		if (_host.empty() || _server_name.empty() || (index == 0 && _port == -1))
 			return (false);
 		return (true);
 	}
@@ -59,7 +56,7 @@ public:
 
 	vector<Location> &getLocations() { return _locations; }
 
-	vector<int> &getPorts() { return _ports; }
+	int &getPort() { return _port; }
 
 
 	void setAutoindex(bool autoindex) { _autoindex = autoindex; }
@@ -78,7 +75,7 @@ public:
 
 	void setLocations(const vector<Location> &locations) { _locations = locations; }
 
-	void setPorts(const vector<int> &ports) { _ports = ports; }
+	void setPort(int port) { _port = port; }
 
 private:
 	bool _autoindex;
@@ -89,7 +86,7 @@ private:
 	int _redirect_status;
 	string _redirect;
 	vector<Location> _locations;
-	vector<int> _ports;
+	int _port;
 };
 
 #endif

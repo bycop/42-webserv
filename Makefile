@@ -1,10 +1,14 @@
 NAME			= webserv
 
-FILES			= main.cpp send_page.cpp socket.cpp create_page.cpp Response.cpp parser_request.cpp backend.cpp parser_conf.cpp
+FILES			= main.cpp send_page.cpp socket.cpp create_page.cpp \
+					Response.cpp parser_request.cpp backend.cpp parser_conf.cpp \
+					utils.cpp
 
 INC_PATH		= includes
 INC_FILES		= webserv.hpp create_page.hpp send_page.hpp socket.hpp Response.hpp
-INC				= $(addprefix ${INC_PATH}/, ${INC_FILES})
+CLASS_PATH		= class
+CLASS_FILES		= Data.hpp Location.hpp Server.hpp
+INC				= $(addprefix ${INC_PATH}/, ${INC_FILES}) $(addprefix ${CLASS_PATH}/, ${CLASS_FILES})
 
 SRC_PATH		= srcs
 SRC				= $(addprefix ${SRC_PATH}/, ${FILES})
@@ -14,7 +18,7 @@ BIN 			= $(SRC:%.cpp=$(BIN_PATH)/%.o)
 
 CC				= clang++
 RM				= rm -rf
-FLAGS			= -std=c++98 -Wall -Wextra  -Werror -fsanitize=address -g3
+FLAGS			= -std=c++98 -fsanitize=address -g3 #-Wall -Wextra  -Werror -fsanitize=address -g3
 
 all: 			${NAME}
 
