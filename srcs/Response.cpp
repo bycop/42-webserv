@@ -72,7 +72,7 @@ void Response::setMapType() {
 	}
 }
 
-void Response::setContentType(string path){
+void Response::setContentType(string &path){
 	string extension = findExtension(path);
 	if (extension.empty()){
 		contentType = "text/html\n";
@@ -94,11 +94,8 @@ void Response::fillHeaderCGI(const string& content) {
 	cout << response << endl; // TODO: TEST
 }
 
-void Response::fillHeader(const string& file, string &path){
-	setContentType(path);
-
 void Response::fillHeader(string file, string &path){
-	setContentTypePath(path);
+	setContentType(path);
 	contentLength =  to_string(file.length());
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;

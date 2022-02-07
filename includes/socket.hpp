@@ -6,9 +6,10 @@
 #define WEBSERV_SOCKET_HPP
 
 #include "../class/Server.hpp"
+#include "../class/Data.hpp"
 #include "Response.hpp"
 
-void create_socket(vector<int> &server_socket, sockaddr_in &address, vector<Server> &servers);
-void receiving_information(vector<int> &server_socket, sockaddr_in &address, Response &response);
+void create_socket(vector<int> &server_socket, vector<Server> &servers);
+void receiving_information(vector<int> &server_socket, Response &response, Data& data);
 
 #endif //WEBSERV_SOCKET_HPP

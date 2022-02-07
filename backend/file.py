@@ -13,13 +13,14 @@ def upload_file(file):
         return '<p>The file ' + filename + ' has a error</p>'
 form = cgi.FieldStorage()
 
-if "file" not in form or form["file"].value == '':
+if "file" not in form:
     content = "<p>Error upload file. Try again</p>"
 else:
     upload_files = form['file']
     content = ''
     check_list = type(upload_files) is list
-    # os.mkdir("upload_file")
+    if not os.path.exists("upload_file"):
+        os.mkdir("upload_file")
 
     if check_list:
         for file in upload_files:

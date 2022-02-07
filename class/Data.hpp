@@ -7,7 +7,7 @@ using namespace std;
 
 class Data {
 public:
-	Data() {};
+	Data(): _isRunning(true) {};
 
 	~Data() {};
 
@@ -43,12 +43,21 @@ public:
 
 	void setServers(const vector<Server> &servers) { _servers = servers; }
 
-	void setWorkers(int workers) { _workers = workers; };
+	void setWorkers(int workers) { _workers = workers; }
+
+	bool IsRunning() const {
+		return _isRunning;
+	}
+
+	void setIsRunning(bool isRunning) {
+		_isRunning = isRunning;
+	};
 
 private:
 
 	vector<Server> _servers;
 	int _workers;
+	bool _isRunning;
 
 };
 
