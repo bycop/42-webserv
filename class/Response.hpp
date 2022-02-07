@@ -31,11 +31,11 @@ public:
 	string	getBody();
 	string	getResponse();
 	size_t	getLength();
-	void	setStatus(string);
-	void	setContentType(string path);
-	void 	fillHeaderCGI(void);
+	void	setStatus(const string&);
+	void	setContentType(string &path);
+	void 	fillHeaderCGI(const string& ficelle);
     void	fillHeader(string file, string &path);
-	string	findExtension(string path);
+	string	findExtension(string &path);
 	void	resetResponse();
 };
 

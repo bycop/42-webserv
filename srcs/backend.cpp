@@ -45,7 +45,7 @@ void setenv_cgi(map<string, string> & request_header) {
 	setenv("HTTP_ACCEPT",request_header["Accept"].c_str(), 1);
 	setenv("HTTP_USER_AGENT",request_header["User-Agent"].c_str(), 1);
 	setenv("HTTP_REFERER",request_header["Referer"].c_str(), 1);
-	print_env();
+//	print_env();
 }
 
 void launch_backend_file(map<string, string> &request_header) {

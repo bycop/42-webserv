@@ -6,15 +6,14 @@
 
 int main(int ac, char **av) {
 	Response response;
-	int server_socket;
-	struct sockaddr_in address;
+	vector<int> server_socket;
 	string file_path = (ac == 2) ? av[1] : "webserv.conf";
 	Data data;
 
 	if (parser_conf(data, file_path))
 		return (1);
 //	data.print();
-    create_socket(server_socket, address);
-	receiving_information(server_socket, address, response, data);
+    create_socket(server_socket, data.getServers());
+	receiving_information(server_socket, response, data);
 	return 0;
 }

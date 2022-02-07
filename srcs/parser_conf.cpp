@@ -66,7 +66,7 @@ bool main_setters(string const &newdata, const int type, Data &data) {
 		case 0:
 			if (!checkTypes(INT, newdata))
 				return (true);
-			data.setWorkers(stoi(newdata));
+			data.setWorkers(atoi(newdata.c_str()));
 			break;
 	}
 	return (false);
@@ -84,7 +84,7 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 				return (true);
 			vector<string> strings = split_string(newdata);
 			for (unsigned long i = 0; i < strings.size(); i++)
-				server.getPorts().push_back(stoi(strings[i]));
+				server.getPorts().push_back(atoi(strings[i].c_str()));
 			break;
 		}
 		case 2:
@@ -104,13 +104,13 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 		case 4:
 			if (!checkTypes(INT, newdata))
 				return (true);
-			server.setClientMaxBodySize(stoi(newdata));
+			server.setClientMaxBodySize(atoi(newdata.c_str()));
 			break;
 		case 5: {
 			vector<string> strings = split_string(newdata);
 			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], ":/"))
 				return (true);
-			server.setRedirectStatus(stoi(strings[0]));
+			server.setRedirectStatus(atoi(strings[0].c_str()));
 			server.setRedirect(strings[1]);
 			break;
 		}

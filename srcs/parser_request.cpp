@@ -117,7 +117,7 @@ string read_body_chunk(int fd) {
 
 
 // THE MAIN FCT OF THE PARSING
-map<string, string> parsing_request_header(int fd) {
+map<string, string> parsing_request_header(int fd, Response &response) {
 	map<string, string> request_header;
 	std::istringstream is(readHeader(fd));
 	std::string line, body;
@@ -128,6 +128,10 @@ map<string, string> parsing_request_header(int fd) {
 	// PARSING HEADER
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
+		if (pos_del == string::npos) {
+			response.setStatus("400 Bad Request");
+			return (request_header);
+		}
 //		cout << line << endl; // TODO: TEST
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
@@ -135,18 +139,21 @@ map<string, string> parsing_request_header(int fd) {
 	return (request_header);
 }
 
-string parsing_request_body(int fd, map<string, string> const& request_header) {
+string parsing_request_body(int fd, map<string, string> const& request_header, Response &response) {
 	string request_body;
 
 	if (request_header.find("method")->second == "POST") {
 		if (request_header.find("Transfer-Encoding") != request_header.end() &&
 			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
 			request_body = read_body_chunk(fd);
-		else if (request_header.find("Content-Length") != request_header.end()) { // CLASSIC WAY TO READ BODY
-			int length = stoi(request_header.find("Content-Length")->second);
+		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
+			response.setStatus("411 Length Required");
+			return (request_body);
+		}
+		else {
+			int length = stoi(request_header.find("Content-Length")->second); // WE CAN READ THE
 			request_body = readBody(fd, length);
-		} else
-			cerr << "Impossible to parse POST" << endl;
+		}
 	}
 //	cout << "BODY : " << request_body << endl;
 	return (request_body);

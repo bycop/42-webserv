@@ -41,8 +41,4 @@ void 		create_error_page(Response &response, Data &data) {
 	}
 	cout << "oui bonjour\n";
 	openFile(path + (response.getStatus().substr(0, 3) + ".html"), response);
-//	std::ostringstream mypage;
-//	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << response.getStatus() << "</title>\n</head>\n" << std::endl;
-//	mypage << "<body><h1>Error " << response.getStatus() << "\n</h1></body></html>";
-//	response.fillHeader(mypage.str(), path);
 }
