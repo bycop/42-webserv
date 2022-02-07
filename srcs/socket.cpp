@@ -65,34 +65,51 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 	struct timespec tmout = { 5,0 }; // Todo
 	struct kevent change_list[server_socket.size()], event_list[server_socket.size()];
 
+	(void)change_list;
+	(void)tmout;
+
 	init_kqueue(server_socket, client_addr, client_len, kq);
-	cout << endl << "------- Launching \e[93mWarningServer\e[0m -------" << endl << endl;
+	cout << endl << "------- Launching " << "\e[93m" << "WarningServer" << "\e[0m" << " -------" << endl << endl;
 	while (data.IsRunning()) {
+		cout << "1" << endl;
 		if ((new_events = kevent(kq, NULL, 0, event_list, server_socket.size(), NULL)) == -1)
 			ft_error("kevent");
+		cout << "2" << endl;
 		for (int i = 0; i < new_events; i++) {
 			int event_fd = static_cast<int>(event_list[i].ident);
-			if (event_list[i].flags & EV_EOF) {
+			cout << "EVENT FD: " << event_fd << endl;
+			if (data.checkFdAlreadyAccepted(event_fd)) {
+				cout << endl << "------- Processing the request -------" << endl << endl;
+				request_header = parsing_request_header(event_fd, response);
+				request_body = parsing_request_body(event_fd, request_header, response);
+				cout << "RESPONSE: " << endl;
+				display_page(event_fd, request_header, true, response, request_body);
+				close(event_fd); // Todo
+			}
+			else if (event_list[i].flags & EV_EOF) {
 				cout << "ALLER HOP CIAO" << endl; // Todo
 				close(event_fd);
 			}
 			else if (checkFd(server_socket, event_fd)) {
 				if ((socket_connection_fd = accept(event_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_len)) == -1)
 					ft_error("Accept socket error");
-				cout << endl << "------- Socket connection accepted -------" << endl << endl;
 				fcntl(socket_connection_fd, F_SETFL, O_NONBLOCK); // Todo
-				EV_SET(change_list, socket_connection_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-				if (kevent(kq, change_list, 1, NULL, 0, &tmout) < 0)
-					ft_error("kevent");
+				data.pushSocketFdAccepted(event_fd);
+//				EV_SET(change_list, socket_connection_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+//				if (kevent(kq, change_list, 1, NULL, 0, &tmout) < 0)
+//					ft_error("kevent");
+				cout << "✅" << " Socket connection accepted " << endl;
+//				exit(0);
+//				cout << event_fd << endl;
 			}
-			else if (event_list[i].filter & EVFILT_READ) {
-				cout << endl << "------- Processing the request -------" << endl << endl;
-				request_header = parsing_request_header(event_fd, response);
-				request_body = parsing_request_body(event_fd, request_header, response);
-				cout << "RESPONSE: " << endl;
-				display_page(event_fd, request_header, true, response, request_body);
+//			else if (event_list[i].filter & EVFILT_READ) {
+//				cout << endl << "------- Processing the request -------" << endl << endl;
+//				request_header = parsing_request_header(event_fd, response);
+//				request_body = parsing_request_body(event_fd, request_header, response);
+//				cout << "RESPONSE: " << endl;
+//				display_page(event_fd, request_header, true, response, request_body);
 //				close(event_fd); // Todo
-			}
+//			}
 		}
 	}
 	close(server_socket[0]);

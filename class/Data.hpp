@@ -53,8 +53,19 @@ public:
 		_isRunning = isRunning;
 	};
 
-private:
+	bool checkFdAlreadyAccepted(int fd) {
+		for (vector<int>::iterator it = socket_fd_accepted.begin(); it < socket_fd_accepted.end(); ++it) {
+			if (*it == fd)
+				return true;
+		}
+		return false;
+	}
 
+	void pushSocketFdAccepted(int fd) {
+		socket_fd_accepted.push_back(fd);
+	}
+private:
+	vector<int>	socket_fd_accepted;
 	vector<Server> _servers;
 	int _workers;
 	bool _isRunning;
