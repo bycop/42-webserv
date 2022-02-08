@@ -2,16 +2,14 @@
 // Created by Codage on 25/01/2022.
 //
 
-#include "Response.hpp"
 #include "webserv.hpp"
 
 ///COPLIEN FORM
-Response::Response() :  status("200 OK\n"), contentType("text/plain\n"){
+Response::Response() : status("200 OK\n"), contentType("text/plain\n") {
 	setMapType();
 }
 
 Response::~Response() {
-
 }
 
 Response::Response(const Response &cpy) {
@@ -26,16 +24,15 @@ Response &Response::operator=(const Response &cpy) {
     return (*this);
 }
 
-string Response::findExtension(string path) {
+string Response::findExtension(string &path) {
 	size_t pos = path.find_last_of('.');
-	cout << path << endl;
 	if (path.find_last_of('/') == path.length() - 1)
 		return (string());
 	return (path.substr(pos + 1));
 }
 
 /// GETTERS
-string		Response::getStatus() {
+string		Response::getStatus(void) {
 	return (status);
 }
 
@@ -49,10 +46,6 @@ string Response::getBody() {
 
 string Response::getResponse() {
 	return (response);
-}
-
-size_t Response::getLength(){
-	return (length);
 }
 
 ///SETTERS
@@ -88,9 +81,10 @@ void Response::setContentType(string &path){
 			contentType = "text/plain\n";
 	}
 }
-void Response::fillHeaderCGI(const string& content) {
+
+void Response::fillHeaderCGI(const string &ficelle){
 	header = "HTTP/1.1 " + status;
-	response = header + content;
+	response = header + ficelle;
 	cout << response << endl; // TODO: TEST
 }
 
@@ -100,6 +94,13 @@ void Response::fillHeader(string file, string &path){
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;
 	response = header + body;
-	length = header.length() + body.length();
-	cout << header << endl;
+}
+
+void 	Response::resetResponse(){
+	status = "200 OK\n";
+	contentType = "text/plain\n";
+	contentLength = string();
+	header = string();
+	body = string();
+	response = string();
 }

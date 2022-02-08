@@ -20,7 +20,7 @@ public:
 			cout << _server_name[i] << " ";
 		cout << endl;
 		cout << "default_pages: " << endl;
-		for (map<int, string>::iterator it = _default_pages.begin(); it != _default_pages.end(); ++it)
+		for (map<string, string>::iterator it = _default_pages.begin(); it != _default_pages.end(); ++it)
 			cout << "              " << it->first << " " << it->second << endl;
 		cout << "client_max_body_size: " << _client_max_body_size << endl;
 		cout << "redirect_status: " << _redirect_status << endl;
@@ -46,7 +46,7 @@ public:
 
 	vector<string> &getServerName() { return _server_name; }
 
-	map<int, string> &getDefaultPages() { return _default_pages; }
+	map<string, string> &getDefaultPages() { return _default_pages; }
 
 	int getClientMaxBodySize() const { return _client_max_body_size; }
 
@@ -65,7 +65,7 @@ public:
 
 	void setServerName(const vector<string> &serverName) { _server_name = serverName; }
 
-	void setDefaultPages(const map<int, string> &defaultPages) { _default_pages = defaultPages; }
+	void setDefaultPages(const map<string, string> &defaultPages) { _default_pages = defaultPages; }
 
 	void setClientMaxBodySize(int clientMaxBodySize) { _client_max_body_size = clientMaxBodySize; }
 
@@ -81,7 +81,7 @@ private:
 	bool _autoindex;
 	string _host;
 	vector<string> _server_name;
-	map<int, string> _default_pages;
+	map<string, string> _default_pages;
 	int _client_max_body_size;
 	int _redirect_status;
 	string _redirect;

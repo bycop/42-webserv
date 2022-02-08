@@ -29,9 +29,23 @@ void create_indexing_page(DIR *dir, std::string path, Response &response){
     response.fillHeader(mypage.str(), path);
 }
 
-void 		create_error_page(std::string &path, Response &response) {
-	std::ostringstream mypage;
-	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << response.getStatus() << "</title>\n</head>\n" << std::endl;
-	mypage << "<body><h1>Error " << response.getStatus() << "\n</h1></body></html>";
-	response.fillHeader(mypage.str(), path);
+void 		create_error_page(Response &response, Data &data) {
+	string path = "./pages/";
+	vector<Server>::iterator it = data.getServers().begin();
+	map<string, string> pages = it->getDefaultPages();
+	for (map<string, string>::iterator mit = pages.begin(); mit != pages.end(); mit++){
+		if (response.getStatus().find(mit->first) != string::npos) {
+			openFile(mit->second, response);
+			return;
+		}
+	}
+	string status = response.getStatus();
+	openFile(path + (response.getStatus().substr(0, 3) + ".html"), response);
+	if (response.getStatus() == "404 Not Found\n") {
+		std::ostringstream mypage;
+		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << status
+			   << "</title>\n</head>\n" << std::endl;
+		mypage << "<body><h1>Error " << status << "\n</h1></body></html>";
+		response.fillHeader(mypage.str(), path);
+	}
 }

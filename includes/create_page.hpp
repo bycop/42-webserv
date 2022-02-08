@@ -5,8 +5,10 @@
 #ifndef WEBSERV_CREATE_HTML_HPP
 #define WEBSERV_CREATE_HTML_HPP
 #include <dirent.h>
+#include "webserv.hpp"
+#include "../class/Response.hpp"
 
 void create_indexing_page(DIR *dir, std::string path, Response &response);
-void create_error_page(std::string &path, Response &response);
+void create_error_page(Response &response, Data &data);
 
 #endif //WEBSERV_CREATE_HTML_HPP
