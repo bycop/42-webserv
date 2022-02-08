@@ -29,10 +29,9 @@ void create_indexing_page(DIR *dir, std::string path, Response &response){
     response.fillHeader(mypage.str(), path);
 }
 
-void 		create_error_page(Response &response, Data &data) {
+void create_error_page(Response &response, Server &server) {
 	string path = "./pages/";
-	vector<Server>::iterator it = data.getServers().begin();
-	map<string, string> pages = it->getDefaultPages();
+	map<string, string> pages = server.getDefaultPages();
 	for (map<string, string>::iterator mit = pages.begin(); mit != pages.end(); mit++){
 		if (response.getStatus().find(mit->first) != string::npos) {
 			openFile(mit->second, response);

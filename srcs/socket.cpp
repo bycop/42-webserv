@@ -26,24 +26,24 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	for (vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-			std::cout << "Server[" << it->getHost() << "] - Port[" << it->getPort() << "]" << std::endl;
+		std::cout << "Server[" << it->getHost() << "] - Port[" << it->getPort() << "]" << std::endl;
 
-			if (already_open(ports, it->getPort()))
-				continue;
+		if (already_open(ports, it->getPort()))
+			continue;
 
-			int sock;
-			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-				ft_error("In socket");
-			server_socket.push_back(sock);
-			address.sin_port = htons(it->getPort());
-			memset(address.sin_zero, '\0', sizeof address.sin_zero);
-			if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
-				ft_error("setsockopt(SO_REUSEADDR) failed");
-			if (bind(sock, (struct sockaddr *) &address, sizeof(address)) < 0)
-				ft_error("In bind");
-			if (listen(sock, 10) < 0)
-				ft_error("In listen");
-			ports.push_back(it->getPort());
+		int sock;
+		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+			ft_error("In socket");
+		server_socket.push_back(sock);
+		address.sin_port = htons(it->getPort());
+		memset(address.sin_zero, '\0', sizeof address.sin_zero);
+		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+			ft_error("setsockopt(SO_REUSEADDR) failed");
+		if (bind(sock, (struct sockaddr *) &address, sizeof(address)) < 0)
+			ft_error("In bind");
+		if (listen(sock, 10) < 0)
+			ft_error("In listen");
+		ports.push_back(it->getPort());
 	}
 
 }
@@ -70,15 +70,22 @@ void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, in
 
 
 Server findServerForHost(string header_host, Data &data, Response &response) {
-	int pos;
 	int port;
 
-	if ((pos = header_host.find(':')) == string::npos) { // IF WE HAVE LOCALHOST:8080
+
+	std::cout << "Header: " << header_host << endl;
+	if (header_host.find(':') != string::npos) { // IF WE HAVE HOST:PORT
 		size_t start = 0;
 		string host = splitPartsByParts(header_host, ':', &start);
 		port = atoi(splitPartsByParts(header_host, ':', &start).c_str());
 		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
-			if (it->getPort() == port && it->getHost() == host )
+			if (it->getPort() == port && it->getHost() == host)
+				return (*it);
+		}
+	}
+	else if (header_host == "localhost" || header_host == "127.0.0.1") { // Special cases for port 80
+		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
+			if (it->getPort() == 80 && it->getHost() == header_host)
 				return (*it);
 		}
 	}
@@ -100,7 +107,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 	string request_body;
 	int kq, new_events, socket_connection_fd, client_len;
 	struct sockaddr_in client_addr = {};
-	struct timespec tmout = { 5,0 }; // Todo
+	struct timespec tmout = {5, 0}; // Todo
 	struct kevent change_list[server_socket.size()], event_list[server_socket.size()];
 
 	init_kqueue(server_socket, client_addr, client_len, kq);
@@ -115,7 +122,8 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				close(event_fd);
 			}
 			else if (checkFd(server_socket, event_fd)) {
-				if ((socket_connection_fd = accept(event_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_len)) == -1)
+				if ((socket_connection_fd = accept(event_fd, (struct sockaddr *) &client_addr,
+												   (socklen_t *) &client_len)) == -1)
 					ft_error("Accept socket error");
 				cout << endl << "------- Socket connection accepted -------" << endl << endl;
 				fcntl(socket_connection_fd, F_SETFL, O_NONBLOCK); // Todo
@@ -127,8 +135,8 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				cout << endl << "------- Processing the request -------" << endl << endl;
 				request_header = parsing_request_header(event_fd, response);
 				request_body = parsing_request_body(event_fd, request_header, response);
-				Server server = findServerForHost(request_header["Host"], data);
-				display_page(event_fd, request_header, true, response, request_body);
+				Server server = findServerForHost(request_header["Host"], data, response);
+				display_page(event_fd, request_header, true, response, request_body, server);
 				close(event_fd); // Todo
 			}
 		}

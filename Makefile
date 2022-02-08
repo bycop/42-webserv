@@ -5,9 +5,9 @@ FILES			= main.cpp send_page.cpp socket.cpp create_page.cpp \
 					utils.cpp
 
 INC_PATH		= includes
-INC_FILES		= webserv.hpp create_page.hpp send_page.hpp socket.hpp Response.hpp
+INC_FILES		= webserv.hpp create_page.hpp send_page.hpp socket.hpp
 CLASS_PATH		= class
-CLASS_FILES		= Data.hpp Location.hpp Server.hpp
+CLASS_FILES		= Data.hpp Location.hpp Server.hpp Response.hpp
 INC				= $(addprefix ${INC_PATH}/, ${INC_FILES}) $(addprefix ${CLASS_PATH}/, ${CLASS_FILES})
 
 SRC_PATH		= srcs
