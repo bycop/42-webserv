@@ -8,7 +8,7 @@ using namespace std;
 
 class Server {
 public:
-	Server() : _autoindex(false), _client_max_body_size(0), _redirect_status(0), _port(-1) {};
+	Server() : _autoindex(false), _client_max_body_size(-1), _redirect_status(-1), _port(-1) {};
 
 	~Server() {};
 

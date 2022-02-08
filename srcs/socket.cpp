@@ -26,7 +26,7 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	for (vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		std::cout << "Server[" << it->getHost() << "] - Port[" << it->getPort() << "]" << std::endl;
+		cout << "Listening on " << it->getHost() << ":" << it->getPort() << endl;
 
 		if (already_open(ports, it->getPort()))
 			continue;
@@ -68,13 +68,10 @@ void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, in
 		ft_error("kevent");
 }
 
+Server findServerForHost(string &header_host, Data &data, Response &response) {
 
-Server findServerForHost(string header_host, Data &data, Response &response) {
-	int port;
-
-
-	std::cout << "Header: " << header_host << endl;
 	if (header_host.find(':') != string::npos) { // IF WE HAVE HOST:PORT
+		int port;
 		size_t start = 0;
 		string host = splitPartsByParts(header_host, ':', &start);
 		port = atoi(splitPartsByParts(header_host, ':', &start).c_str());
@@ -100,6 +97,51 @@ Server findServerForHost(string header_host, Data &data, Response &response) {
 	// IF WE HAVE A ERROR
 	response.setStatus("418 I'm a teapot");
 	return (Server());
+}
+
+Location findLocationForServer(string& header_path, Server &server, Response &response) {
+	string file[3]; // [0] = directory; [1] = filename; [2] = extension
+	Location location;
+	unsigned long pos;
+
+	if ((pos = header_path.rfind('/')) != string::npos) {
+		file[0] = header_path.substr(0, pos + 1);
+		file[1] = header_path.substr(pos + 1);
+		if ((pos = file[1].rfind('.')) == string::npos) {
+			file[0] += file[1];
+			file[1] = "";
+		}
+		else
+			file[2] = file[1].substr(pos);
+	}
+	else {
+		file[1] = header_path;
+		file[2] = (pos = file[1].rfind('.')) != string::npos ? file[1].substr(pos) : "";
+	}
+//	cout << "Directory: " << file[0] << endl;
+//	cout << "Filename: " << file[1] << endl;
+//	cout << "Extension: " << file[2] << endl;
+	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
+		if (it->getPath() == "/" || file[0] == it->getPath()) {
+			location = *it;
+			if (it->getPath() != "/")
+				break;
+		}
+	}
+	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
+		if (file[2] == it->getPath()) {
+			if (!it->getAllowMethods().empty())
+				location.setAllowMethods(it->getAllowMethods());
+			if (it->getUploadStore().length() > 0)
+				location.setUploadStore(it->getUploadStore());
+			if (it->getRoot().length() > 0)
+				location.setRoot(it->getRoot());
+			break;
+		}
+	}
+	if (location.isEmpty())
+		response.setStatus("418 I'm a teapot");
+	return (location);
 }
 
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
@@ -136,7 +178,9 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				request_header = parsing_request_header(event_fd, response);
 				request_body = parsing_request_body(event_fd, request_header, response);
 				Server server = findServerForHost(request_header["Host"], data, response);
-				display_page(event_fd, request_header, true, response, request_body, server);
+				Location location = findLocationForServer(request_header["path"], server, response);
+//				location.print();
+				display_page(event_fd, request_header, response, request_body, server);
 				close(event_fd); // Todo
 			}
 		}
