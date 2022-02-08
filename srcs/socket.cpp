@@ -87,6 +87,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 			}
 			else if (event_list[i].filter & EVFILT_READ) {
 				cout << endl << "------- Processing the request -------" << endl << endl;
+				thread timeout();
 				request_header = parsing_request_header(event_fd, response);
 				request_body = parsing_request_body(event_fd, request_header, response);
 				cout << "RESPONSE: " << endl;
