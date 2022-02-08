@@ -6,11 +6,6 @@
 #include <fcntl.h>
 #include <sys/event.h>
 
-void ft_error(const char *err) {
-	perror(err);
-	exit(EXIT_FAILURE);
-}
-
 void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	int enable = 1;
 	struct sockaddr_in address;
@@ -58,8 +53,7 @@ void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, in
 }
 
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
-	map<string, string> request_header;
-	string request_body;
+	pair<map<string, string>, string> request;
 	int kq, new_events, socket_connection_fd, client_len;
 	struct sockaddr_in client_addr = {};
 	struct timespec tmout = { 5,0 }; // Todo
@@ -87,11 +81,9 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 			}
 			else if (event_list[i].filter & EVFILT_READ) {
 				cout << endl << "------- Processing the request -------" << endl << endl;
-				thread timeout();
-				request_header = parsing_request_header(event_fd, response);
-				request_body = parsing_request_body(event_fd, request_header, response);
+				checkTimeOutParsing(request, event_fd, response);
 				cout << "RESPONSE: " << endl;
-				display_page(event_fd, request_header, true, response, request_body, data);
+				display_page(event_fd, request.first, true, response, request.second, data);
 //				close(event_fd); // Todo
 			}
 		}

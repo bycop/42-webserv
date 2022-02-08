@@ -22,7 +22,16 @@
 #include "socket.hpp"
 #include "create_page.hpp"
 #include "send_page.hpp"
-#include <thread>
+#include <pthread.h>
+#include <ctime>
+#include <unistd.h>
+
+struct Error{
+	int event_fd;
+	Response response;
+	pair<map<string, string>, string> request;
+	bool parsed;
+};
 
 #define PORT 8080
 using namespace std;
@@ -36,4 +45,9 @@ string backend_page(map<string, string> & request_header, string & request_body)
 
 // PARSER_CONF
 int parser_conf(Data &data, string const& file_path);
+
+// ERROR
+void ft_error(const char *err);
+int checkError(std::string &path, Response &response, Data &data, std::map<std::string, std::string> request_header);
+void	checkTimeOutParsing(pair<map<string, string>, string> &request, int &event_fd, Response &response);
 #endif //WEBSERV_WEBSERV_HPP
