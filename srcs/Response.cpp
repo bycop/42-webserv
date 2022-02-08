@@ -28,7 +28,6 @@ Response &Response::operator=(const Response &cpy) {
 
 string Response::findExtension(string path) {
 	size_t pos = path.find_last_of('.');
-	cout << path << endl;
 	if (path.find_last_of('/') == path.length() - 1)
 		return (string());
 	return (path.substr(pos + 1));
@@ -78,7 +77,6 @@ void Response::setContentType(string &path){
 		contentType = "text/html\n";
 	}
 	else {
-		cout << path << endl;
 		map<string, string>::iterator it;
 		it = types.find(extension);
 		if (it != types.end()) {
@@ -88,18 +86,24 @@ void Response::setContentType(string &path){
 			contentType = "text/plain\n";
 	}
 }
-void Response::fillHeaderCGI(const string& content) {
+
+void Response::fillHeaderCGI(const string& content, map<string, string> request_header) {
 	header = "HTTP/1.1 " + status;
+	if (request_header["Connection"] == "keep-alive")
+		header += "\nConnection: keep-alive\n\n";
+	header += "Content-Length:" + to_string(content.length()) + '\n';
 	response = header + content;
 	cout << response << endl; // TODO: TEST
 }
 
-void Response::fillHeader(string file, string &path){
+void Response::fillHeader(string file, string &path, map<string, string> request_header){
 	setContentType(path);
 	contentLength =  to_string(file.length());
-	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
-	body = file;
-	response = header + body;
-	length = header.length() + body.length();
+	header = "HTTP/1.1 " + status;
+	header += "Content-Type: " + contentType + "Content-Length: " + contentLength;
+	if (request_header["Connection"] == "keep-alive")
+		header += "\nConnection: keep-alive\n\n";
+	response = header + file;
+	cout << "- Header response :" << endl;
 	cout << header << endl;
 }

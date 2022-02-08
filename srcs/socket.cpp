@@ -3,8 +3,7 @@
 //
 
 #include "webserv.hpp"
-#include <fcntl.h>
-#include <sys/event.h>
+
 
 void ft_error(const char *err) {
 	perror(err);
@@ -19,7 +18,7 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	address.sin_addr.s_addr = INADDR_ANY;
 	for (vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
 		for (vector<int>::iterator port_it = it->getPorts().begin(); port_it != it->getPorts().end(); port_it++) {
-			std::cout << "Server[" << it->getHost() << "] - Port[" << *port_it << "]" << std::endl;
+//			std::cout << "Server[" << it->getHost() << "] - Port[" << *port_it << "]" << std::endl; // TODO: PRINT FOR TEST
 
 			int sock;
 			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -37,80 +36,36 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	}
 }
 
-bool checkFd(vector<int> &server_socket, int event_fd) {
-	for (unsigned long i = 0; i < server_socket.size(); i++) {
-		if (event_fd == server_socket[i])
-			return (true);
-	}
-	return (false);
-}
-
-void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, int &client_len, int &kq) {
-	struct kevent change_list[server_socket.size()];
-
-	client_len = sizeof(client_addr);
-	if ((kq = kqueue()) == -1)
-		ft_error("kqueue");
-	for (unsigned long i = 0; i < server_socket.size(); i++)
-		EV_SET(&change_list[i], server_socket[i], EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
-	if (kevent(kq, change_list, server_socket.size(), NULL, 0, NULL) == -1)
-		ft_error("kevent");
-}
-
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
 	map<string, string> request_header;
 	string request_body;
-	int kq, new_events, socket_connection_fd, client_len;
-	struct sockaddr_in client_addr = {};
-	struct timespec tmout = { 5,0 }; // Todo
-	struct kevent change_list[server_socket.size()], event_list[server_socket.size()];
+	int kq, new_events;
+	struct kevent event_list[server_socket.size()];
 
-	(void)change_list;
-	(void)tmout;
-
-	init_kqueue(server_socket, client_addr, client_len, kq);
-	cout << endl << "------- Launching " << "\e[93m" << "WarningServer" << "\e[0m" << " -------" << endl << endl;
+	init_kqueue(server_socket, kq);
+	display_banner();
 	while (data.IsRunning()) {
-		cout << "1" << endl;
+		// CATCH ALL EVENTS
+		cout << "------- Waiting for new connections -------" << endl;
 		if ((new_events = kevent(kq, NULL, 0, event_list, server_socket.size(), NULL)) == -1)
 			ft_error("kevent");
-		cout << "2" << endl;
 		for (int i = 0; i < new_events; i++) {
 			int event_fd = static_cast<int>(event_list[i].ident);
-			cout << "EVENT FD: " << event_fd << endl;
-			if (data.checkFdAlreadyAccepted(event_fd)) {
-				cout << endl << "------- Processing the request -------" << endl << endl;
-				request_header = parsing_request_header(event_fd, response);
-				request_body = parsing_request_body(event_fd, request_header, response);
-				cout << "RESPONSE: " << endl;
-				display_page(event_fd, request_header, true, response, request_body);
-				close(event_fd); // Todo
-			}
-			else if (event_list[i].flags & EV_EOF) {
-				cout << "ALLER HOP CIAO" << endl; // Todo
-				close(event_fd);
-			}
-			else if (checkFd(server_socket, event_fd)) {
-				if ((socket_connection_fd = accept(event_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_len)) == -1)
-					ft_error("Accept socket error");
-				fcntl(socket_connection_fd, F_SETFL, O_NONBLOCK); // Todo
-				data.pushSocketFdAccepted(event_fd);
-//				EV_SET(change_list, socket_connection_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-//				if (kevent(kq, change_list, 1, NULL, 0, &tmout) < 0)
-//					ft_error("kevent");
-				cout << "✅" << " Socket connection accepted " << endl;
-//				exit(0);
-//				cout << event_fd << endl;
-			}
-//			else if (event_list[i].filter & EVFILT_READ) {
-//				cout << endl << "------- Processing the request -------" << endl << endl;
-//				request_header = parsing_request_header(event_fd, response);
-//				request_body = parsing_request_body(event_fd, request_header, response);
-//				cout << "RESPONSE: " << endl;
-//				display_page(event_fd, request_header, true, response, request_body);
-//				close(event_fd); // Todo
-//			}
+			std::cout << "SOCKET FD : " << event_fd << endl;
+
+			// CONNEXION END
+			if (event_list[i].flags & EV_EOF || event_list[i].flags & EV_ERROR)
+				end_connexion(data, event_fd);
+			// CONNEXION ALREADY ACCEPTED
+			else if (data.checkFdAlreadyAccepted(event_fd))
+				process_request(event_fd, request_header, request_body, response, data);
+			// ACCEPT THE SOCKET, CREATE A EVENT TO THIS SOCKET, AND ADD TO OUR SOCKET VECTOR
+			else if (include_in_vector(server_socket, event_fd))
+				create_connection(event_fd, kq, data);
 		}
 	}
+	// CLOSE ALL SOCKETS
+	for (vector<int>::const_iterator it = data.getSocketFdAccepted().begin(); it < data.getSocketFdAccepted().end(); ++it)
+		close(*it);
 	close(server_socket[0]);
 }

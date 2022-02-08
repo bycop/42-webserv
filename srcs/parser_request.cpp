@@ -62,18 +62,15 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 string readHeader(int fd) {
 	string str_buffer;
 	string line;
-	char buffer[2];
-	int i = 0;
+	char buffer[513];
+	bzero(buffer, 513);
+//	size_t read_r;
+
+//		cout << buffer << endl;
 	while (str_buffer.find("\n\r\n") == std::string::npos) {
 		read(fd, buffer, 1);
-		str_buffer += buffer[0];
 		cout << buffer[0];
-		if (i == 1000) {
-			cout << "I STOP" << endl;
-			return (str_buffer);
-		}
-		i++;
-
+		str_buffer += buffer[0];
 	}
 	cout << endl;
 	return (str_buffer);
@@ -89,6 +86,7 @@ string readBody(int fd, int length) {
 	return (body);
 }
 
+
 string read_body_chunk(int fd) {
 	string body, len_buffer;
 	int len = -1;
@@ -99,17 +97,20 @@ string read_body_chunk(int fd) {
 			read(fd, buffer, 1);
 			len_buffer += buffer[0];
 		}
+		// HAVE THE LENGTH
 		len = atoi(len_buffer.c_str());
 		len_buffer.clear();
+		// ERROR
 		if (len < 0) {
 			cerr << "Negative chunk's len's" << endl;
 			return (body);
 		}
-		for (int i = 0; i < len; i++) {
-			read(fd, buffer, 1);
-			body += buffer[0];
-		}
-		for (int i = 0; i < 2; ++i) // READ THE \r\n
+		// READ BODY CHUNK
+		char tmp[len + 1];
+		read(fd, tmp, len);
+		body += tmp;
+		// READ THE \r\n
+		for (int i = 0; i < 2; ++i)
 			read(fd, buffer, 1);
 	}
 	return (body);

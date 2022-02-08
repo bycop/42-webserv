@@ -4,7 +4,7 @@
 
 #include "webserv.hpp"
 
-void create_indexing_page(DIR *dir, std::string path, Response &response){
+void create_indexing_page(DIR *dir, std::string path, Response &response, map<string, string> request_header){
 	std::ostringstream mypage;
 	std::string dir_p = ".";
 	std::string content_type = "text/html";
@@ -26,12 +26,12 @@ void create_indexing_page(DIR *dir, std::string path, Response &response){
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";
 	response.setStatus("200 OK");
-    response.fillHeader(mypage.str(), path);
+    response.fillHeader(mypage.str(), path, request_header);
 }
 
-void 		create_error_page(std::string &path, Response &response) {
+void 		create_error_page(std::string &path, Response &response, map<string, string> request_header) {
 	std::ostringstream mypage;
 	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << response.getStatus() << "</title>\n</head>\n" << std::endl;
 	mypage << "<body><h1>Error " << response.getStatus() << "\n</h1></body></html>";
-	response.fillHeader(mypage.str(), path);
+	response.fillHeader(mypage.str(), path, request_header);
 }
