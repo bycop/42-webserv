@@ -134,7 +134,7 @@ string parsing_request_body(int fd, map<string, string> const& request_header, R
 			return (request_body);
 		}
 		else {
-			int length = stoi(request_header.find("Content-Length")->second); // WE CAN READ THE
+			int length = atoi(request_header.find("Content-Length")->second.c_str()); // WE CAN READ THE
 			request_body = readBody(fd, length);
 		}
 	}

@@ -90,7 +90,10 @@ void Response::fillHeaderCGI(const string &ficelle){
 
 void Response::fillHeader(string file, string &path){
 	setContentType(path);
-	contentLength =  to_string(file.length());
+
+	stringstream ss;
+	ss << file.length();
+	contentLength =  ss.str();
 	header = "HTTP/1.1 " + status + "Content-Type: " + contentType + "Content-Length: " + contentLength + "\n\n";
 	body = file;
 	response = header + body;
