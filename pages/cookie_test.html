@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<button onclick="showCookies()">Show cookies</button>
+
+<button onclick="clearOutputCookies()">
+    Clear
+</button>
+
+<div>
+    <code id="cookies"></code>
+</div>
+
+</body>
+</html>
+<script>
+    function showCookies() {
+        const output = document.getElementById('cookies')
+        output.textContent = '> ' + document.cookie
+    }
+
+    function clearOutputCookies() {
+        const output = document.getElementById('cookies')
+        output.textContent = ''
+    }
+</script>
