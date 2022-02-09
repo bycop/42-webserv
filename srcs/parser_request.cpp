@@ -124,15 +124,16 @@ map<string, string> parsing_request_header(int fd, Response &response) {
 	std::string line, body;
 	size_t pos_del;
 
+	(void)response;
 	parse_first_line_request(is, request_header);
 
 	// PARSING HEADER
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
-		if (pos_del == string::npos) {
-			response.setStatus("400 Bad Request");
-			return (request_header);
-		}
+//		if (pos_del == string::npos) {
+//			response.setStatus("400 Bad Request");
+//			return (request_header);
+//		}
 //		cout << line << endl; // TODO: TEST
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r

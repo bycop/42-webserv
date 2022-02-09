@@ -73,37 +73,54 @@ void Response::setMapType() {
 
 void Response::setContentType(string &path){
 	string extension = findExtension(path);
+	cout << "CONTENT-TYPE: " << endl;
+	cout << path << endl;
 	if (extension.empty()){
-		contentType = "text/html\n";
+		contentType = "text/html";
 	}
 	else {
 		map<string, string>::iterator it;
 		it = types.find(extension);
 		if (it != types.end()) {
-			contentType = it->second + "\n";
+			contentType = it->second;
 		}
 		else
-			contentType = "text/plain\n";
+			contentType = "text/plain";
+	}
+	header += "Content-Type: " + contentType + '\n';
+}
+
+
+void Response::responseCGI(const string& cgi_content, map<string, string> & request_header) {
+	size_t pos_spliter = cgi_content.find("\n\n");
+	if (pos_spliter == string::npos) {
+		fillHeader(request_header["path"], request_header, true);
+		body = cgi_content;
+	}
+	else {
+		body = cgi_content.substr(pos_spliter + 2, cgi_content.length() - pos_spliter);
+		fillHeader(request_header["path"], request_header, true);
+		header += cgi_content.substr(0, pos_spliter + 2);
 	}
 }
 
-void Response::fillHeaderCGI(const string& content, map<string, string> request_header) {
+void Response::fillHeader(string &path, map<string, string> & request_header, bool is_cgi){
 	header = "HTTP/1.1 " + status;
+	header += "Content-Length: " + std::to_string(body.length()) + '\n';
 	if (request_header["Connection"] == "keep-alive")
-		header += "\nConnection: keep-alive\n\n";
-	header += "Content-Length:" + to_string(content.length()) + '\n';
-	response = header + content;
-	cout << response << endl; // TODO: TEST
+		header += "Connection: keep-alive\n";
+	if (!is_cgi)
+		setContentType(path);
 }
 
-void Response::fillHeader(string file, string &path, map<string, string> request_header){
-	setContentType(path);
-	contentLength =  to_string(file.length());
-	header = "HTTP/1.1 " + status;
-	header += "Content-Type: " + contentType + "Content-Length: " + contentLength;
-	if (request_header["Connection"] == "keep-alive")
-		header += "\nConnection: keep-alive\n\n";
-	response = header + file;
-	cout << "- Header response :" << endl;
+void	Response::response_http(int new_socket) {
+	response = header + '\n' + body;
+	cout << "- Response :" << endl;
 	cout << header << endl;
+//	cout << response << endl; // TODO: TEST
+	write(new_socket, const_cast<char *>(response.c_str()), response.length());
+}
+
+void Response::fillBody(string const& content) {
+	body = content;
 }

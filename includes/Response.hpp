@@ -32,10 +32,11 @@ public:
 	string	getResponse();
 	size_t	getLength();
 	void	setStatus(const string&);
-	void	setBody(string);
+	void	response_http(int new_socket);
 	void	setContentType(string &path);
-    void	fillHeader(string file, string &path, map<string, string> request_header);
-	void	fillHeaderCGI(const string& content, map<string, string> request_header);
+    void	fillHeader(string &path, map<string, string> & request_header, bool is_cgi);
+	void	fillBody(string const& content);
+	void	responseCGI(const string& cgi_content, map<string, string> & request_header);
 	string	findExtension(string path);
 };
 

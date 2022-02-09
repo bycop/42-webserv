@@ -43,6 +43,8 @@ void ft_error(const char *err);
 // UTILS
 void display_banner();
 bool include_in_vector(vector<int> &server_socket, int event_fd);
+bool endsWith(const string &str, const string &suffix);
+bool startsWith(const string &str, const string &prefix);
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);
