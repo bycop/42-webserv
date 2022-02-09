@@ -27,10 +27,14 @@
 #include <unistd.h>
 
 struct Error{
-	int event_fd;
-	Response response;
-	pair<map<string, string>, string> request;
+	pair<map<string, string>, string> &_request;
+	int &_event_fd;
+	Response &_response;
 	bool parsed;
+
+	Error(pair<map<string, string>, string> &request, int &event_fd, Response &response) : _request(request), _event_fd(event_fd), _response(response){
+	}
+	Error(const Error &cpy) : _request(cpy._request), _event_fd(cpy._event_fd), _response(cpy._response) {}
 };
 
 #define PORT 8080

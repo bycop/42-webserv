@@ -24,33 +24,29 @@ int 	checkError(std::string &path, Response &response, Data &data, std::map<std:
 }
 
 void 	*launchParsing(void *arg){
-	Error *error;
-	error = static_cast<Error *>(arg);
-	error->request->first = parsing_request_header(*(error->event_fd), *(error->response));
-	error->request->second = parsing_request_body(*(error->event_fd), error->request->first, *(error->response));
+	Error *error = static_cast<Error *>(arg);
+	error->_request.first = parsing_request_header(error->_event_fd, error->_response);
+	error->_request.second = parsing_request_body(error->_event_fd, error->_request.first, error->_response);
 	error->parsed = true;
-	return (error);
+	return (NULL);
 }
 
 void	checkTimeOutParsing(pair<map<string, string>, string> &request, int &event_fd, Response &response){
 	pthread_t thread;
 	Error *error;
-	error = static_cast<Error *>(malloc(sizeof(Error)));
-
-	error->event_fd = event_fd;
-	error->response = response;
-	error->request = request;
-//	error->parsed = false;
-//	time_t now = time(0);
+	error = new Error(request, event_fd, response);
+	error->parsed = false;
+	time_t now = time(0);
 	pthread_create(&thread, NULL, &launchParsing, error);
-//	while (!error->parsed){
-//		if (time(0) > now + 5) {
+//	pthread_join(thread, &i);
+	usleep(1000);
+	while (!error->parsed) {
+	cout << time(0) - now << endl;
+		if (time(0) > now + 5) {
+			cout << "quit quit" << endl;
 //			pthread_cancel(thread);
-//			response->setStatus("408 Request Timeout");
-//		}
-//	}
-//	request = error->request;
-//	event_fd = error->event_fd;
-//	response = error->response;
-	free(error);
+			response.setStatus("408 Request Timeout");
+			break;
+		}
+	}
 }
