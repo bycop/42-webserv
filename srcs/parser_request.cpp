@@ -4,24 +4,6 @@
 
 #include "webserv.hpp"
 
-// UTILITY
-string splitPartsByParts(string const& line, const char delimiter, size_t *start) {
-	size_t end;
-	string part;
-
-	if (*start > line.length())
-		return (part);
-	end = line.find(delimiter, *start);
-	if (end == string::npos) {
-		part = line.substr(*start, line.length() - *start);
-		*start = line.length() + 1;
-		return (part);
-	}
-	part = line.substr(*start, end - *start);
-	*start = end + 1;
-	return (part);
-}
-
 std::string parse_query_string(std::string & path) {
 	std::string query;
 	std::string path_tmp = path;
@@ -55,22 +37,26 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
 	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
-	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start))); // TODO:  DONT TAKE TWO LAST CHARS
+	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
+	request["version"].erase(request["version"].length() - 1, 2);
 }
 
 // MY READER YEAAAAH
 string readHeader(int fd) {
 	string str_buffer;
 	string line;
-	char buffer[513];
-	bzero(buffer, 513);
-//	size_t read_r;
-
-//		cout << buffer << endl;
+	char buffer[2];
+	int i = 0;
 	while (str_buffer.find("\n\r\n") == std::string::npos) {
 		read(fd, buffer, 1);
-		cout << buffer[0];
 		str_buffer += buffer[0];
+		cout << buffer[0];
+		if (i == 1000) {
+			cout << "I STOP" << endl;
+			return (str_buffer);
+		}
+		i++;
+
 	}
 	cout << endl;
 	return (str_buffer);
@@ -85,7 +71,6 @@ string readBody(int fd, int length) {
 	}
 	return (body);
 }
-
 
 string read_body_chunk(int fd) {
 	string body, len_buffer;
@@ -124,16 +109,15 @@ map<string, string> parsing_request_header(int fd, Response &response) {
 	std::string line, body;
 	size_t pos_del;
 
-	(void)response;
 	parse_first_line_request(is, request_header);
 
 	// PARSING HEADER
 	while(std::getline(is, line)) {
 		pos_del = line.find(':');
-//		if (pos_del == string::npos) {
-//			response.setStatus("400 Bad Request");
-//			return (request_header);
-//		}
+		if (pos_del == string::npos && line.length() < 1) {
+			response.setStatus("400 Bad Request");
+			return (request_header);
+		}
 //		cout << line << endl; // TODO: TEST
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
@@ -153,7 +137,7 @@ string parsing_request_body(int fd, map<string, string> const& request_header, R
 			return (request_body);
 		}
 		else {
-			int length = stoi(request_header.find("Content-Length")->second); // WE CAN READ THE
+			int length = stoi(request_header.find("Content-Length")->second);
 			request_body = readBody(fd, length);
 		}
 	}

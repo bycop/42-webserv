@@ -2,16 +2,14 @@
 // Created by Codage on 25/01/2022.
 //
 
-#include "Response.hpp"
 #include "webserv.hpp"
 
 ///COPLIEN FORM
-Response::Response() :  status("200 OK\n"), contentType("text/plain\n"){
+Response::Response() : status("200 OK\n"), contentType("text/plain\n") {
 	setMapType();
 }
 
 Response::~Response() {
-
 }
 
 Response::Response(const Response &cpy) {
@@ -26,7 +24,7 @@ Response &Response::operator=(const Response &cpy) {
     return (*this);
 }
 
-string Response::findExtension(string path) {
+string Response::findExtension(string &path) {
 	size_t pos = path.find_last_of('.');
 	if (path.find_last_of('/') == path.length() - 1)
 		return (string());
@@ -50,10 +48,6 @@ string Response::getResponse() {
 	return (response);
 }
 
-size_t Response::getLength(){
-	return (length);
-}
-
 ///SETTERS
 void Response::setStatus(const string& stat) {
 	status = stat + "\n";
@@ -73,8 +67,6 @@ void Response::setMapType() {
 
 void Response::setContentType(string &path){
 	string extension = findExtension(path);
-	cout << "CONTENT-TYPE: " << endl;
-	cout << path << endl;
 	if (extension.empty()){
 		contentType = "text/html";
 	}
@@ -123,4 +115,13 @@ void	Response::response_http(int new_socket) {
 
 void Response::fillBody(string const& content) {
 	body = content;
+}
+
+void 	Response::resetResponse(){
+	status = "200 OK\n";
+	contentType = "text/plain\n";
+	contentLength = string();
+	header = string();
+	body = string();
+	response = string();
 }

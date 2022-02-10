@@ -10,29 +10,39 @@ void ft_error(const char *err) {
 	exit(EXIT_FAILURE);
 }
 
+bool already_open(vector<int> &ports, int port) {
+	for (vector<int>::iterator it = ports.begin(); it != ports.end(); it++)
+		if (*it == port)
+			return (true);
+	return (false);
+}
+
 void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	int enable = 1;
 	struct sockaddr_in address;
+	vector<int> ports;
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	for (vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		for (vector<int>::iterator port_it = it->getPorts().begin(); port_it != it->getPorts().end(); port_it++) {
-//			std::cout << "Server[" << it->getHost() << "] - Port[" << *port_it << "]" << std::endl; // TODO: PRINT FOR TEST
+		cout << "Listening on " << it->getHost() << ":" << it->getPort() << endl;
 
-			int sock;
-			if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-				ft_error("In socket");
-			server_socket.push_back(sock);
-			address.sin_port = htons(*port_it);
-			memset(address.sin_zero, '\0', sizeof address.sin_zero);
-			if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
-				ft_error("setsockopt(SO_REUSEADDR) failed");
-			if (bind(sock, (struct sockaddr *) &address, sizeof(address)) < 0)
-				ft_error("In bind");
-			if (listen(sock, 10) < 0)
-				ft_error("In listen");
-		}
+		if (already_open(ports, it->getPort()))
+			continue;
+
+		int sock;
+		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+			ft_error("In socket");
+		server_socket.push_back(sock);
+		address.sin_port = htons(it->getPort());
+		memset(address.sin_zero, '\0', sizeof address.sin_zero);
+		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+			ft_error("setsockopt(SO_REUSEADDR) failed");
+		if (bind(sock, (struct sockaddr *) &address, sizeof(address)) < 0)
+			ft_error("In bind");
+		if (listen(sock, 10) < 0)
+			ft_error("In listen");
+		ports.push_back(it->getPort());
 	}
 }
 

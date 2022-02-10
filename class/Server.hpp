@@ -8,22 +8,19 @@ using namespace std;
 
 class Server {
 public:
-	Server() : _autoindex(false), _client_max_body_size(0), _redirect_status(0) {};
+	Server() : _autoindex(false), _client_max_body_size(-1), _redirect_status(-1), _port(-1) {};
 
 	~Server() {};
 
 	void print() {
 		cout << "host: " << this->_host << endl;
-		cout << "ports: ";
-		for (unsigned long i = 0; i < _ports.size(); i++)
-			cout << _ports[i] << " ";
-		cout << endl;
+		cout << "ports: " << this->_port << endl;
 		cout << "server_names: ";
 		for (unsigned long i = 0; i < _server_name.size(); i++)
 			cout << _server_name[i] << " ";
 		cout << endl;
 		cout << "default_pages: " << endl;
-		for (map<int, string>::iterator it = _default_pages.begin(); it != _default_pages.end(); ++it)
+		for (map<string, string>::iterator it = _default_pages.begin(); it != _default_pages.end(); ++it)
 			cout << "              " << it->first << " " << it->second << endl;
 		cout << "client_max_body_size: " << _client_max_body_size << endl;
 		cout << "redirect_status: " << _redirect_status << endl;
@@ -38,7 +35,7 @@ public:
 	};
 
 	bool mandatory(int index = -1) {
-		if (_host.empty() || _server_name.empty() || (index == 0 && _ports.empty()))
+		if (_host.empty() || _server_name.empty() || (index == 0 && _port == -1))
 			return (false);
 		return (true);
 	}
@@ -49,7 +46,7 @@ public:
 
 	vector<string> &getServerName() { return _server_name; }
 
-	map<int, string> &getDefaultPages() { return _default_pages; }
+	map<string, string> &getDefaultPages() { return _default_pages; }
 
 	int getClientMaxBodySize() const { return _client_max_body_size; }
 
@@ -59,7 +56,7 @@ public:
 
 	vector<Location> &getLocations() { return _locations; }
 
-	vector<int> &getPorts() { return _ports; }
+	int &getPort() { return _port; }
 
 
 	void setAutoindex(bool autoindex) { _autoindex = autoindex; }
@@ -68,7 +65,7 @@ public:
 
 	void setServerName(const vector<string> &serverName) { _server_name = serverName; }
 
-	void setDefaultPages(const map<int, string> &defaultPages) { _default_pages = defaultPages; }
+	void setDefaultPages(const map<string, string> &defaultPages) { _default_pages = defaultPages; }
 
 	void setClientMaxBodySize(int clientMaxBodySize) { _client_max_body_size = clientMaxBodySize; }
 
@@ -78,18 +75,18 @@ public:
 
 	void setLocations(const vector<Location> &locations) { _locations = locations; }
 
-	void setPorts(const vector<int> &ports) { _ports = ports; }
+	void setPort(int port) { _port = port; }
 
 private:
 	bool _autoindex;
 	string _host;
 	vector<string> _server_name;
-	map<int, string> _default_pages;
+	map<string, string> _default_pages;
 	int _client_max_body_size;
 	int _redirect_status;
 	string _redirect;
 	vector<Location> _locations;
-	vector<int> _ports;
+	int _port;
 };
 
 #endif

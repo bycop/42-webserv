@@ -9,7 +9,22 @@ class Location {
 public:
 	Location() {};
 
+	Location &operator=(const Location &src) {
+		this->_allow_methods = src._allow_methods;
+		this->_index = src._index;
+		this->_path = src._path;
+		this->_root = src._root;
+		this->_upload_store = src._upload_store;
+		return (*this);
+	}
+
 	~Location() {};
+
+	bool isEmpty() {
+		if (_index.empty() && _root.length() == 0 && _path.length() == 0 && _upload_store.length() == 0 && _allow_methods.empty())
+			return (true);
+		return (false);
+	}
 
 	void print() {
 		cout << "indexs: ";
@@ -34,7 +49,6 @@ public:
 	const string &getPath() const { return _path; }
 
 	const string &getUploadStore() const { return _upload_store; }
-
 
 	void setIndex(const vector<string> &index) { Location::_index = index; }
 

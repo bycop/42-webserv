@@ -7,7 +7,7 @@
 
 #include "../class/Server.hpp"
 #include "../class/Data.hpp"
-#include "Response.hpp"
+#include "../class/Response.hpp"
 
 void create_socket(vector<int> &server_socket, vector<Server> &servers);
 void receiving_information(vector<int> &server_socket, Response &response, Data& data);

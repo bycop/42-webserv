@@ -80,11 +80,9 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 			server.setHost(newdata);
 			break;
 		case 1: {
-			if (!checkTypes(INT_A, newdata))
+			if (!checkTypes(INT, newdata))
 				return (true);
-			vector<string> strings = split_string(newdata);
-			for (unsigned long i = 0; i < strings.size(); i++)
-				server.getPorts().push_back(atoi(strings[i].c_str()));
+			server.setPort(atoi(newdata.c_str()));
 			break;
 		}
 		case 2:
@@ -96,7 +94,7 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 			vector<string> strings = split_string(newdata);
 			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], "./_-=*!~+"))
 				return (true);
-			pair<std::map<int, string>::iterator, bool> ret_val = server.getDefaultPages().insert(make_pair(atoi(strings[0].c_str()), strings[1]));
+			pair<std::map<string, string>::iterator, bool> ret_val = server.getDefaultPages().insert(make_pair(strings[0], strings[1]));
 			if (!ret_val.second)
 				return (true);
 			break;
