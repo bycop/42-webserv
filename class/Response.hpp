@@ -31,11 +31,14 @@ public:
 	string	getBody();
 	string	getResponse();
 	void	setStatus(const string&);
+	void	response_http(int new_socket);
 	void	setContentType(string &path);
-	void 	fillHeaderCGI(const string& ficelle);
-    void	fillHeader(string file, string &path);
+    void	fillHeader(string &path, map<string, string> & request_header, bool is_cgi);
+	void	fillBody(string const& content);
+	void	responseCGI(const string& cgi_content, map<string, string> & request_header);
 	string	findExtension(string &path);
 	void	resetResponse();
+
 };
 
 #endif //WEBSERV_HEADERRESPOc NSE_H

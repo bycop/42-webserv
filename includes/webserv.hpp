@@ -19,6 +19,8 @@
 #include <vector>
 #include "../class/Response.hpp"
 #include "../class/Data.hpp"
+#include <fcntl.h>
+#include <sys/event.h>
 #include "socket.hpp"
 #include "create_page.hpp"
 #include "send_page.hpp"
@@ -56,8 +58,17 @@ int checkError(std::string &path, Response &response, Data &data, std::map<std::
 void	checkTimeOutParsing(pair<map<string, string>, string> &request, int &event_fd, Response &response);
 
 // UTILS
+void display_banner();
+bool include_in_vector(vector<int> &server_socket, int event_fd);
+bool endsWith(const string &str, const string &suffix);
 string splitPartsByParts(string const& line, const char delimiter, size_t *start);
-bool endsWith(string str, string suffix);
-bool startsWith(string str, string prefix);
+bool startsWith(const string &str, const string &prefix);
+// KEVENT
+void createEvent(int kq, int fd);
+void init_kqueue(vector<int> &server_socket, int &kq);
+// PROCESS_REQUEST
+void create_connection(int event_fd, int kq, Data &data);
+void end_connexion(Data &data, int socket_fd);
+void process_request(int &fd, map<string, string> &request_header, string &request_body, Response &response, Data &data);
 
 #endif //WEBSERV_WEBSERV_HPP

@@ -3,8 +3,7 @@
 //
 
 #include "webserv.hpp"
-#include <fcntl.h>
-#include <sys/event.h>
+
 
 void ft_error(const char *err) {
 	perror(err);
@@ -47,142 +46,38 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	}
 }
 
-bool checkFd(vector<int> &server_socket, int event_fd) {
-	for (unsigned long i = 0; i < server_socket.size(); i++) {
-		if (event_fd == server_socket[i])
-			return (true);
-	}
-	return (false);
-}
-
-void init_kqueue(vector<int> &server_socket, struct sockaddr_in &client_addr, int &client_len, int &kq) {
-	struct kevent change_list[server_socket.size()];
-
-	client_len = sizeof(client_addr);
-	if ((kq = kqueue()) == -1)
-		ft_error("kqueue");
-	for (unsigned long i = 0; i < server_socket.size(); i++)
-		EV_SET(&change_list[i], server_socket[i], EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
-	if (kevent(kq, change_list, server_socket.size(), NULL, 0, NULL) == -1)
-		ft_error("kevent");
-}
-
-Server findServerForHost(string &header_host, Data &data, Response &response) {
-
-	if (header_host.find(':') != string::npos) { // IF WE HAVE HOST:PORT
-		int port;
-		size_t start = 0;
-		string host = splitPartsByParts(header_host, ':', &start);
-		port = atoi(splitPartsByParts(header_host, ':', &start).c_str());
-		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
-			if (it->getPort() == port && it->getHost() == host)
-				return (*it);
-		}
-	}
-	else if (header_host == "localhost" || header_host == "127.0.0.1") { // Special cases for port 80
-		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
-			if (it->getPort() == 80 && it->getHost() == header_host)
-				return (*it);
-		}
-	}
-	else { // IF WE HAVE SERVER NAME
-		for (vector<Server>::iterator it = data.getServers().begin(); it != data.getServers().end(); it++) {
-			for (vector<string>::iterator it2 = it->getServerName().begin(); it2 != it->getServerName().end(); it2++) {
-				if (*it2 == header_host)
-					return (*it);
-			}
-		}
-	}
-	// IF WE HAVE A ERROR
-	response.setStatus("418 I'm a teapot");
-	return (Server());
-}
-
-Location findLocationForServer(string& header_path, Server &server, Response &response) {
-	string file[3]; // [0] = directory; [1] = filename; [2] = extension
-	Location location;
-	unsigned long pos;
-
-	if ((pos = header_path.rfind('/')) != string::npos) {
-		file[0] = header_path.substr(0, pos + 1);
-		file[1] = header_path.substr(pos + 1);
-		if ((pos = file[1].rfind('.')) == string::npos) {
-			file[0] += file[1];
-			file[1] = "";
-		}
-		else
-			file[2] = file[1].substr(pos);
-	}
-	else {
-		file[1] = header_path;
-		file[2] = (pos = file[1].rfind('.')) != string::npos ? file[1].substr(pos) : "";
-	}
-//	cout << "Directory: " << file[0] << endl;
-//	cout << "Filename: " << file[1] << endl;
-//	cout << "Extension: " << file[2] << endl;
-	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
-		if (it->getPath() == "/" || file[0] == it->getPath()) {
-			location = *it;
-			if (it->getPath() != "/")
-				break;
-		}
-	}
-	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
-		if (file[2] == it->getPath()) {
-			if (!it->getAllowMethods().empty())
-				location.setAllowMethods(it->getAllowMethods());
-			if (it->getUploadStore().length() > 0)
-				location.setUploadStore(it->getUploadStore());
-			if (it->getRoot().length() > 0)
-				location.setRoot(it->getRoot());
-			break;
-		}
-	}
-	if (location.isEmpty())
-		response.setStatus("418 I'm a teapot");
-	return (location);
-}
-
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
+	map<string, string> request_header;
 	pair<map<string, string>, string> request;
-	int kq, new_events, socket_connection_fd, client_len;
-	struct sockaddr_in client_addr = {};
-	struct timespec tmout = {5, 0}; // Todo
-	struct kevent change_list[server_socket.size()], event_list[server_socket.size()];
+	string request_body;
+	int kq, new_events;
+	struct kevent event_list[server_socket.size()];
 
-	init_kqueue(server_socket, client_addr, client_len, kq);
-	cout << endl << "------- Launching \e[93mWarningServer\e[0m -------" << endl << endl;
+	init_kqueue(server_socket, kq);
+	display_banner();
 	while (data.IsRunning()) {
+		// CATCH ALL EVENTS
+		cout << "------- Waiting for new connections -------" << endl;
 		if ((new_events = kevent(kq, NULL, 0, event_list, server_socket.size(), NULL)) == -1)
 			ft_error("kevent");
 		for (int i = 0; i < new_events; i++) {
 			int event_fd = static_cast<int>(event_list[i].ident);
-			if (event_list[i].flags & EV_EOF) {
-				cout << "ALLER HOP CIAO" << endl; // Todo
-				close(event_fd);
-			}
-			else if (checkFd(server_socket, event_fd)) {
-				if ((socket_connection_fd = accept(event_fd, (struct sockaddr *) &client_addr,
-												   (socklen_t *) &client_len)) == -1)
-					ft_error("Accept socket error");
-				cout << endl << "------- Socket connection accepted -------" << endl << endl;
-				fcntl(socket_connection_fd, F_SETFL, O_NONBLOCK); // Todo
-				EV_SET(change_list, socket_connection_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-				if (kevent(kq, change_list, 1, NULL, 0, &tmout) < 0)
-					ft_error("kevent");
-			}
-			else if (event_list[i].filter & EVFILT_READ) {
-				cout << endl << "------- Processing the request -------" << endl << endl;
-				checkTimeOutParsing(request, event_fd, response);
-				cout << "RESPONSE: " << endl;
-//				close(event_fd); // Todo
-				Server server = findServerForHost(request.first["Host"], data, response);
-				Location location = findLocationForServer(request.first["path"], server, response);
-//				location.print();
-				display_page(event_fd, request.first, response, request.second, server);
-				close(event_fd); // Todo
-			}
+			std::cout << "SOCKET FD : " << event_fd << endl;
+
+			// CONNEXION END
+			if (event_list[i].flags & EV_EOF || event_list[i].flags & EV_ERROR)
+				end_connexion(data, event_fd);
+			// CONNEXION ALREADY ACCEPTED
+			else if (data.checkFdAlreadyAccepted(event_fd))
+				process_request(event_fd, request_header, request_body, response, data);
+//			checkTimeOutParsing(request, event_fd, response);
+			// ACCEPT THE SOCKET, CREATE A EVENT TO THIS SOCKET, AND ADD TO OUR SOCKET VECTOR
+			else if (include_in_vector(server_socket, event_fd))
+				create_connection(event_fd, kq, data);
 		}
 	}
+	// CLOSE ALL SOCKETS
+	for (vector<int>::const_iterator it = data.getSocketFdAccepted().begin(); it < data.getSocketFdAccepted().end(); ++it)
+		close(*it);
 	close(server_socket[0]);
 }
