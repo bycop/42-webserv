@@ -48,18 +48,12 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	if (endsWith(pathModify, ".py"))
 		response.responseCGI(backend_page(request_header, request_body), request_header);
 	else {
-		if (checkError(pathModify, response, server, request_header)) {
-			cout << "ERROR PAGE" << endl;
+		if (checkError(pathModify, response, server, request_header))
 			create_error_page(response, server);
-		}
-		else if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL) {
-			cout << "INDEXING PAGE" << endl;
+		else if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			create_indexing_page(dir, pathModify, response);
-		}
-		else {
-			cout << "OPEN FILE" << endl;
+		else
 			openFile(pathModify, response);
-		}
 		response.fillHeader(pathModify, request_header, false);
 	}
 	response.response_http(new_socket);

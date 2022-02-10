@@ -6,10 +6,12 @@
 
 void create_indexing_page(DIR *dir, std::string &path, Response &response){
 	std::ostringstream mypage;
+	string pathTmp = path;
 
+	pathTmp.erase(0, 1);
 	cout << "Je suis dans indexing page" << endl;
-	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Index of " << path << "</title>\n</head>\n" << std::endl;
-	mypage << "<body><h1>Index of " << path << "\n</h1><hr/><br>";
+	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Index of " << pathTmp << "</title>\n</head>\n" << std::endl;
+	mypage << "<body><h1>Index of " << pathTmp << "\n</h1><hr/><br>";
 	struct dirent *ent;
 
 	while ((ent = readdir(dir)) != NULL) {
