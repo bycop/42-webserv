@@ -7,7 +7,7 @@ using namespace std;
 
 class Data {
 public:
-	Data(): _isRunning(true) {};
+	Data() : _isRunning(true) {};
 
 	~Data() {};
 
@@ -33,6 +33,13 @@ public:
 				cerr << "\e[91m[ERROR]\e[0m Mandatory key is missing " << endl;
 				return (false);
 			}
+		for (unsigned long i = 0; i < _servers.size(); i++)
+			for (unsigned long j = 0; j < _servers.size(); j++)
+				if (i != j && _servers[i].getPort() == _servers[j].getPort() &&
+					_servers[i].getHost() == _servers[j].getHost() &&
+					alreadyExistSN(_servers[i].getServerName(), _servers[j].getServerName()))
+					return (false);
+
 		return (true);
 	}
 
@@ -53,6 +60,13 @@ public:
 	};
 
 private:
+	bool alreadyExistSN(vector<string> sn1, vector<string> sn2) {
+		for (unsigned long i = 0; i < sn1.size(); i++)
+			for (unsigned long j = 0; j < sn2.size(); j++)
+				if (sn1[i] == sn2[j])
+					return (true);
+		return (false);
+	}
 
 	vector<Server> _servers;
 	int _workers;

@@ -54,4 +54,10 @@ int parser_conf(Data &data, string const& file_path);
 void ft_error(const char *err);
 int checkError(std::string &path, Response &response, Data &data, std::map<std::string, std::string> request_header);
 void	checkTimeOutParsing(pair<map<string, string>, string> &request, int &event_fd, Response &response);
+
+// UTILS
+string splitPartsByParts(string const& line, const char delimiter, size_t *start);
+bool endsWith(string str, string suffix);
+bool startsWith(string str, string prefix);
+
 #endif //WEBSERV_WEBSERV_HPP
