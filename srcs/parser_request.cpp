@@ -82,17 +82,20 @@ string read_body_chunk(int fd) {
 			read(fd, buffer, 1);
 			len_buffer += buffer[0];
 		}
+		// HAVE THE LENGTH
 		len = atoi(len_buffer.c_str());
 		len_buffer.clear();
+		// ERROR
 		if (len < 0) {
 			cerr << "Negative chunk's len's" << endl;
 			return (body);
 		}
-		for (int i = 0; i < len; i++) {
-			read(fd, buffer, 1);
-			body += buffer[0];
-		}
-		for (int i = 0; i < 2; ++i) // READ THE \r\n
+		// READ BODY CHUNK
+		char tmp[len + 1];
+		read(fd, tmp, len);
+		body += tmp;
+		// READ THE \r\n
+		for (int i = 0; i < 2; ++i)
 			read(fd, buffer, 1);
 	}
 	return (body);
@@ -134,7 +137,7 @@ string parsing_request_body(int fd, map<string, string> const& request_header, R
 			return (request_body);
 		}
 		else {
-			int length = stoi(request_header.find("Content-Length")->second); // WE CAN READ THE
+			int length = stoi(request_header.find("Content-Length")->second);
 			request_body = readBody(fd, length);
 		}
 	}
