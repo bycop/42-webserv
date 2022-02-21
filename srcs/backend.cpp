@@ -4,8 +4,6 @@
 
 #include "webserv.hpp"
 
-
-
 void print_env() { // TODO: JUST FOR TEST
 	cout << "ENV : " << endl;
 	cout << "GATEWAY_INTERFACE : " << getenv("GATEWAY_INTERFACE") << endl;
@@ -26,14 +24,15 @@ void print_env() { // TODO: JUST FOR TEST
 	cout << "HTTP_REFERER : " << getenv("HTTP_REFERER") << endl;
 }
 
-void setenv_cgi(map<string, string> & request_header) {
+void setenv_cgi(map<string, string> & request_header, Server &server) {
 	char tmp[256];
 	getcwd(tmp, 256);
+	strcat(tmp, "/");
 	setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
-	setenv("SERVER_NAME", "localhost", 1); // TODO: CHANGE WITH CONFIGURATION FILE
+	setenv("SERVER_NAME", server.getHost().c_str(), 1);
 	setenv("SERVER_SOFTWARE", "WarningServer", 1);
 	setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
-	setenv("SERVER_PORT", "8080", 1); // TODO: CHANGE WITH CONFIGURATION FILE
+	setenv("SERVER_PORT", ITOA(server.getPort()).c_str(), 1);
 	setenv("REQUEST_METHOD",request_header["method"].c_str(), 1);
 	setenv("PATH_INFO", request_header["path_info"].c_str(), 1);
 	setenv("PATH_TRANSLATED", request_header["path_translated"].c_str(), 1);
@@ -48,15 +47,15 @@ void setenv_cgi(map<string, string> & request_header) {
 //	print_env();
 }
 
-void launch_backend_file(map<string, string> &request_header) {
+void launch_backend_file(map<string, string> &request_header, Location &location) {
 	std::string filename = request_header["path"];
 	filename.erase(0, 1);
-	std::string command = "python";
-	command += " " + filename;
+	std::string py_command = "python " + string(getenv("DOCUMENT_ROOT")) + filename;
+	std::string command = "cd " + location.getUploadStore() + " && " + py_command;
 	system(command.c_str());
 }
 
-string send_body(map<string, string> &request_header, string &request_body) {
+string send_body(map<string, string> &request_header, string &request_body, Location &location) {
 	pid_t pid;
 	int p[2];
 	string html_content;
@@ -70,7 +69,7 @@ string send_body(map<string, string> &request_header, string &request_body) {
 	else if (pid == 0) {// CHILD
 		dup2(p[0], 0);
 		dup2(p[1], 1);
-		launch_backend_file(request_header);
+		launch_backend_file(request_header, location);
 		write(1, "\0", 1);
 		close(p[1]);
 		close(p[0]);
@@ -90,7 +89,7 @@ string send_body(map<string, string> &request_header, string &request_body) {
 	return (html_content);
 }
 // MISE EN PLACE CGI
-string backend_page(map<string, string> &request_header, string &request_body) {
-	setenv_cgi(request_header);
-	return (send_body(request_header, request_body));
+string backend_page(map<string, string> &request_header, string &request_body, Location &location, Server &server) {
+	setenv_cgi(request_header, server);
+	return (send_body(request_header, request_body, location));
 }

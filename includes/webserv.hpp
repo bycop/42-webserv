@@ -27,6 +27,8 @@
 #include "send_page.hpp"
 
 #define PORT 8080
+#define DEFAULT_UPLOAD_FOLDER "upload_file"
+#define ITOA(x) dynamic_cast<std::ostringstream&> ((std::ostringstream() << std::dec << x)).str()
 using namespace std;
 
 // PARSER_REQUEST.CPP
@@ -34,7 +36,7 @@ map<string, string> parsing_request_header(int fd, Response &response);
 string parsing_request_body(int fd, map<string, string> const& request_header, Response &response);
 
 // BACKEND.CPP
-string backend_page(map<string, string> & request_header, string & request_body);
+string backend_page(map<string, string> & request_header, string & request_body, Location &location, Server &server);
 
 // PARSER_CONF
 int parser_conf(Data &data, string const& file_path);

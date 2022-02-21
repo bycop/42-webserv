@@ -34,8 +34,8 @@ public:
 		}
 	};
 
-	bool mandatory(int index = -1) {
-		if (_host.empty() || _server_name.empty() || (index == 0 && _port == -1))
+	bool mandatory() {
+		if (_host.empty() || _server_name.empty() || _port == -1)
 			return (false);
 		return (true);
 	}

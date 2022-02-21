@@ -7,7 +7,7 @@ def upload_file(file):
     accept_extensions = ["jpeg", "png", "jpg", "gif", "svg", "bmp"]
 
     if file.filename and (extension_file in accept_extensions):
-        open('upload_file/' + filename, 'wb').write(file.file.read())
+        open(filename, 'wb').write(file.file.read())
         return '<p>The file ' + filename + ' was uploaded successfully</p>'
     else:
         return '<p>The file ' + filename + ' has a error</p>'
@@ -19,8 +19,8 @@ else:
     upload_files = form['file']
     content = ''
     check_list = type(upload_files) is list
-    if not os.path.exists("upload_file"):
-        os.mkdir("upload_file")
+    # if not os.path.exists("upload_file"):
+    #     os.mkdir("upload_file")
 
     if check_list:
         for file in upload_files:

@@ -40,13 +40,13 @@ void add_slash_to_directory(string & path) {
 		path.insert(path.length(), "/");
 }
 
-void display_page(int &new_socket, std::map<std::string, std::string> &request_header, Response &response, string &request_body, Server &server) {
+void display_page(int &new_socket, std::map<std::string, std::string> &request_header, Response &response, string &request_body, Server &server, Location &location) {
 	DIR *dir;
 	string pathModify = "." + request_header["path"];
 
 	add_slash_to_directory(pathModify);
 	if (endsWith(pathModify, ".py"))
-		response.responseCGI(backend_page(request_header, request_body), request_header);
+		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
 	else {
 		if (checkError(pathModify, response, server, request_header))
 			create_error_page(response, server);

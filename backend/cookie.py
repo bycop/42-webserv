@@ -1,4 +1,5 @@
 import cgi
+import os
 form = cgi.FieldStorage()
 
 if "nickname" not in form or form["nickname"].value == '':
@@ -12,7 +13,7 @@ else:
               "</p>"
 
 content += "<a href=\"/pages/cookie_test.html\">Go to cookie_test</a>"
-fd = open("backend/base.html")
+fd = open(os.environ['DOCUMENT_ROOT'] + "backend/base.html")
 html_content = fd.read()
 html_content = html_content.replace("content", content, 1)
 print("Content-Type: text/html\nSet-Cookie: nickname=" + form["nickname"].value + "; Max-Age=86400; Path=/\n")
