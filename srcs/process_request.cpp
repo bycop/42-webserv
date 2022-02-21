@@ -78,8 +78,14 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 	}
 	if (location.isEmpty())
 		response.setStatus("418 I'm a teapot");
-	else if (location.getUploadStore().empty())
+	else {
+		if (location.getUploadStore().empty())
 			location.setUploadStore(DEFAULT_UPLOAD_FOLDER);
+		else if (location.getAllowMethods().empty()) {
+			location.getAllowMethods().push_back("GET");
+			location.getAllowMethods().push_back("POST");
+		}
+	}
 	return (location);
 }
 

@@ -4,7 +4,7 @@
 
 #include "webserv.hpp"
 
-int 	checkError(std::string &path, Response &response, Server &server, std::map<std::string, std::string> request_header){
+int 	checkError(std::string &path, Response &response, Server &server, std::map<std::string, std::string> request_header, Location &location){
 	std::ifstream ifs(path);
 	(void)server;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
@@ -13,6 +13,8 @@ int 	checkError(std::string &path, Response &response, Server &server, std::map<
 		response.setStatus("404 Not Found");
 	else if (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE")
 		response.setStatus("501 Not Implemented");
+	else if (!contains(location.getAllowMethods(), request_header["method"]))
+		response.setStatus("405 Method Not Allowed");
 	else if (request_header["version"] != "HTTP/1.1")
 		response.setStatus("505 HTTP Version Not Supported");
 	else if (response.getStatus() == "200 OK\n")
@@ -48,7 +50,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	if (endsWith(pathModify, ".py"))
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
 	else {
-		if (checkError(pathModify, response, server, request_header))
+		if (checkError(pathModify, response, server, request_header, location))
 			create_error_page(response, server);
 		else if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			create_indexing_page(dir, pathModify, response);

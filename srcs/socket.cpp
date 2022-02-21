@@ -70,7 +70,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 			else if (data.checkFdAlreadyAccepted(event_fd))
 				process_request(event_fd, request_header, request_body, response, data);
 			// ACCEPT THE SOCKET, CREATE A EVENT TO THIS SOCKET, AND ADD TO OUR SOCKET VECTOR
-			else if (include_in_vector(server_socket, event_fd))
+			else if (contains(server_socket, event_fd))
 				create_connection(event_fd, kq, data);
 		}
 	}
