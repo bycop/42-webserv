@@ -27,24 +27,35 @@ void openFile(std::string path, Response &response){
         std::ostringstream oss;
         oss << ifs.rdbuf();
         std::string file = oss.str();
+		response.fillBody(file);
 		response.setStatus("200 OK");
-        response.fillHeader(file, path);
     }
 	else
 		response.setStatus("404 Not Found");
 }
 
+
+void add_slash_to_directory(string & path) {
+	if(opendir(const_cast<char *>((path).c_str())) != NULL && path[path.length() - 1] != '/')
+		path.insert(path.length(), "/");
+}
+
 void display_page(int &new_socket, std::map<std::string, std::string> &request_header, Response &response, string &request_body, Server &server) {
-	string path = "." + request_header["path"];
 	DIR *dir;
-	if (checkError(path, response, server, request_header))
-		create_error_page(response, server);
-	else if (path.find(".py") != string::npos)
-		response.fillHeaderCGI(backend_page(request_header, request_body));
-	else if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(path.c_str()))) != NULL)
-		create_indexing_page(dir, request_header["path"], response);
-	else
-		openFile(path, response);
-	write(new_socket, const_cast<char *>(response.getResponse().c_str()), response.getResponse().length());
+	string pathModify = "." + request_header["path"];
+
+	add_slash_to_directory(pathModify);
+	if (endsWith(pathModify, ".py"))
+		response.responseCGI(backend_page(request_header, request_body), request_header);
+	else {
+		if (checkError(pathModify, response, server, request_header))
+			create_error_page(response, server);
+		else if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
+			create_indexing_page(dir, pathModify, response);
+		else
+			openFile(pathModify, response);
+		response.fillHeader(pathModify, request_header, false);
+	}
+	response.response_http(new_socket);
 	response.resetResponse();
 }

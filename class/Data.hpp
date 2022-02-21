@@ -59,6 +59,41 @@ public:
 		_isRunning = isRunning;
 	};
 
+	bool checkFdAlreadyAccepted(int fd) {
+		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+			if (*it == fd)
+				return true;
+		}
+		return false;
+	}
+
+	void pushSocketFdAccepted(int fd) {
+		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+			if (*it == fd) {
+				cerr << "FD already accepted" << endl;
+				return ;
+			}
+		}
+		socket_fd.push_back(fd);
+	}
+
+	const vector<int> &getSocketFdAccepted() const {
+		return socket_fd;
+	}
+
+	void setSocketFdAccepted(const vector<int> &socket_fd) {
+		this->socket_fd = socket_fd;
+	}
+
+	void eraseSocketFd(int fd) {
+		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+			if (*it == fd) {
+				socket_fd.erase(it);
+				return ;
+			}
+		}
+	}
+
 private:
 	bool alreadyExistSN(vector<string> sn1, vector<string> sn2) {
 		for (unsigned long i = 0; i < sn1.size(); i++)
@@ -68,10 +103,10 @@ private:
 		return (false);
 	}
 
+	vector<int>	socket_fd;
 	vector<Server> _servers;
 	int _workers;
 	bool _isRunning;
-
 };
 
 #endif
