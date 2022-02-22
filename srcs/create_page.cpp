@@ -30,6 +30,7 @@ void create_indexing_page(DIR *dir, std::string &path, Response &response){
 
 void create_error_page(Response &response, Server &server) {
 	string path = "./pages/";
+
 	map<string, string> pages = server.getDefaultPages();
 	for (map<string, string>::iterator mit = pages.begin(); mit != pages.end(); mit++){
 		if (response.getStatus().find(mit->first) != string::npos) {
@@ -38,8 +39,7 @@ void create_error_page(Response &response, Server &server) {
 		}
 	}
 	string status = response.getStatus();
-	openFile(path + (response.getStatus().substr(0, 3) + ".html"), response);
-	if (response.getStatus() == "404 Not Found\n") {
+	if (!openFile(path + (response.getStatus().substr(0, 3) + ".html"), response)) {
 		std::ostringstream mypage;
 		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << status
 			   << "</title>\n</head>\n" << std::endl;

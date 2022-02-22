@@ -50,7 +50,8 @@ string Response::getResponse() {
 
 ///SETTERS
 void Response::setStatus(const string& stat) {
-	status = stat + "\n";
+	if (status == "200 OK\n")
+		status = stat + "\n";
 }
 
 void Response::setMapType() {
@@ -90,11 +91,14 @@ void Response::setContentType(string &path){
 }
 
 
-void Response::responseCGI(const string& cgi_content, map<string, string> & request_header) {
+void Response::responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server) {
+	std::cout << "CGI CONTENT : " << endl;
+	std::cout << cgi_content << endl;
 	size_t pos_spliter = cgi_content.find("\n\n");
 	if (pos_spliter == string::npos) {
-		fillHeader(request_header["path"], request_header, true);
-		body = cgi_content;
+		status = "502 Bad Gateway\n";
+		create_error_page(*this, server);
+		fillHeader(request_header["path"], request_header, false);
 	}
 	else {
 		body = cgi_content.substr(pos_spliter + 2, cgi_content.length() - pos_spliter);
@@ -103,12 +107,12 @@ void Response::responseCGI(const string& cgi_content, map<string, string> & requ
 	}
 }
 
-void Response::fillHeader(string &path, map<string, string> & request_header, bool is_cgi){
+void Response::fillHeader(string &path, map<string, string> & request_header, bool set_content_type){
 	header = "HTTP/1.1 " + status;
 	header += "Content-Length: " + std::to_string(body.length()) + '\n';
 	if (request_header["Connection"] == "keep-alive")
 		header += "Connection: keep-alive\n";
-	if (!is_cgi)
+	if (!set_content_type)
 		setContentType(path);
 }
 

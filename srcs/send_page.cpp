@@ -22,7 +22,7 @@ int 	checkError(std::string &path, Response &response, Server &server, std::map<
 	return (1);
 }
 
-void openFile(std::string path, Response &response){
+bool openFile(std::string path, Response &response){
     std::ifstream ifs(path);
     std::string page;
     if (ifs) {
@@ -30,9 +30,11 @@ void openFile(std::string path, Response &response){
         oss << ifs.rdbuf();
         std::string file = oss.str();
 		response.fillBody(file);
-    }
-	else
+    } else {
 		response.setStatus("404 Not Found");
+		return (false);
+	}
+	return (true);
 }
 
 void add_slash_to_directory(string & path) {
@@ -50,7 +52,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		response.fillHeader(pathModify, request_header, false);
 	}
 	else if (endsWith(pathModify, ".py") || (endsWith(pathModify, ".php")))
-		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
+		response.responseCGI(backend_page(request_header, request_body, location, server), request_header, server);
 	else {
 		if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			create_indexing_page(dir, pathModify, response);

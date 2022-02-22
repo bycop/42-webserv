@@ -33,9 +33,9 @@ public:
 	void	setStatus(const string&);
 	void	response_http(int new_socket);
 	void	setContentType(string &path);
-    void	fillHeader(string &path, map<string, string> & request_header, bool is_cgi);
+    void	fillHeader(string &path, map<string, string> & request_header, bool set_content_type);
 	void	fillBody(string const& content);
-	void	responseCGI(const string& cgi_content, map<string, string> & request_header);
+	void	responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server);
 	string	findExtension(string &path);
 	void	resetResponse();
 
