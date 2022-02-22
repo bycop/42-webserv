@@ -12,6 +12,14 @@ void display_banner() {
 			 " ███ ███  ██   ██ ██   ██ ██   ████ ██ ██   ████  ██████              ███████ ███████ ██   ██   ████   ███████ ██   ██ \n";
 }
 
+
+bool IsPathExist(const std::string &s)
+{
+	struct stat buffer;
+	return (stat (s.c_str(), &buffer) == 0);
+}
+
+
 bool include_in_vector(vector<int> &server_socket, int event_fd) {
 	for (unsigned long i = 0; i < server_socket.size(); i++) {
 		if (event_fd == server_socket[i])

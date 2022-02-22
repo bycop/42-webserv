@@ -25,6 +25,8 @@
 #include "socket.hpp"
 #include "create_page.hpp"
 #include "send_page.hpp"
+#include <sys/stat.h>
+
 
 #define PORT 8080
 #define DEFAULT_UPLOAD_FOLDER "upload_file"
@@ -48,6 +50,7 @@ void display_banner();
 bool include_in_vector(vector<int> &server_socket, int event_fd);
 bool endsWith(const string &str, const string &suffix);
 string splitPartsByParts(string const& line, const char delimiter, size_t *start);
+bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 // KEVENT
 void createEvent(int kq, int fd);

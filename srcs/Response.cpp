@@ -66,19 +66,26 @@ void Response::setMapType() {
 }
 
 void Response::setContentType(string &path){
-	string extension = findExtension(path);
-	if (extension.empty()){
+	// IF WE HAVE AN ERROR
+	if (status != "200 OK\n"){
 		contentType = "text/html";
 	}
 	else {
-		map<string, string>::iterator it;
-		it = types.find(extension);
-		if (it != types.end()) {
-			contentType = it->second;
+		string extension = findExtension(path);
+		if (extension.empty()){
+			contentType = "text/html";
 		}
-		else
-			contentType = "text/plain";
+		else {
+			map<string, string>::iterator it;
+			it = types.find(extension);
+			if (it != types.end()) {
+				contentType = it->second;
+			}
+			else
+				contentType = "text/plain";
+		}
 	}
+
 	header += "Content-Type: " + contentType + '\n';
 }
 
