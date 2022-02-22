@@ -41,103 +41,73 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	request["version"].erase(request["version"].length() - 1, 2);
 }
 
-// MY READER YEAAAAH
-string readHeader(int fd) {
+// Quentin READER YEAAAAH lol
+string readRequest(int fd, Response &response) {
 	string str_buffer;
-	string line;
+	time_t start = time(0);
 	char buffer[2];
-	int i = 0;
-	while (str_buffer.find("\n\r\n") == std::string::npos) {
-		read(fd, buffer, 1);
-		str_buffer += buffer[0];
-		cout << buffer[0];
-		if (i == 1000) {
-			cout << "I STOP" << endl;
-			return (str_buffer);
+	fcntl(fd, F_SETFL, O_NONBLOCK);
+	while (read(fd, buffer, 1) > 0){
+		if (checkTimeOut(start, 5)) {
+			response.setStatus("408 Request Timeout");
+			break;
 		}
-		i++;
-
+		str_buffer += buffer[0];
 	}
-	cout << endl;
 	return (str_buffer);
 }
 
-string readBody(int fd, int length) {
-	string body;
-	char buffer[2];
-	for (int i = 0; i < length; ++i) {
-		read(fd, buffer, 1);
-		body += buffer[0];
-	}
-	return (body);
-}
+string read_body_chunk(string &request_body_chunked) {
+	int posChunk, num, start = 0;
+	string request_body;
+	stringstream numbers;
 
-string read_body_chunk(int fd) {
-	string body, len_buffer;
-	int len = -1;
-	char buffer[2];
-	bzero(buffer, 2);
-	while (len != 0) {
-		while (len_buffer.find("\r\n") > len_buffer.length()) {
-			read(fd, buffer, 1);
-			len_buffer += buffer[0];
-		}
-		len = atoi(len_buffer.c_str());
-		len_buffer.clear();
-		if (len < 0) {
-			cerr << "Negative chunk's len's" << endl;
-			return (body);
-		}
-		for (int i = 0; i < len; i++) {
-			read(fd, buffer, 1);
-			body += buffer[0];
-		}
-		for (int i = 0; i < 2; ++i) // READ THE \r\n
-			read(fd, buffer, 1);
+	while(start < static_cast<int>(request_body_chunked.length())) {
+		// FIND THE NUMBERS TO READ
+		posChunk = request_body_chunked.find("\r\n", start);
+		string len = request_body_chunked.substr(start, posChunk);
+		// CONVERT TO DECIMAL
+		numbers << hex << len;
+		numbers >> num;
+		// READ JUST THE CHUNKED ELEMENTS
+		request_body += request_body_chunked.substr(posChunk + 2, num);
+		start += posChunk + 2 + num + 2;
 	}
-	return (body);
+	return (request_body);
 }
-
 
 // THE MAIN FCT OF THE PARSING
-map<string, string> parsing_request_header(int fd, Response &response) {
+map<string, string> parsing_request_header(Response &response, string &read_request) {
 	map<string, string> request_header;
-	std::istringstream is(readHeader(fd));
-	std::string line, body;
+	std::istringstream is(read_request);
+	std::string line;
 	size_t pos_del;
 
 	parse_first_line_request(is, request_header);
 
 	// PARSING HEADER
-	while(std::getline(is, line)) {
+	while(std::getline(is, line) && line != "\r\n\r\n") {
 		pos_del = line.find(':');
 		if (pos_del == string::npos && line.length() < 1) {
 			response.setStatus("400 Bad Request");
-			return (request_header);
+			break;
 		}
 //		cout << line << endl; // TODO: TEST
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
+	read_request.erase(0, read_request.find("\r\n\r\n") + 2);
 	return (request_header);
 }
 
-string parsing_request_body(int fd, map<string, string> const& request_header, Response &response) {
-	string request_body;
 
+void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
 	if (request_header.find("method")->second == "POST") {
 		if (request_header.find("Transfer-Encoding") != request_header.end() &&
 			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
-			request_body = read_body_chunk(fd);
+			read_request = read_body_chunk(read_request);
 		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
 			response.setStatus("411 Length Required");
-			return (request_body);
-		}
-		else {
-			int length = atoi(request_header.find("Content-Length")->second.c_str()); // WE CAN READ THE
-			request_body = readBody(fd, length);
 		}
 	}
-//	cout << "BODY : " << request_body << endl;
-	return (request_body);
 }

@@ -11,8 +11,9 @@ def upload_file(file):
         return '<p>The file ' + filename + ' was uploaded successfully</p>'
     else:
         return '<p>The file ' + filename + ' has a error</p>'
-form = cgi.FieldStorage()
 
+
+form = cgi.FieldStorage()
 if "file" not in form:
     content = "<p>Error upload file. Try again</p>"
 else:

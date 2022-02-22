@@ -25,6 +25,9 @@
 #include "socket.hpp"
 #include "create_page.hpp"
 #include "send_page.hpp"
+#include <ctime>
+#include <unistd.h>
+#define TIMEOUT 5
 #include <sys/stat.h>
 
 
@@ -34,8 +37,9 @@
 using namespace std;
 
 // PARSER_REQUEST.CPP
-map<string, string> parsing_request_header(int fd, Response &response);
-string parsing_request_body(int fd, map<string, string> const& request_header, Response &response);
+map<string, string> parsing_request_header(Response &response, string &read_request);
+void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request);
+string readRequest(int fd, Response &response);
 
 // BACKEND.CPP
 string backend_page(map<string, string> & request_header, string & request_body, Location &location, Server &server);
@@ -44,7 +48,10 @@ string backend_page(map<string, string> & request_header, string & request_body,
 int parser_conf(Data &data, string const& file_path);
 
 // ERROR
-void ft_error(const char *err);
+void 	ft_error(const char *err);
+int 	checkError(std::string &path, Response &response, Data &data, std::map<std::string, std::string> request_header);
+int		checkTimeOut(time_t start, int timeOut);
+
 // UTILS
 void display_banner();
 bool endsWith(const string &str, const string &suffix);
@@ -57,7 +64,7 @@ void init_kqueue(vector<int> &server_socket, int &kq);
 // PROCESS_REQUEST
 void create_connection(int event_fd, int kq, Data &data);
 void end_connexion(Data &data, int socket_fd);
-void process_request(int &fd, map<string, string> &request_header, string &request_body, Response &response, Data &data);
+void process_request(int &fd, Response &response, Data &data);
 
 
 template <typename T>

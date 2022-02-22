@@ -89,13 +89,16 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 	return (location);
 }
 
-void process_request(int &fd, map<string, string> &request_header, string &request_body, Response &response, Data &data) {
+void process_request(int &fd, Response &response, Data &data) {
 	cout << "------- Processing the request -------" << endl << endl;
-	request_header = parsing_request_header(fd, response);
-	request_body = parsing_request_body(fd, request_header, response);
+	map<string, string> request_header;
+	string read_request = readRequest(fd, response);
+
+	request_header = parsing_request_header(response, read_request);
+	parsing_request_body(request_header, response, read_request);
 	Server server = findServerForHost(request_header["Host"], data, response);
 	Location location = findLocationForServer(request_header["path"], server, response);
-	display_page(fd, request_header, response, request_body, server, location);
+	display_page(fd, request_header, response, read_request, server, location);
 	if (request_header["Connection"] == "close")
 		end_connexion(data, fd);
 }

@@ -50,7 +50,8 @@ string Response::getResponse() {
 
 ///SETTERS
 void Response::setStatus(const string& stat) {
-	status = stat + "\n";
+	if (status == "200 OK\n")
+		status = stat + "\n";
 }
 
 void Response::setMapType() {
@@ -66,26 +67,19 @@ void Response::setMapType() {
 }
 
 void Response::setContentType(string &path){
-	// IF WE HAVE AN ERROR
-	if (status != "200 OK\n"){
+	string extension = findExtension(path);
+	if (extension.empty() || status != "200 OK\n"){
 		contentType = "text/html";
 	}
 	else {
-		string extension = findExtension(path);
-		if (extension.empty()){
-			contentType = "text/html";
+		map<string, string>::iterator it;
+		it = types.find(extension);
+		if (it != types.end()) {
+			contentType = it->second;
 		}
-		else {
-			map<string, string>::iterator it;
-			it = types.find(extension);
-			if (it != types.end()) {
-				contentType = it->second;
-			}
-			else
-				contentType = "text/plain";
-		}
+		else
+			contentType = "text/plain";
 	}
-
 	header += "Content-Type: " + contentType + '\n';
 }
 

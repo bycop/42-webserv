@@ -38,7 +38,6 @@ public:
 	void	responseCGI(const string& cgi_content, map<string, string> & request_header);
 	string	findExtension(string &path);
 	void	resetResponse();
-
 };
 
 #endif //WEBSERV_HEADERRESPOc NSE_H
