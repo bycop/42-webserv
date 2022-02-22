@@ -4,8 +4,7 @@
 
 #include "webserv.hpp"
 
-
-	Server findServerForHost(string &header_host, Data &data, Response &response) {
+Server findServerForHost(string &header_host, Data &data, Response &response) {
 
 		if (header_host.find(':') != string::npos) { // IF WE HAVE HOST:PORT
 			int port;
@@ -34,7 +33,7 @@
 		// IF WE HAVE A ERROR
 		response.setStatus("418 I'm a teapot");
 		return (Server());
-	}
+}
 
 	Location findLocationForServer(string& header_path, Server &server, Response &response) {
 		string file[3]; // [0] = directory; [1] = filename; [2] = extension
@@ -79,15 +78,23 @@
 		if (location.isEmpty())
 			response.setStatus("418 I'm a teapot");
 		return (location);
-	}
+}
 
-void process_request(int &fd, map<string, string> &request_header, string &request_body, Response &response, Data &data) {
+void process_request(int &fd, Response &response, Data &data) {
 	cout << "------- Processing the request -------" << endl << endl;
-	request_header = parsing_request_header(fd, response);
-	request_body = parsing_request_body(fd, request_header, response);
+	map<string, string> request_header;
+	string read_request = readRequest(fd, response);
+
+
+	std::cout << read_request << endl;
+	request_header = parsing_request_header(response, read_request);
+	parsing_request_body(request_header, response, read_request);
+	std::cout << "LENGTH" << endl;
+	std::cout << read_request.length() << endl;
+//	std::cout << "BODY : " << "|" << read_request << "|" << endl;
 	Server server = findServerForHost(request_header["Host"], data, response);
-//	Location location = findLocationForServer(request_header["path"], server, response);
-	display_page(fd, request_header, response, request_body, server);
+	Location location = findLocationForServer(request_header["path"], server, response);
+	display_page(fd, request_header, response, read_request, server);
 	if (request_header["Connection"] == "close")
 		end_connexion(data, fd);
 }

@@ -34,7 +34,6 @@ void openFile(std::string path, Response &response){
 		response.setStatus("404 Not Found");
 }
 
-
 void add_slash_to_directory(string & path) {
 	if(opendir(const_cast<char *>((path).c_str())) != NULL && path[path.length() - 1] != '/')
 		path.insert(path.length(), "/");

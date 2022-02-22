@@ -4,12 +4,6 @@
 
 #include "webserv.hpp"
 
-
-void ft_error(const char *err) {
-	perror(err);
-	exit(EXIT_FAILURE);
-}
-
 bool already_open(vector<int> &ports, int port) {
 	for (vector<int>::iterator it = ports.begin(); it != ports.end(); it++)
 		if (*it == port)
@@ -47,9 +41,6 @@ void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 }
 
 void receiving_information(vector<int> &server_socket, Response &response, Data &data) {
-	map<string, string> request_header;
-	pair<map<string, string>, string> request;
-	string request_body;
 	int kq, new_events;
 	struct kevent event_list[server_socket.size()];
 
@@ -69,8 +60,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 				end_connexion(data, event_fd);
 			// CONNEXION ALREADY ACCEPTED
 			else if (data.checkFdAlreadyAccepted(event_fd))
-				process_request(event_fd, request_header, request_body, response, data);
-//			checkTimeOutParsing(request, event_fd, response);
+				process_request(event_fd, response, data);
 			// ACCEPT THE SOCKET, CREATE A EVENT TO THIS SOCKET, AND ADD TO OUR SOCKET VECTOR
 			else if (include_in_vector(server_socket, event_fd))
 				create_connection(event_fd, kq, data);

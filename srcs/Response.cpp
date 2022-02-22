@@ -50,7 +50,8 @@ string Response::getResponse() {
 
 ///SETTERS
 void Response::setStatus(const string& stat) {
-	status = stat + "\n";
+	if (status == "200 OK\n")
+		status = stat + "\n";
 }
 
 void Response::setMapType() {
@@ -67,7 +68,7 @@ void Response::setMapType() {
 
 void Response::setContentType(string &path){
 	string extension = findExtension(path);
-	if (extension.empty()){
+	if (extension.empty() || status != "200 OK\n"){
 		contentType = "text/html";
 	}
 	else {
