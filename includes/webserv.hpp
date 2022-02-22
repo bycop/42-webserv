@@ -47,7 +47,6 @@ int parser_conf(Data &data, string const& file_path);
 void ft_error(const char *err);
 // UTILS
 void display_banner();
-bool include_in_vector(vector<int> &server_socket, int event_fd);
 bool endsWith(const string &str, const string &suffix);
 string splitPartsByParts(string const& line, const char delimiter, size_t *start);
 bool IsPathExist(const std::string &s);
@@ -59,5 +58,16 @@ void init_kqueue(vector<int> &server_socket, int &kq);
 void create_connection(int event_fd, int kq, Data &data);
 void end_connexion(Data &data, int socket_fd);
 void process_request(int &fd, map<string, string> &request_header, string &request_body, Response &response, Data &data);
+
+
+template <typename T>
+bool contains(vector<T> &vec, const T& elem )
+{
+	for (typename vector<T>::iterator it = vec.begin(); it != vec.end(); it++) {
+		if (*it == elem)
+			return (true);
+	}
+	return (false);
+};
 
 #endif //WEBSERV_WEBSERV_HPP
