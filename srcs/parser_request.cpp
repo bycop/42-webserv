@@ -48,7 +48,7 @@ string readRequest(int fd, Response &response) {
 	char buffer[2];
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (read(fd, buffer, 1) > 0){
-		if (checkTimeOut(start, 5)) {
+		if (checkTimeOut(start, TIMEOUT)) {
 			response.setStatus("408 Request Timeout");
 			break;
 		}
@@ -99,7 +99,6 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	read_request.erase(0, read_request.find("\r\n\r\n") + 2);
 	return (request_header);
 }
-
 
 void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
 	if (request_header.find("method")->second == "POST") {

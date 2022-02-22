@@ -4,9 +4,9 @@
 
 #include "webserv.hpp"
 
-int 	checkError(std::string &path, Response &response, Server &server, std::map<std::string, std::string> request_header, Location &location){
+int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location){
 	std::ifstream ifs(path);
-	(void)server;
+	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)
@@ -22,7 +22,7 @@ int 	checkError(std::string &path, Response &response, Server &server, std::map<
 	return (1);
 }
 
-void openFile(std::string path, Response &response){
+bool openFile(std::string path, Response &response){
     std::ifstream ifs(path);
     std::string page;
     if (ifs) {
@@ -31,8 +31,11 @@ void openFile(std::string path, Response &response){
         std::string file = oss.str();
 		response.fillBody(file);
     }
-	else
+	else {
 		response.setStatus("404 Not Found");
+		return (false);
+	}
+	return (true);
 }
 
 void add_slash_to_directory(string & path) {
@@ -45,7 +48,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	string pathModify = "." + request_header["path"];
 
 	add_slash_to_directory(pathModify);
-	if (checkError(pathModify, response, server, request_header, location)) {
+	if (checkError(pathModify, response, request_header, location)) {
 		create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);
 	}

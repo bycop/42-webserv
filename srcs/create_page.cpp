@@ -38,8 +38,7 @@ void create_error_page(Response &response, Server &server) {
 		}
 	}
 	string status = response.getStatus();
-	openFile(path + (response.getStatus().substr(0, 3) + ".html"), response);
-	if (response.getStatus() == "404 Not Found\n") {
+	if (!openFile(path + (response.getStatus().substr(0, 3) + ".html"), response)) {
 		std::ostringstream mypage;
 		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << status
 			   << "</title>\n</head>\n" << std::endl;

@@ -93,12 +93,27 @@ void process_request(int &fd, Response &response, Data &data) {
 	cout << "------- Processing the request -------" << endl << endl;
 	map<string, string> request_header;
 	string read_request = readRequest(fd, response);
-
-	request_header = parsing_request_header(response, read_request);
-	parsing_request_body(request_header, response, read_request);
-	Server server = findServerForHost(request_header["Host"], data, response);
-	Location location = findLocationForServer(request_header["path"], server, response);
+	Server server;
+	Location location;
+	cout << "1" << endl;
+//	cout << "- Request: " << endl;
+//	for (map<string, string>::iterator it = request_header.begin(); it != request_header.end(); ++it) {
+//		cout << it->first << ": " << it->second << endl;
+//	}
+	if (response.getStatus() == "200 OK\n") {
+		cout << "2" << endl;
+//		cout << "read_request: " << read_request << endl;
+		request_header = parsing_request_header(response, read_request);
+		cout << "3" << endl;
+		parsing_request_body(request_header, response, read_request);
+		cout << "KEEEEEP CAAAAALM" << endl;
+		server = findServerForHost(request_header["Host"], data, response);
+		cout << "4" << endl;
+		location = findLocationForServer(request_header["path"], server, response);
+	}
+	cout << "5" << endl;
 	display_page(fd, request_header, response, read_request, server, location);
+	cout << "6" << endl;
 	if (request_header["Connection"] == "close")
 		end_connexion(data, fd);
 }
