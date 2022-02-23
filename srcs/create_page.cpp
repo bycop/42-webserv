@@ -8,19 +8,20 @@ void create_indexing_page(DIR *dir, std::string &path, Response &response){
 	std::ostringstream mypage;
 	string pathTmp = path;
 
-	pathTmp.erase(0, 1);
-	cout << "Je suis dans indexing page" << endl;
+	if (pathTmp[0] == '.')
+		pathTmp.erase(0, 1);
 	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Index of " << pathTmp << "</title>\n</head>\n" << std::endl;
 	mypage << "<body><h1>Index of " << pathTmp << "\n</h1><hr/><br>";
 	struct dirent *ent;
+	//Ne pas afficher le "."
+	ent = readdir(dir);
 
 	while ((ent = readdir(dir)) != NULL) {
 		std::string name = ent->d_name;
-		if (opendir(const_cast<char *>((path + name).c_str())) != NULL && name != ".." && name != ".") {
-			mypage << "<a href=\"" << path << name << "\">" << ent->d_name << "/" << "</a><br>";
-		}
+		if (opendir(const_cast<char *>((path + name).c_str())) != NULL && name != "..")
+			mypage << "<a href=\"" << pathTmp << name << "\">" << ent->d_name << "/" << "</a><br>";
 		else
-			mypage << "<a href=\"" << path << name << "\">" << ent->d_name << "</a><br>";
+			mypage << "<a href=\"" << pathTmp << name << "\">" << ent->d_name << "</a><br>";
 	}
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";

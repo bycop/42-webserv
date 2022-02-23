@@ -31,21 +31,21 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	size_t start = 0;
 	std::pair<string, string> path_info_translated;
 	getline(is, first_line);
-//	cout << first_line << endl; // TODO: TEST
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
-	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
-	request.insert(make_pair("path_translated", request["path"]));
+//	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
+//	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
 	request["version"].erase(request["version"].length() - 1, 2);
 }
 
 // Quentin READER YEAAAAH lol
-string readRequest(int fd, Response &response) {
+string readRequest(int fd, Response &response, Data &data) {
 	string str_buffer;
 	time_t start = time(0);
 	char buffer[2];
+	(void)data;
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (read(fd, buffer, 1) > 0){
 		if (checkTimeOut(start, TIMEOUT)) {
@@ -84,7 +84,6 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	size_t pos_del;
 
 	parse_first_line_request(is, request_header);
-
 	// PARSING HEADER
 	while(std::getline(is, line) && line != "\r\n\r\n") {
 		pos_del = line.find(':');
