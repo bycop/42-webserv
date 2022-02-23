@@ -255,7 +255,7 @@ int parser_conf(Data &data, string const &file_path) {
 			}
 		if (!find && line.find("server{", 0) == 0)
 			server_loop(file, data);
-		else if (!find && line != "")
+		else if (!find && !line.empty())
 			display_error("main", original);
 	}
 	if (error || !data.mandatory()) {
