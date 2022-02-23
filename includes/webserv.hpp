@@ -39,7 +39,7 @@ using namespace std;
 // PARSER_REQUEST.CPP
 map<string, string> parsing_request_header(Response &response, string &read_request);
 void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request);
-string readRequest(int fd, Response &response);
+string readRequest(int fd, Response &response, Data &data);
 
 // BACKEND.CPP
 string backend_page(map<string, string> & request_header, string & request_body, Location &location, Server &server);

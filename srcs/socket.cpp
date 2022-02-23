@@ -53,7 +53,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 			ft_error("kevent");
 		for (int i = 0; i < new_events; i++) {
 			int event_fd = static_cast<int>(event_list[i].ident);
-			std::cout << "SOCKET FD : " << event_fd << endl;
+			std::cout << "EVENT FD : " << event_fd << endl;
 
 			// CONNEXION END
 			if (event_list[i].flags & EV_EOF || event_list[i].flags & EV_ERROR)
