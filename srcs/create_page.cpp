@@ -8,7 +8,7 @@ void create_indexing_page(DIR *dir, std::string &path, Response &response){
 	std::ostringstream mypage;
 	string pathTmp = path;
 
-c	if (pathTmp[0] == '.')
+	if (pathTmp[0] == '.')
 		pathTmp.erase(0, 1);
 	mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Index of " << pathTmp << "</title>\n</head>\n" << std::endl;
 	mypage << "<body><h1>Index of " << pathTmp << "\n</h1><hr/><br>";

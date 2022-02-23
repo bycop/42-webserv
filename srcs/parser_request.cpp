@@ -59,8 +59,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	getline(is, first_line);
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
-	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
-	request.insert(make_pair("path_translated", request["path"]));
+//	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
+//	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
 	request["version"].erase(request["version"].length() - 1, 2);
@@ -68,17 +68,15 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 }
 
 // Quentin READER YEAAAAH lol
-string readRequest(int fd, Response &response, Data &data) {
+string readRequest(int fd, Response &response) {
 	string str_buffer;
 	time_t start = time(0);
 	char buffer[2];
-	(void)data;
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (read(fd, buffer, 1) > 0){
 		if (checkTimeOut(start, TIMEOUT)) {
 			response.setStatus("408 Request Timeout");
-			str_buffer = string();
-			break;
+			return (string());
 		}
 		str_buffer += buffer[0];
 	}

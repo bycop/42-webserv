@@ -46,13 +46,20 @@ void setenv_cgi(map<string, string> & request_header, Server &server) {
 	setenv("HTTP_REFERER",request_header["Referer"].c_str(), 1);
 //	print_env();
 }
-
 void launch_backend_file(map<string, string> &request_header, Location &location) {
 	std::string filename = request_header["path"];
+	string command;
+	string directory = location.getUploadStore();
+	std::string py_command;
+
 	filename.erase(0, 1);
-	std::string py_command = "python " + string(getenv("DOCUMENT_ROOT")) + filename;
-	// TODO: MKDIR
-	std::string command = "cd " + location.getUploadStore() + " && " + py_command;
+	py_command = "python " + string(getenv("DOCUMENT_ROOT")) + filename;
+	DIR* dir = opendir(directory.c_str());
+	if (!dir) {
+		command = "mkdir " + directory;
+		system(command.c_str());
+	}
+	command = "cd " + directory + " && " + py_command;
 	system(command.c_str());
 }
 
