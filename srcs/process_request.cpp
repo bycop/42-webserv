@@ -59,7 +59,7 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 //	cout << "Filename: " << file[1] << endl;
 //	cout << "Extension: " << file[2] << endl;
 	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
-		if (it->getPath() == "/" || file[0] == it->getPath()) {
+		if (it->getPath() == "/" || file[0] == it->getPath() || file[0] + "/" == it->getPath()) {
 			location = *it;
 			if (it->getPath() != "/")
 				break;
@@ -81,7 +81,7 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 	else {
 		if (location.getUploadStore().empty())
 			location.setUploadStore(DEFAULT_UPLOAD_FOLDER);
-		else if (location.getAllowMethods().empty()) {
+		if (location.getAllowMethods().empty()) {
 			location.getAllowMethods().push_back("GET");
 			location.getAllowMethods().push_back("POST");
 		}

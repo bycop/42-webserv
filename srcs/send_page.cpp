@@ -4,7 +4,21 @@
 
 #include "webserv.hpp"
 
+bool checkRights(std::string &path, Response &response) {
+	struct stat results;
+
+	stat(path.c_str(), &results);
+	if (!(results.st_mode & S_IRUSR) && !(results.st_mode & S_IRGRP) && !(results.st_mode & S_IROTH)) {
+		response.setStatus("403 Forbidden");
+		return (false);
+	}
+	return (true);
+}
+
 int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location){
+	if (!checkRights(path, response))
+		return (1);
+
 	std::ifstream ifs(path);
 	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
@@ -23,9 +37,13 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 }
 
 bool openFile(std::string path, Response &response){
-    std::ifstream ifs(path);
+
+	if (!checkRights(path, response))
+		return (false);
+
+	std::ifstream ifs(path);
     std::string page;
-    if (ifs) {
+	if (ifs) {
         std::ostringstream oss;
         oss << ifs.rdbuf();
         std::string file = oss.str();
@@ -38,14 +56,14 @@ bool openFile(std::string path, Response &response){
 	return (true);
 }
 
-void add_slash_to_directory(string & path) {
-	if(opendir(const_cast<char *>((path).c_str())) != NULL && path[path.length() - 1] != '/')
+void add_slash_to_directory(string &path) {
+	if (opendir(const_cast<char *>((path).c_str())) != NULL && path[path.length() - 1] != '/')
 		path.insert(path.length(), "/");
 }
 
 void display_page(int &new_socket, std::map<std::string, std::string> &request_header, Response &response, string &request_body, Server &server, Location &location) {
 	DIR *dir;
-	string pathModify = "." + request_header["path"];
+	string pathModify = (!location.getRoot().empty() ? location.getRoot() : ".") + request_header["path"];
 
 	add_slash_to_directory(pathModify);
 	if (checkError(pathModify, response, request_header, location)) {
@@ -57,8 +75,28 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	else {
 		if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			create_indexing_page(dir, pathModify, response);
-		else
-			openFile(pathModify, response);
+		else if (server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL) {
+			struct dirent *ent;
+			while ((ent = readdir(dir)) != NULL) {
+				string name = ent->d_name;
+				if (contains(location.getIndex(), name)) {
+					pathModify += (endsWith(pathModify, "/") ? "" : "/") + name;
+					if (!openFile(pathModify, response))
+						create_error_page(response, server);
+					break;
+				}
+			}
+
+			if (ent == NULL) {
+				response.setStatus("404 Not Found");
+				create_error_page(response, server);
+			}
+			closedir(dir);
+		}
+		else {
+			if (!openFile(pathModify, response))
+				create_error_page(response, server);
+			}
 		response.fillHeader(pathModify, request_header, false);
 	}
 	response.response_http(new_socket);

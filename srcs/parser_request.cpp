@@ -25,7 +25,6 @@ string get_path_info_and_del_to_path(string &path) {
 	return(path_info);
 }
 
-
 char from_hex(char ch) {
 	return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
 }
