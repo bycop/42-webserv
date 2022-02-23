@@ -129,7 +129,7 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 bool location_setters(string const &newdata, const int type, Location &location) {
 	switch (type) {
 		case 0:
-			if (!checkTypes(STRING_A, newdata, "."))
+			if (!checkTypes(STRING_A, newdata, "_-."))
 				return (true);
 			location.setIndex(split_string(newdata));
 			break;
