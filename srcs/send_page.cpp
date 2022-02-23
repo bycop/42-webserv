@@ -70,6 +70,16 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);
 	}
+	else if (request_header["method"] == "DELETE") {
+		if (checkRights(pathModify, response) && (opendir(const_cast<char *>(pathModify.c_str()))) == NULL) {
+			std::remove(pathModify.c_str());
+			response.setStatus("200 OK");
+			response.fillBody("<html><body><h1>File deleted.</h1></body></html>");
+			response.fillHeader(pathModify, request_header, false);
+		}
+		else
+			create_error_page(response, server);
+	}
 	else if (endsWith(pathModify, ".py") || (endsWith(pathModify, ".php")))
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
 	else {
