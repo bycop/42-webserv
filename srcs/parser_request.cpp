@@ -25,6 +25,33 @@ string get_path_info_and_del_to_path(string &path) {
 	return(path_info);
 }
 
+
+char from_hex(char ch) {
+	return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
+}
+
+string url_decode(string &text) {
+	char h;
+	ostringstream escaped;
+	escaped.fill('0');
+
+	for (string::iterator i = text.begin(); i != text.end(); ++i) {
+		string::value_type c = (*i);
+		if (c == '%') {
+			if (i[1] && i[2]) {
+				h = from_hex(i[1]) << 4 | from_hex(i[2]);
+				escaped << h;
+				i += 2;
+			}
+		} else if (c == '+')
+			escaped << ' ';
+		else
+			escaped << c;
+	}
+
+	return escaped.str();
+}
+
 // FIRST_LINE
 void parse_first_line_request(std::istringstream &is, map<string, string> &request) {
 	string part, first_line;
@@ -39,6 +66,7 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
 	request["version"].erase(request["version"].length() - 1, 2);
+	request["path"] = url_decode(request["path"]);
 }
 
 // Quentin READER YEAAAAH lol
