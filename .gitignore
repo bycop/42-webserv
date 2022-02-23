@@ -1,3 +1,5 @@
 .idea/
 bin/
 */__pycache__/
+*.out
+*.pyc
