@@ -95,18 +95,15 @@ void process_request(int &fd, Response &response, Data &data) {
 	string read_request = readRequest(fd, response);
 	Server server;
 	Location location;
+
 	if (response.getStatus() == "200 OK\n") {
 		request_header = parsing_request_header(response, read_request);
 		parsing_request_body(request_header, response, read_request);
 		server = findServerForHost(request_header["Host"], data, response);
 		location = findLocationForServer(request_header["path"], server, response);
 	}
-	bool is_error = response.getStatus() == "200 OK\n";
-	bool timeout = response.getStatus() == "408 Request Timeout\n";
 	display_page(fd, request_header, response, read_request, server, location);
-	if (timeout)
-		exit(0);
-	if (request_header["Connection"] == "close" || is_error)
+	if (request_header["Connection"] == "close")
 		end_connexion(data, fd);
 }
 

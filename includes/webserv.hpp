@@ -27,7 +27,7 @@
 #include "send_page.hpp"
 #include <ctime>
 #include <unistd.h>
-#define TIMEOUT 5
+#define TIMEOUT 1
 #include <sys/stat.h>
 
 
