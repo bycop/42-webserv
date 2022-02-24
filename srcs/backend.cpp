@@ -49,7 +49,7 @@ void setenv_cgi(map<string, string> & request_header, Server &server) {
 void launch_backend_file(map<string, string> &request_header, Location &location) {
 	std::string filename = request_header["path"];
 	string command;
-	string directory = location.getUploadStore();
+	const string  &directory = location.getUploadStore();
 	std::string py_command;
 
 	filename.erase(0, 1);

@@ -36,7 +36,7 @@ public:
     void	fillHeader(string &path, map<string, string> & request_header, bool is_cgi);
 	void	fillBody(string const& content);
 	void	responseCGI(const string& cgi_content, map<string, string> & request_header);
-	string	findExtension(string &path);
+	static string	findExtension(string &path);
 	void	resetResponse();
 };
 

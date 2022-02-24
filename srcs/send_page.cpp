@@ -5,7 +5,7 @@
 #include "webserv.hpp"
 
 bool checkRights(std::string &path, Response &response) {
-	struct stat results;
+	struct stat results = {};
 
 	stat(path.c_str(), &results);
 	if (!(results.st_mode & S_IRUSR) && !(results.st_mode & S_IRGRP) && !(results.st_mode & S_IROTH)) {

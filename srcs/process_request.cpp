@@ -118,12 +118,12 @@ void create_connection(int event_fd, int kq, Data &data) {
 		ft_error("Accept socket error");
 	createEvent(kq, socket_fd);
 	data.pushSocketFdAccepted(socket_fd);
-	cout << "✅" << " Socket connection accepted (event_fd: " << event_fd << ", socket_fd : " << socket_fd << ")"
+	cout << "✅" << " Socket connection accepted (event_fd: " << event_fd << ", _socket_fd : " << socket_fd << ")"
 		 << endl;
 }
 
 void end_connexion(Data &data, int socket_fd) {
-	cout << "Connexion end with socket_fd : " << socket_fd << endl;
+	cout << "Connexion end with _socket_fd : " << socket_fd << endl;
 	data.eraseSocketFd(socket_fd);
 	close(socket_fd);
 }

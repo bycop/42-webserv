@@ -8,18 +8,19 @@
 #define _countof(a) (sizeof(a) / sizeof(*(a)))
 
 bool error = false;
+int line_readed = 0;
 
 void display_error(string const &type, string const &key, int typeerror = 0) {
 	if (typeerror)
 		cerr << "\e[91m[ERROR]\e[0m Invalid type for " << type << " key at '"
-			 << key << "'" << endl;
+			 << key << "'" << " [Line " << line_readed << "]" << endl;
 	else
 		cerr << "\e[91m[ERROR]\e[0m Unrecognized " << type << " key at '"
-			 << key << "'" << endl;
+			 << key << "'" << " [Line " << line_readed << "]" << endl;
 	error = true;
 }
 
-bool checkTypes(int type, string line, string allowed_chars = "") {
+bool checkTypes(int type, string line, const string &allowed_chars = "") {
 	switch (type) {
 		case INT:
 			for (unsigned long i = 0; i < line.length(); i++)
@@ -46,6 +47,8 @@ bool checkTypes(int type, string line, string allowed_chars = "") {
 				if (allowed_chars.find(line[i]) == std::string::npos)
 					return (false);
 			break;
+		default:
+			break;
 	}
 	return (true);
 }
@@ -61,7 +64,7 @@ vector<string> split_string(string const &line) {
 	return (strings);
 }
 
-bool main_setters(string const &newdata, const int type, Data &data) {
+bool main_setters(string const &newdata, unsigned long type, Data &data) {
 	switch (type) {
 		case 0:
 			if (!checkTypes(INT, newdata))
@@ -72,7 +75,7 @@ bool main_setters(string const &newdata, const int type, Data &data) {
 	return (false);
 }
 
-bool server_setters(string const &newdata, const int type, Server &server) {
+bool server_setters(string const &newdata, unsigned long type, Server &server) {
 	switch (type) {
 		case 0:
 			if (!checkTypes(STRING, newdata, "."))
@@ -122,11 +125,13 @@ bool server_setters(string const &newdata, const int type, Server &server) {
 			else
 				return (true);
 			break;
+		default:
+			break;
 	}
 	return (false);
 }
 
-bool location_setters(string const &newdata, const int type, Location &location) {
+bool location_setters(string const &newdata, unsigned long type, Location &location) {
 	switch (type) {
 		case 0:
 			if (!checkTypes(STRING_A, newdata, "_-."))
@@ -153,6 +158,8 @@ bool location_setters(string const &newdata, const int type, Location &location)
 				return (true);
 			location.setUploadStore(newdata);
 			break;
+		default:
+			break;
 	}
 	return (false);
 }
@@ -163,10 +170,10 @@ string location_path(string const &line) {
 	size_t space = 0;
 	for (unsigned long i = 0; i < line.length() && isspace(line[i]); i++)
 		space++;
-	if (line.find("location", space) == string::npos || line.find("{", space) == string::npos)
+	if (line.find("location", space) == string::npos || line.find('{', space) == string::npos)
 		return (path);
 	path = &line[9 + space];
-	path = path.erase(path.find("{"), path.length());
+	path = path.erase(path.find('{'), path.length());
 	path.erase(std::remove_if(path.begin(), path.end(), ::isspace), path.end());
 	return (path);
 }
@@ -178,7 +185,7 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 	bool find;
 
 	location.setPath(path);
-	while (std::getline(file, line)) {
+	while (std::getline(file, line) && ++line_readed) {
 		string original = line;
 
 		find = false;
@@ -192,9 +199,9 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 					display_error("location", original, 1);
 				find = true;
 			}
-		if (line.find("}", 0) == 0)
+		if (line.find('}', 0) == 0)
 			break;
-		else if (!find && line != "")
+		else if (!find && !line.empty())
 			display_error("location", original);
 	}
 	server.getLocations().push_back(location);
@@ -206,7 +213,7 @@ void server_loop(std::ifstream &file, Data &data) {
 	string servervars[7] = {"host", "port", "server_name", "default",
 							"client_max_body_size", "redirect", "autoindex"};
 	bool find;
-	while (std::getline(file, line)) {
+	while (std::getline(file, line) && ++line_readed) {
 		string original = line;
 
 		find = false;
@@ -220,10 +227,10 @@ void server_loop(std::ifstream &file, Data &data) {
 					display_error("server", original, 1);
 				find = true;
 			}
-		if (line.find("}", 0) == 0) break;
+		if (line.find('}', 0) == 0) break;
 		if (!find && line.find("location", 0) == 0 && !location_path(original).empty())
 			location_loop(file, server, location_path(original));
-		else if (!find && line != "")
+		else if (!find && !line.empty())
 			display_error("server", original);
 
 	}
@@ -240,7 +247,7 @@ int parser_conf(Data &data, string const &file_path) {
 		cerr << "Error: file not found" << endl;
 		return (1);
 	}
-	while (std::getline(file, line)) {
+	while (std::getline(file, line) && ++line_readed) {
 		string original = line;
 		find = false;
 		line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
@@ -263,4 +270,4 @@ int parser_conf(Data &data, string const &file_path) {
 		return (1);
 	}
 	return (0);
-};
+}
