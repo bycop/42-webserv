@@ -51,9 +51,9 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 		file[1] = header_path;
 		file[2] = (pos = file[1].rfind('.')) != string::npos ? file[1].substr(pos) : "";
 	}
-	cout << "Directory: " << file[0] << endl;
-	cout << "Filename: " << file[1] << endl;
-	cout << "Extension: " << file[2] << endl;
+//	cout << "Directory: " << file[0] << endl;
+//	cout << "Filename: " << file[1] << endl;
+//	cout << "Extension: " << file[2] << endl;
 	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
 		if (it->getPath() == "/" || file[0] == it->getPath() || file[0] + "/" == it->getPath()) {
 			location = *it;
