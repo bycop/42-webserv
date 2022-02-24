@@ -59,6 +59,7 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 string atoiString(int nb);
 bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
+int			ft_atoi_base(const char *str, const char *base);
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);
