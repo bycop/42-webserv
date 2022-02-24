@@ -44,11 +44,7 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 	if ((pos = header_path.rfind('/')) != string::npos) {
 		file[0] = header_path.substr(0, pos + 1);
 		file[1] = header_path.substr(pos + 1);
-		if ((pos = file[1].rfind('.')) == string::npos) {
-			file[0] += file[1];
-			file[1] = "";
-		}
-		else
+		if ((pos = file[1].rfind('.')) != string::npos)
 			file[2] = file[1].substr(pos);
 	}
 	else {
