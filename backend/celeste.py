@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 from art import *
-import  base
+import base
 
-Art=text2art("gros chien va bosser","rand")
+Art = text2art("Warning\nserver", "rand")
 
 # str = art("random")
 # str += tprint("Warning Server")
