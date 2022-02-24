@@ -1,3 +1,7 @@
+//
+// Created by Saméo Fournion on 2/8/22.
+//
+
 #include "webserv.hpp"
 
 #define INT 1

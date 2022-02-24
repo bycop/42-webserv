@@ -7,7 +7,10 @@
 bool checkRights(std::string &path, Response &response) {
 	struct stat results = {};
 
-	stat(path.c_str(), &results);
+	if (stat(path.c_str(), &results)) {
+		response.setStatus("404 Not Found");
+		return (false);
+	};
 	if (!(results.st_mode & S_IRUSR) && !(results.st_mode & S_IRGRP) && !(results.st_mode & S_IROTH)) {
 		response.setStatus("403 Forbidden");
 		return (false);
@@ -16,7 +19,14 @@ bool checkRights(std::string &path, Response &response) {
 }
 
 int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location){
-	if (!checkRights(path, response))
+
+	if (request_header["version"].empty() || request_header["version"] != "HTTP/1.1")
+		response.setStatus("505 HTTP Version Not Supported");
+	else if (request_header["method"].empty() || (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE"))
+		response.setStatus("501 Not Implemented");
+	else if (!contains(location.getAllowMethods(), request_header["method"]))
+		response.setStatus("405 Method Not Allowed");
+	else if (!checkRights(path, response))
 		return (1);
 
 	std::ifstream ifs(path);
@@ -24,12 +34,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)
 		response.setStatus("404 Not Found");
-	else if (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE")
-		response.setStatus("501 Not Implemented");
-	else if (!contains(location.getAllowMethods(), request_header["method"]))
-		response.setStatus("405 Method Not Allowed");
-	else if (request_header["version"] != "HTTP/1.1")
-		response.setStatus("505 HTTP Version Not Supported");
 	else if (response.getStatus() == "200 OK\n")
 		return (0);
 	return (1);
@@ -78,15 +82,21 @@ void deleteFile(string &pathModify, Response &response, map<string, string> &req
 
 void sendAutoIndex(string &pathModify, Response &response, Server &server, Location &location, DIR *dir) {
 	struct dirent *ent;
+	string path;
+	DIR *tmpdir;
 
 	while ((ent = readdir(dir)) != NULL) {
+		tmpdir = NULL;
 		string name = ent->d_name;
-		if (contains(location.getIndex(), name)) {
-			pathModify += (endsWith(pathModify, "/") ? "" : "/") + name;
-			if (!openFile(pathModify, response))
+		path = pathModify + (endsWith(pathModify, "/") ? "" : "/") + name;
+
+		if (contains(location.getIndex(), name) && (tmpdir = opendir(const_cast<char *>(path.c_str()))) == NULL) {
+			if (!openFile(path, response))
 				create_error_page(response, server);
 			break;
 		}
+		if (tmpdir)
+			closedir(tmpdir);
 	}
 
 	if (ent == NULL) {
@@ -111,7 +121,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header, server);
 	else {
 		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
-			server.isAutoindex() ? sendAutoIndex(pathModify, response, server, location, dir) : create_indexing_page(dir, pathModify, response);
+			server.isAutoindex() ? create_indexing_page(dir, pathModify, response) : sendAutoIndex(pathModify, response, server, location, dir);
 		else if (!openFile(pathModify, response))
 				create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);
