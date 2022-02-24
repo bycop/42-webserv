@@ -31,14 +31,27 @@ testlist = [
 	# Miscelaneous tests
 	['PUT', 'http://localhost:8080/pages', 0, 501],
 	['HEAD', 'http://localhost:8080/pages/1', 0, 501],
-	['GET', 'http://localhost:8080/pages/1', 0, 404],
-	['POST', 'http://localhost:8080/pages/1', 0, 405],
+
+	# GET tests
+	['GET', 'http://localhost:8080/', 0, 200],
+	['GET', 'http://localhost:8080/missing_rights/', 0, 403],
+
+	# DELETE tests
+	['DELETE', 'http://localhost:8080/post/post.html', 0, 405],
+	['DELETE', 'http://localhost:8080/delete/delete2.html', 0, 404],
+	['DELETE', 'http://localhost:8080/post-delete/post-delete2.html', 0, 404],
+
+	# POST tests
+	['POST', 'http://localhost:8080/post-delete/post-delete.html', 0, 200],
+	['POST', 'http://localhost:8080/post/post.html', 0, 200],
+	['POST', 'http://localhost:8080/delete/delete.html', 0, 405],
 	#	Delete Tests
-	['DELETE', 'http://localhost:8080/pages/txtfiles/test.txt', 0, 200],
-	['DELETE', 'http://localhost:8080/pages/txtfiles/test.txt', 0, 404],
-	['DELETE', 'http://localhost:8080/', 0, 405],
-	['DELETE', 'http://localhost:8080/FileNotExist', 0, 405],
-	['DELETE', 'http://localhost:8080/pages/txtfiles/FolderNotExist', 0, 404]
+	# ['DELETE', 'http://localhost:8080/pages/txtfiles/test.txt', 0, 200],
+	# ['DELETE', 'http://localhost:8080/pages/txtfiles/test.txt', 0, 404],
+	# ['DELETE', 'http://localhost:8080/', 0, 405],
+	# ['DELETE', 'http://localhost:8080/FileNotExist', 0, 405],
+	# ['DELETE', 'http://localhost:8080/pages/txtfiles/FolderNotExist', 0, 404]
+	#	Get Tests
 
 ];
 
@@ -51,5 +64,5 @@ for test in tqdm(testlist):
 	count += 1
 	sleep(0.1)
 
-print(output)
+print("\033[91m" + output + "\033[0m" if output != "" else "\033[92m" + "All tests passed" + "\033[0m")
 		
