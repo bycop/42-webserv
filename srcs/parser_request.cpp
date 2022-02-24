@@ -47,7 +47,6 @@ string url_decode(string &text) {
 		else
 			escaped << c;
 	}
-
 	return escaped.str();
 }
 
@@ -76,30 +75,34 @@ string readRequest(int fd, Response &response) {
 	char buffer[2];
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (read(fd, buffer, 1) > 0){
-		if (checkTimeOut(start, TIMEOUT))
+		if (checkTimeOut(start, TIMEOUT)) {
 			response.setStatus("504 Gateway Timeout");
+			return (string());
+		}
 		str_buffer += buffer[0];
 	}
-	cout << "REQUEST -- " << endl << str_buffer.substr(0, 400) << endl << " -- REQUEST" << endl;
+	cout << "REQUEST -- " << endl << "|" << str_buffer << "|"<< endl << " -- REQUEST" << endl;
 	return (str_buffer);
 }
 
 string read_body_chunk(string &request_body_chunked) {
-	int posChunk, num, start = 0;
+	int posChunk, num;
+	size_t start = 0;
 	string request_body;
 	stringstream numbers;
+	char base[] = "0123456789";
 
-	while(start < static_cast<int>(request_body_chunked.length())) {
+	while(start < request_body_chunked.length()) {
 		// FIND THE NUMBERS TO READ
 		posChunk = request_body_chunked.find("\r\n", start);
-		string len = request_body_chunked.substr(start, posChunk);
+		string len = request_body_chunked.substr(start, posChunk - start);
 		// CONVERT TO DECIMAL
-		numbers << hex << len;
-		numbers >> num;
+		num = ft_atoi_base(len.c_str(), base);
 		// READ JUST THE CHUNKED ELEMENTS
 		request_body += request_body_chunked.substr(posChunk + 2, num);
-		start += posChunk + 2 + num + 2;
+		start +=  num + 5;
 	}
+	cout << "request body is : " << request_body << endl;
 	return (request_body);
 }
 
@@ -124,7 +127,7 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	}
 	pos_del = read_request.find("\r\n\r\n");
 	if (pos_del != string::npos)
-		read_request.erase(0, read_request.find("\r\n\r\n") + 2);
+		read_request.erase(0, read_request.find("\r\n\r\n") + 4);
 	return (request_header);
 }
 

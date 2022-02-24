@@ -38,3 +38,74 @@ bool startsWith(const string &str, const string &prefix)
 {
 	return str.size() >= prefix.size() && 0 == str.compare(0, prefix.size(), prefix);
 }
+
+int		ft_whitespace(char c)
+{
+	if (c == '\n' || c == '\t' || c == '\v' || \
+			c == '\f' || c == '\r' || c == ' ')
+		return (1);
+	return (0);
+}
+
+int				ft_check_error(const char *base)
+{
+	int			i;
+	int			j;
+
+	i = 0;
+	if (strlen(base) == 0 || strlen(base) == 1)
+		return (0);
+	while (base[i])
+	{
+		j = i + 1;
+		if (base[i] == '+' || base[i] == '-' || ft_whitespace(base[i]))
+			return (0);
+		while (base[j])
+		{
+			if (base[i] == base[j])
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+
+static int	ft_is_in_base(char c, const char *str)
+{
+	int		i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == c)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+int			ft_atoi_base(const char *str, const char *base)
+{
+	int		signe;
+	int		n;
+	int		i;
+	int		base_l;
+
+	i = 0;
+	signe = 1;
+	n = 0;
+	base_l = strlen(base);
+	if (!(ft_check_error(base)))
+		return (0);
+	while (ft_whitespace(str[i]))
+		i++;
+	while (str[i] == '+' || str[i] == '-')
+		if (str[i++] == '-')
+			signe = -signe;
+	while (str[i] && (ft_is_in_base(str[i], base) != -1))
+		n = n * base_l + ft_is_in_base(str[i++], base);
+	return (n * signe);
+}
+

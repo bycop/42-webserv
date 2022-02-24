@@ -95,15 +95,15 @@ void process_request(int &fd, Response &response, Data &data) {
 	string read_request = readRequest(fd, response);
 	Server server;
 	Location location;
-
 	if (response.getStatus() == "200 OK\n") {
 		request_header = parsing_request_header(response, read_request);
 		parsing_request_body(request_header, response, read_request);
 		server = findServerForHost(request_header["Host"], data, response);
 		location = findLocationForServer(request_header["path"], server, response);
 	}
+	bool stat = response.getStatus() == "504 Gateway Timeout\n";
 	display_page(fd, request_header, response, read_request, server, location);
-	if (request_header["Connection"] == "close")
+	if (request_header["Connection"] == "close" || stat)
 		end_connexion(data, fd);
 }
 
