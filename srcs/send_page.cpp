@@ -7,7 +7,10 @@
 bool checkRights(std::string &path, Response &response) {
 	struct stat results = {};
 
-	stat(path.c_str(), &results);
+	if (stat(path.c_str(), &results)) {
+		response.setStatus("404 Not Found");
+		return (false);
+	};
 	if (!(results.st_mode & S_IRUSR) && !(results.st_mode & S_IRGRP) && !(results.st_mode & S_IROTH)) {
 		response.setStatus("403 Forbidden");
 		return (false);
