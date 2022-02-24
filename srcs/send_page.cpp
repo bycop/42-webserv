@@ -5,7 +5,7 @@
 #include "webserv.hpp"
 
 bool checkRights(std::string &path, Response &response) {
-	struct stat results;
+	struct stat results = {};
 
 	stat(path.c_str(), &results);
 	if (!(results.st_mode & S_IRUSR) && !(results.st_mode & S_IRGRP) && !(results.st_mode & S_IROTH)) {
@@ -61,6 +61,42 @@ void add_slash_to_directory(string &path) {
 		path.insert(path.length(), "/");
 }
 
+void deleteFile(string &pathModify, Response &response, map<string, string> &request_header, Server &server) {
+	DIR *dir = NULL;
+
+	if (checkRights(pathModify, response) && (dir = opendir(const_cast<char *>(pathModify.c_str()))) == NULL) {
+		std::remove(pathModify.c_str());
+		response.setStatus("200 OK");
+		response.fillBody("<html><body><h1>File deleted.</h1></body></html>");
+		response.fillHeader(pathModify, request_header, false);
+	}
+	else {
+		create_error_page(response, server);
+		if (dir)
+			closedir(dir);
+	}
+}
+
+void sendAutoIndex(string &pathModify, Response &response, Server &server, Location &location, DIR *dir) {
+	struct dirent *ent;
+
+	while ((ent = readdir(dir)) != NULL) {
+		string name = ent->d_name;
+		if (contains(location.getIndex(), name)) {
+			pathModify += (endsWith(pathModify, "/") ? "" : "/") + name;
+			if (!openFile(pathModify, response))
+				create_error_page(response, server);
+			break;
+		}
+	}
+
+	if (ent == NULL) {
+		response.setStatus("404 Not Found");
+		create_error_page(response, server);
+	}
+	closedir(dir);
+}
+
 void display_page(int &new_socket, std::map<std::string, std::string> &request_header, Response &response, string &request_body, Server &server, Location &location) {
 	DIR *dir;
 	string pathModify = (!location.getRoot().empty() ? location.getRoot() : ".") + request_header["path"];
@@ -70,43 +106,15 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);
 	}
-	else if (request_header["method"] == "DELETE") {
-		if (checkRights(pathModify, response) && (opendir(const_cast<char *>(pathModify.c_str()))) == NULL) {
-			std::remove(pathModify.c_str());
-			response.setStatus("200 OK");
-			response.fillBody("<html><body><h1>File deleted.</h1></body></html>");
-			response.fillHeader(pathModify, request_header, false);
-		}
-		else
-			create_error_page(response, server);
-	}
+	else if (request_header["method"] == "DELETE")
+		deleteFile(pathModify, response, request_header, server);
 	else if (endsWith(pathModify, ".py") || (endsWith(pathModify, ".php")))
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
 	else {
-		if (!server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
-			create_indexing_page(dir, pathModify, response);
-		else if (server.isAutoindex() && (dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL) {
-			struct dirent *ent;
-			while ((ent = readdir(dir)) != NULL) {
-				string name = ent->d_name;
-				if (contains(location.getIndex(), name)) {
-					pathModify += (endsWith(pathModify, "/") ? "" : "/") + name;
-					if (!openFile(pathModify, response))
-						create_error_page(response, server);
-					break;
-				}
-			}
-
-			if (ent == NULL) {
-				response.setStatus("404 Not Found");
+		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
+			server.isAutoindex() ? sendAutoIndex(pathModify, response, server, location, dir) : create_indexing_page(dir, pathModify, response);
+		else if (!openFile(pathModify, response))
 				create_error_page(response, server);
-			}
-			closedir(dir);
-		}
-		else {
-			if (!openFile(pathModify, response))
-				create_error_page(response, server);
-			}
 		response.fillHeader(pathModify, request_header, false);
 	}
 	response.response_http(new_socket);

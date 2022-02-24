@@ -7,7 +7,7 @@ using namespace std;
 
 class Data {
 public:
-	Data() : _isRunning(true) {};
+	Data() : _workers(1), _isRunning(true) {};
 
 	~Data() {};
 
@@ -60,7 +60,7 @@ public:
 	};
 
 	bool checkFdAlreadyAccepted(int fd) {
-		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+		for (vector<int>::iterator it = _socket_fd.begin(); it < _socket_fd.end(); ++it) {
 			if (*it == fd)
 				return true;
 		}
@@ -68,34 +68,34 @@ public:
 	}
 
 	void pushSocketFdAccepted(int fd) {
-		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+		for (vector<int>::iterator it = _socket_fd.begin(); it < _socket_fd.end(); ++it) {
 			if (*it == fd) {
 				cerr << "FD already accepted" << endl;
 				return ;
 			}
 		}
-		socket_fd.push_back(fd);
+		_socket_fd.push_back(fd);
 	}
 
 	const vector<int> &getSocketFdAccepted() const {
-		return socket_fd;
+		return _socket_fd;
 	}
 
 	void setSocketFdAccepted(const vector<int> &socket_fd) {
-		this->socket_fd = socket_fd;
+		this->_socket_fd = socket_fd;
 	}
 
 	void eraseSocketFd(int fd) {
-		for (vector<int>::iterator it = socket_fd.begin(); it < socket_fd.end(); ++it) {
+		for (vector<int>::iterator it = _socket_fd.begin(); it < _socket_fd.end(); ++it) {
 			if (*it == fd) {
-				socket_fd.erase(it);
+				_socket_fd.erase(it);
 				return ;
 			}
 		}
 	}
 
 private:
-	bool alreadyExistSN(vector<string> sn1, vector<string> sn2) {
+	static bool alreadyExistSN(vector<string> sn1, vector<string> sn2) {
 		for (unsigned long i = 0; i < sn1.size(); i++)
 			for (unsigned long j = 0; j < sn2.size(); j++)
 				if (sn1[i] == sn2[j])
@@ -103,7 +103,7 @@ private:
 		return (false);
 	}
 
-	vector<int>	socket_fd;
+	vector<int>	_socket_fd;
 	vector<Server> _servers;
 	int _workers;
 	bool _isRunning;

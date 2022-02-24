@@ -13,7 +13,7 @@ bool already_open(vector<int> &ports, int port) {
 
 void create_socket(vector<int> &server_socket, vector<Server> &servers) {
 	int enable = 1;
-	struct sockaddr_in address;
+	struct sockaddr_in address = {};
 	vector<int> ports;
 
 	address.sin_family = AF_INET;
@@ -49,7 +49,7 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 	while (data.IsRunning()) {
 		// CATCH ALL EVENTS
 		cout << "------- Waiting for new connections -------" << endl;
-		if ((new_events = kevent(kq, NULL, 0, event_list, server_socket.size(), NULL)) == -1)
+		if ((new_events = kevent(kq, NULL, 0, event_list, static_cast<int>(server_socket.size()), NULL)) == -1)
 			ft_error("kevent");
 		for (int i = 0; i < new_events; i++) {
 			int event_fd = static_cast<int>(event_list[i].ident);
