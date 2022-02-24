@@ -80,7 +80,7 @@ string readRequest(int fd, Response &response) {
 			response.setStatus("504 Gateway Timeout");
 		str_buffer += buffer[0];
 	}
-	cout << "REQUEST -- " << endl << str_buffer.substr(0, 400) << endl << " -- REQUEST" << endl;
+	cout << "REQUEST -- " << endl << str_buffer.substr(0, 600) << endl << " -- REQUEST" << endl;
 	return (str_buffer);
 }
 

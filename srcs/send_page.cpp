@@ -20,7 +20,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 		return (1);
 
 	std::ifstream ifs(path);
-	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)
@@ -68,7 +67,7 @@ void deleteFile(string &pathModify, Response &response, map<string, string> &req
 		std::remove(pathModify.c_str());
 		response.setStatus("200 OK");
 		response.fillBody("<html><body><h1>File deleted.</h1></body></html>");
-		response.fillHeader(pathModify, request_header, false);
+		response.fillHeader(pathModify, request_header, true);
 	}
 	else {
 		create_error_page(response, server);
@@ -104,12 +103,12 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	add_slash_to_directory(pathModify);
 	if (checkError(pathModify, response, request_header, location)) {
 		create_error_page(response, server);
-		response.fillHeader(pathModify, request_header, false);
+		response.fillHeader(pathModify, request_header, true);
 	}
 	else if (request_header["method"] == "DELETE")
 		deleteFile(pathModify, response, request_header, server);
 	else if (endsWith(pathModify, ".py") || (endsWith(pathModify, ".php")))
-		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
+		response.responseCGI(backend_page(request_header, request_body, location, server), request_header, server);
 	else {
 		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			server.isAutoindex() ? sendAutoIndex(pathModify, response, server, location, dir) : create_indexing_page(dir, pathModify, response);

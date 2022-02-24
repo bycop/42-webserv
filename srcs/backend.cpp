@@ -53,7 +53,7 @@ void launch_backend_file(map<string, string> &request_header, Location &location
 	std::string py_command;
 
 	filename.erase(0, 1);
-	py_command = "python " + string(getenv("DOCUMENT_ROOT")) + filename;
+	py_command = "python3 " + string(getenv("DOCUMENT_ROOT")) + filename;
 	DIR* dir = opendir(directory.c_str());
 	if (!dir) {
 		command = "mkdir " + directory;
