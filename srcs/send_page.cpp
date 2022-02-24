@@ -19,7 +19,14 @@ bool checkRights(std::string &path, Response &response) {
 }
 
 int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location){
-	if (!checkRights(path, response))
+
+	if (request_header["version"].empty() || request_header["version"] != "HTTP/1.1")
+		response.setStatus("505 HTTP Version Not Supported");
+	else if (request_header["method"].empty() || (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE"))
+		response.setStatus("501 Not Implemented");
+	else if (!contains(location.getAllowMethods(), request_header["method"]))
+		response.setStatus("405 Method Not Allowed");
+	else if (!checkRights(path, response))
 		return (1);
 
 	std::ifstream ifs(path);
@@ -28,12 +35,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)
 		response.setStatus("404 Not Found");
-	else if (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE")
-		response.setStatus("501 Not Implemented");
-	else if (!contains(location.getAllowMethods(), request_header["method"]))
-		response.setStatus("405 Method Not Allowed");
-	else if (request_header["version"] != "HTTP/1.1")
-		response.setStatus("505 HTTP Version Not Supported");
 	else if (response.getStatus() == "200 OK\n")
 		return (0);
 	return (1);
@@ -121,7 +122,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
 	else {
 		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
-			server.isAutoindex() ? sendAutoIndex(pathModify, response, server, location, dir) : create_indexing_page(dir, pathModify, response);
+			server.isAutoindex() ? create_indexing_page(dir, pathModify, response) : sendAutoIndex(pathModify, response, server, location, dir);
 		else if (!openFile(pathModify, response))
 				create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);
