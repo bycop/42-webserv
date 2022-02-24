@@ -82,15 +82,21 @@ void deleteFile(string &pathModify, Response &response, map<string, string> &req
 
 void sendAutoIndex(string &pathModify, Response &response, Server &server, Location &location, DIR *dir) {
 	struct dirent *ent;
+	string path;
+	DIR *tmpdir;
 
 	while ((ent = readdir(dir)) != NULL) {
+		tmpdir = NULL;
 		string name = ent->d_name;
-		if (contains(location.getIndex(), name)) {
-			pathModify += (endsWith(pathModify, "/") ? "" : "/") + name;
-			if (!openFile(pathModify, response))
+		path = pathModify + (endsWith(pathModify, "/") ? "" : "/") + name;
+
+		if (contains(location.getIndex(), name) && (tmpdir = opendir(const_cast<char *>(path.c_str()))) == NULL) {
+			if (!openFile(path, response))
 				create_error_page(response, server);
 			break;
 		}
+		if (tmpdir)
+			closedir(tmpdir);
 	}
 
 	if (ent == NULL) {
