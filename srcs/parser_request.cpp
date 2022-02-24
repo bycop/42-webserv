@@ -57,6 +57,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	size_t start = 0;
 	std::pair<string, string> path_info_translated;
 	getline(is, first_line);
+	if (first_line.empty())
+		return ;
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
 //	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
@@ -74,12 +76,11 @@ string readRequest(int fd, Response &response) {
 	char buffer[2];
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (read(fd, buffer, 1) > 0){
-		if (checkTimeOut(start, TIMEOUT)) {
-			response.setStatus("408 Request Timeout");
-			return (string());
-		}
+		if (checkTimeOut(start, TIMEOUT))
+			response.setStatus("504 Gateway Timeout");
 		str_buffer += buffer[0];
 	}
+	cout << "REQUEST -- " << endl << str_buffer.substr(0, 400) << endl << " -- REQUEST" << endl;
 	return (str_buffer);
 }
 
@@ -121,7 +122,9 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
-	read_request.erase(0, read_request.find("\r\n\r\n") + 2);
+	pos_del = read_request.find("\r\n\r\n");
+	if (pos_del != string::npos)
+		read_request.erase(0, read_request.find("\r\n\r\n") + 2);
 	return (request_header);
 }
 
