@@ -111,15 +111,7 @@ bool server_setters(string const &newdata, unsigned long type, Server &server) {
 				return (true);
 			server.setClientMaxBodySize(atoi(newdata.c_str()));
 			break;
-		case 5: {
-			vector<string> strings = split_string(newdata);
-			if (strings.size() != 2 || !checkTypes(INT, strings[0]) || !checkTypes(STRING, strings[1], ":/"))
-				return (true);
-			server.setRedirectStatus(atoi(strings[0].c_str()));
-			server.setRedirect(strings[1]);
-			break;
-		}
-		case 6:
+		case 5:
 			if (!checkTypes(RESTRICT_CHARS, newdata, "onf"))
 				return (true);
 			if (newdata == "on")
@@ -214,8 +206,8 @@ void location_loop(std::ifstream &file, Server &server, string const &path) {
 void server_loop(std::ifstream &file, Data &data) {
 	Server server;
 	string line;
-	string servervars[7] = {"host", "port", "server_name", "default",
-							"client_max_body_size", "redirect", "autoindex"};
+	string servervars[6] = {"host", "port", "server_name", "default",
+							"client_max_body_size", "autoindex"};
 	bool find;
 	while (std::getline(file, line) && ++line_readed) {
 		string original = line;

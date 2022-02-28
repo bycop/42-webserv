@@ -27,8 +27,9 @@
 #include "send_page.hpp"
 #include <ctime>
 #include <unistd.h>
-#define TIMEOUT 1
 #include <sys/stat.h>
+#include <cmath>
+#define TIMEOUT 1
 
 
 #define PORT 8080
@@ -37,9 +38,13 @@
 using namespace std;
 
 // PARSER_REQUEST.CPP
-map<string, string> parsing_request_header(Response &response, string &read_request);
+map<string, string> parsing_request_header(Response &response, string read_request);
 void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request);
-string readRequest(int fd, Response &response);
+
+// READ_REQUEST
+string readBody(int fd, map<string, string> & request_header);
+string readHeader(int fd);
+string defragment_request_body(string &request_body_chunked);
 
 // BACKEND.CPP
 string backend_page(map<string, string> & request_header, string & request_body, Location &location, Server &server);

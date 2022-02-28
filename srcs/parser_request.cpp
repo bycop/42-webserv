@@ -68,46 +68,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 	request["path"] = url_decode(request["path"]);
 }
 
-// Quentin READER YEAAAAH lol
-string readRequest(int fd, Response &response) {
-	string str_buffer;
-	time_t start = time(0);
-	char buffer[2];
-	fcntl(fd, F_SETFL, O_NONBLOCK);
-	while (read(fd, buffer, 1) > 0){
-		if (checkTimeOut(start, TIMEOUT)) {
-			response.setStatus("504 Gateway Timeout");
-			return (string());
-		}
-		str_buffer += buffer[0];
-	}
-	cout << "REQUEST -- " << endl << "|" << str_buffer << "|"<< endl << " -- REQUEST" << endl;
-	return (str_buffer);
-}
-
-string read_body_chunk(string &request_body_chunked) {
-	int posChunk, num;
-	size_t start = 0;
-	string request_body;
-	stringstream numbers;
-	char base[] = "0123456789";
-
-	while(start < request_body_chunked.length()) {
-		// FIND THE NUMBERS TO READ
-		posChunk = request_body_chunked.find("\r\n", start);
-		string len = request_body_chunked.substr(start, posChunk - start);
-		// CONVERT TO DECIMAL
-		num = ft_atoi_base(len.c_str(), base);
-		// READ JUST THE CHUNKED ELEMENTS
-		request_body += request_body_chunked.substr(posChunk + 2, num);
-		start +=  num + 5;
-	}
-	cout << "request body is : " << request_body << endl;
-	return (request_body);
-}
-
 // THE MAIN FCT OF THE PARSING
-map<string, string> parsing_request_header(Response &response, string &read_request) {
+map<string, string> parsing_request_header(Response &response, string read_request) {
 	map<string, string> request_header;
 	std::istringstream is(read_request);
 	std::string line;
@@ -125,19 +87,5 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
-	pos_del = read_request.find("\r\n\r\n");
-	if (pos_del != string::npos)
-		read_request.erase(0, read_request.find("\r\n\r\n") + 4);
 	return (request_header);
-}
-
-void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
-	if (request_header.find("method")->second == "POST") {
-		if (request_header.find("Transfer-Encoding") != request_header.end() &&
-			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
-			read_request = read_body_chunk(read_request);
-		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
-			response.setStatus("411 Length Required");
-		}
-	}
 }

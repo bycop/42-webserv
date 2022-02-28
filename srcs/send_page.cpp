@@ -30,7 +30,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 	else if (!checkRights(path, response))
 		return (1);
 	std::ifstream ifs(path);
-	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)

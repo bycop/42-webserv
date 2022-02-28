@@ -74,7 +74,7 @@ string send_body(map<string, string> &request_header, string &request_body, Loca
 		perror("fork");
 		return (html_content);
 	}
-	else if (pid == 0) {// CHILD
+	else if (pid == 0) { // CHILD
 		dup2(p[0], 0);
 		dup2(p[1], 1);
 		launch_backend_file(request_header, location);
