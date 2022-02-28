@@ -65,6 +65,7 @@ string atoiString(int nb);
 bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);
+const char *detectBase(const string &len);
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);

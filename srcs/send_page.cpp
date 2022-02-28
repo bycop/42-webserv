@@ -27,8 +27,9 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 		response.setStatus("501 Not Implemented");
 	else if (!contains(location.getAllowMethods(), request_header["method"]))
 		response.setStatus("405 Method Not Allowed");
-	else if (!checkRights(path, response))
+	else if (!checkRights(path, response) || (response.getStatus() != "200 OK\n" && !response.getStatus().empty()))
 		return (1);
+
 	std::ifstream ifs(path);
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);

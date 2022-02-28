@@ -64,8 +64,10 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 //	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
-	request["version"].erase(request["version"].length() - 1, 2);
-	request["path"] = url_decode(request["path"]);
+	if (!request["version"].empty())
+		request["version"].erase(request["version"].length() - 1, 2);
+	if (!request["path"].empty())
+		request["path"] = url_decode(request["path"]);
 }
 
 // THE MAIN FCT OF THE PARSING
@@ -87,5 +89,19 @@ map<string, string> parsing_request_header(Response &response, string read_reque
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
 								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
 	}
+	pos_del = read_request.find("\r\n\r\n");
+	if (pos_del != string::npos)
+		read_request.erase(0, read_request.find("\r\n\r\n") + 4);
 	return (request_header);
+}
+
+void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
+	if (request_header.find("method")->second == "POST") {
+		if (request_header.find("Transfer-Encoding") != request_header.end() &&
+			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
+			read_request = defragment_request_body(read_request);
+		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
+			response.setStatus("411 Length Required");
+		}
+	}
 }
