@@ -73,7 +73,7 @@ void init_kqueue(vector<int> &server_socket, int &kq);
 void create_connection(int event_fd, int kq, Data &data);
 void end_connexion(Data &data, int socket_fd);
 void process_request(int &fd, Response &response, Data &data);
-
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> &request_header);
 
 template <typename T>
 bool contains(vector<T> &vec, const T& elem )

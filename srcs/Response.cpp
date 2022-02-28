@@ -87,12 +87,17 @@ void Response::setContentType(string &path){
 
 // CGI
 void Response::responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server) {
+	if (endsWith(request_header["path"], ".php")) {
+		fillBody(cgi_content);
+		fillHeader(request_header["path"], request_header, false);
+		return ;
+	}
 	size_t pos_spliter = cgi_content.find("\n\n");
 
-//	cout << "Cgi content : " << endl;
-//	cout << cgi_content << endl;
+	cout << "Cgi content : " << endl;
+	cout << cgi_content << endl;
 	if (pos_spliter == string::npos) {
-		responseError( "502 Bad Gateway", server, request_header);
+//		responseError( "502 Bad Gateway", server, request_header);
 		return ;
 	}
 	string header_cgi = cgi_content.substr(0, pos_spliter);

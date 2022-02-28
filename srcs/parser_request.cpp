@@ -94,14 +94,3 @@ map<string, string> parsing_request_header(Response &response, string read_reque
 		read_request.erase(0, read_request.find("\r\n\r\n") + 4);
 	return (request_header);
 }
-
-void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
-	if (request_header.find("method")->second == "POST") {
-		if (request_header.find("Transfer-Encoding") != request_header.end() &&
-			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
-			read_request = defragment_request_body(read_request);
-		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
-			response.setStatus("411 Length Required");
-		}
-	}
-}

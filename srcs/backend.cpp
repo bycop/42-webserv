@@ -50,16 +50,23 @@ void launch_backend_file(map<string, string> &request_header, Location &location
 	std::string filename = request_header["path"];
 	string command;
 	const string  &directory = location.getUploadStore();
-	std::string py_command;
+	std::string launch_cgi;
 
 	filename.erase(0, 1);
-	py_command = "python3 " + string(getenv("DOCUMENT_ROOT")) + filename;
+	// CHOOSE COMMAND INTERPRETER
+	if (endsWith(request_header["path"], ".py"))
+		launch_cgi = "python3";
+	else
+		launch_cgi = "php";
+	// ADD DIRECTORY
+	launch_cgi += " " + string(getenv("DOCUMENT_ROOT")) + filename;
+	// CREATE DIRECTORY IF NOT EXIST
 	DIR* dir = opendir(directory.c_str());
 	if (!dir) {
 		command = "mkdir " + directory;
 		system(command.c_str());
 	}
-	command = "cd " + directory + " && " + py_command;
+	command = "cd " + directory + " && " + launch_cgi;
 	system(command.c_str());
 }
 
