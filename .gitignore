@@ -3,3 +3,6 @@ bin/
 */__pycache__/
 *.out
 *.pyc
+.DS_Store
+webserv
+.vscode/settings.json
