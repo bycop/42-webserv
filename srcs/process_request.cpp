@@ -32,7 +32,7 @@ Server findServerForHost(string &header_host, Data &data, Response &response) {
 		}
 	}
 	// IF WE HAVE A ERROR
-	response.setStatus("418 I'm a teapot");
+	response.setStatus("400 Bad Request");
 	return (Server());
 }
 
