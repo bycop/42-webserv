@@ -89,15 +89,14 @@ string read_body_chunk(string &request_body_chunked) {
 	int posChunk, num;
 	size_t start = 0;
 	string request_body;
-	stringstream numbers;
-	char base[] = "0123456789";
 
 	while(start < request_body_chunked.length()) {
 		// FIND THE NUMBERS TO READ
 		posChunk = request_body_chunked.find("\r\n", start);
 		string len = request_body_chunked.substr(start, posChunk - start);
 		// CONVERT TO DECIMAL
-		num = ft_atoi_base(len.c_str(), base);
+		num = ft_atoi_base(len.c_str(), detectBase(len));
+		cout << "num is : " << num << endl;
 		// READ JUST THE CHUNKED ELEMENTS
 		request_body += request_body_chunked.substr(posChunk + 2, num);
 		start +=  num + 5;

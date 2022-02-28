@@ -26,7 +26,6 @@
 #include "create_page.hpp"
 #include "send_page.hpp"
 #include <ctime>
-#include <unistd.h>
 #define TIMEOUT 1
 #include <sys/stat.h>
 
@@ -59,6 +58,7 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);
+const char *detectBase(const string &len);
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);

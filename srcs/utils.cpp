@@ -109,3 +109,19 @@ int			ft_atoi_base(const char *str, const char *base)
 	return (n * signe);
 }
 
+const char *detectBase(const string &len) {
+	string hex = "abcdef";
+	string hex_c = "ABCDEF";
+	for (string::const_iterator it = len.begin(); it != len.end(); it++) {
+		for (string::iterator it2 = hex.begin(); it2 != hex.end(); it2++) {
+			if (*it == *it2)
+				return ("0123456789abcdef");
+		}
+		for (string::iterator it3 = hex_c.begin(); it3 != hex_c.end(); it3++) {
+			if (*it == *it3)
+				return ("0123456789ABCDEF");
+		}
+	}
+	return ("0123456789");
+}
+
