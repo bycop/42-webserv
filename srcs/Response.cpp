@@ -3,6 +3,7 @@
 //
 
 #include "webserv.hpp"
+#include "../class/Response.hpp"
 
 ///COPLIEN FORM
 Response::Response() : status("200 OK\n"), contentType("text/plain\n") {
@@ -84,32 +85,83 @@ void Response::setContentType(string &path){
 }
 
 
-void Response::responseCGI(const string& cgi_content, map<string, string> & request_header) {
+// CGI
+void Response::responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server) {
 	size_t pos_spliter = cgi_content.find("\n\n");
+
+//	cout << "Cgi content : " << endl;
+//	cout << cgi_content << endl;
 	if (pos_spliter == string::npos) {
-		fillHeader(request_header["path"], request_header, true);
-		body = cgi_content;
+		responseError( "502 Bad Gateway", server, request_header);
+		return ;
 	}
-	else {
-		body = cgi_content.substr(pos_spliter + 2, cgi_content.length() - pos_spliter);
-		fillHeader(request_header["path"], request_header, true);
-		header += cgi_content.substr(0, pos_spliter + 2);
+	string header_cgi = cgi_content.substr(0, pos_spliter);
+	cout << "Header CGI : " << endl;
+	cout << header_cgi << endl;
+	map<string, string> request_header_cgi = parsing_request_header_cgi(header_cgi);
+	if (request_header_cgi.find("Content-Type") == request_header_cgi.end()) {
+		responseError("502 Bad Gateway", server, request_header);
+		return;
 	}
+	fillBody(cgi_content.substr(pos_spliter + 2, cgi_content.length() - pos_spliter));
+	fillHeader(request_header["path"], request_header, true);
+	addHeaderCgi(request_header_cgi);
 }
 
-void Response::fillHeader(string &path, map<string, string> & request_header, bool is_cgi){
+void Response::addHeaderCgi(map<string, string> &request_header_cgi) {
+	map<string, string>::iterator it_content_length = request_header_cgi.find("Content-Length");
+	if (it_content_length != request_header_cgi.end() && atoi(it_content_length->second.c_str()) <= 0)
+		request_header_cgi.erase(it_content_length);
+	for (map<string, string>::iterator it = request_header_cgi.begin(); it != request_header_cgi.end(); ++it) {
+		if (request_header_cgi.find("Connection") == request_header_cgi.end())
+			header += it->first + ": " + it->second + '\n';
+	}
+	if (request_header_cgi.find("Content-Length") == request_header_cgi.end())
+		header += "Content-Length: " + atoiString(static_cast<int>(body.length())) + '\n';
+}
+
+void Response::responseError(const char * error_msg, Server &server, map<string, string> &request_header) {
+	setStatus(error_msg);
+	create_error_page(*this, server);
+	fillHeader(request_header["path"], request_header, false);
+}
+
+map<string, string> Response::parsing_request_header_cgi(const string &header_cgi) {
+	std::istringstream is(header_cgi);
+	map<string, string> request_header_cgi;
+	string line;
+	size_t pos_del;
+
+	while(std::getline(is, line) && !line.empty()) {
+		pos_del = line.find(':');
+		string key = line.substr(0, pos_del);
+
+		// ALREADY IN THE HEADER REPLACE IT
+		map<string, string>::iterator it;
+		if ((it = request_header_cgi.find(key)) != request_header_cgi.end())
+			request_header_cgi.erase(it);
+		// INSERT KEY, VALUE
+		request_header_cgi.insert(make_pair(key, line.substr(pos_del + 2, line.length() - (pos_del + 2))));
+	}
+	return (request_header_cgi);
+}
+
+
+// RESPONSE HTTP (HEADER + BODY)
+void Response::fillHeader(string &path, map<string, string> & request_header, bool is_cgi) {
 	header = "HTTP/1.1 " + status;
-	header += "Content-Length: " + std::to_string(body.length()) + '\n';
+	if (!is_cgi) {
+		header += "Content-Length: " + atoiString(static_cast<int>(body.length())) + '\n';
+		setContentType(path);
+	}
 	if (request_header["Connection"] == "keep-alive")
 		header += "Connection: keep-alive\n";
-	if (!is_cgi)
-		setContentType(path);
 }
 
 void	Response::response_http(int new_socket) {
 	response = header + '\n' + body;
-	cout << "- Response :" << endl;
-	cout << header << endl;
+//	cout << "- Response :" << endl;
+//	cout << header << endl;
 //	cout << response << endl; // TODO: TEST
 	write(new_socket, const_cast<char *>(response.c_str()), response.length());
 }
@@ -120,7 +172,7 @@ void Response::fillBody(string const& content) {
 
 void 	Response::resetResponse(){
 	status = "200 OK\n";
-	contentType = "text/plain\n";
+	contentType = "text/plain";
 	contentLength = string();
 	header = string();
 	body = string();

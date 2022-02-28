@@ -55,6 +55,7 @@ int		checkTimeOut(time_t start, int timeOut);
 void display_banner();
 bool endsWith(const string &str, const string &suffix);
 string splitPartsByParts(string const& line, const char delimiter, size_t *start);
+string atoiString(int nb);
 bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);

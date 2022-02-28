@@ -18,18 +18,19 @@ bool checkRights(std::string &path, Response &response) {
 	return (true);
 }
 
-int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location){
-
+int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location) {
 	if (request_header["version"].empty() || request_header["version"] != "HTTP/1.1")
 		response.setStatus("505 HTTP Version Not Supported");
-	else if (request_header["method"].empty() || (request_header["method"] != "GET" && request_header["method"] != "POST" && request_header["method"] != "DELETE"))
+	else if (request_header["method"].empty() ||
+			 (request_header["method"] != "GET" && request_header["method"] != "POST" &&
+			  request_header["method"] != "DELETE"))
 		response.setStatus("501 Not Implemented");
 	else if (!contains(location.getAllowMethods(), request_header["method"]))
 		response.setStatus("405 Method Not Allowed");
 	else if (!checkRights(path, response))
 		return (1);
-
 	std::ifstream ifs(path);
+	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)
@@ -38,7 +39,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 		return (0);
 	return (1);
 }
-
 bool openFile(std::string path, Response &response){
 
 	if (!checkRights(path, response))
@@ -71,7 +71,7 @@ void deleteFile(string &pathModify, Response &response, map<string, string> &req
 		std::remove(pathModify.c_str());
 		response.setStatus("200 OK");
 		response.fillBody("<html><body><h1>File deleted.</h1></body></html>");
-		response.fillHeader(pathModify, request_header, false);
+		response.fillHeader(pathModify, request_header, true);
 	}
 	else {
 		create_error_page(response, server);
@@ -118,7 +118,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 	else if (request_header["method"] == "DELETE")
 		deleteFile(pathModify, response, request_header, server);
 	else if (endsWith(pathModify, ".py") || (endsWith(pathModify, ".php")))
-		response.responseCGI(backend_page(request_header, request_body, location, server), request_header);
+		response.responseCGI(backend_page(request_header, request_body, location, server), request_header, server);
 	else {
 		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
 			server.isAutoindex() ? create_indexing_page(dir, pathModify, response) : sendAutoIndex(pathModify, response, server, location, dir);

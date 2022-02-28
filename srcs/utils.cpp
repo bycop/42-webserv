@@ -12,6 +12,15 @@ void display_banner() {
 			 " ███ ███  ██   ██ ██   ██ ██   ████ ██ ██   ████  ██████              ███████ ███████ ██   ██   ████   ███████ ██   ██ \n";
 }
 
+string atoiString(int nb) {
+	string str;
+	stringstream ss;
+
+	ss << nb;
+	ss >> str;
+	return (str);
+}
+
 string splitPartsByParts(string const& line, const char delimiter, size_t *start) {
 	size_t end;
 	string part;
