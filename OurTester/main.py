@@ -36,7 +36,7 @@ def make_request(method, url, expected, data=None):
 
 def send_request(request_header, expected):
     if config.PRINT_REQUESTS:
-        print("Testing " + request_header + " on " + config.SERVER_ADDRESS + ":" + config.SERVER_PORT)
+        print("Testing " + request_header + " on " + config.SERVER_ADDRESS + ":" + str(config.SERVER_PORT))
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((config.SERVER_ADDRESS, config.SERVER_PORT))
@@ -74,6 +74,7 @@ basic_tests = [
 ]
 
 complete_tests = [
+    ["\0", 400],
     ["GET / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 200]
 ]
 
@@ -82,14 +83,14 @@ count = 1
 
 print("Starting basic tests...")
 for test in tqdm(basic_tests):
-    if not make_request(test[0], test[1], test[2], test[3]):
+    if not make_request(test[0], test[1], test[2]):
         output += "\nTest " + str(count) + " failed"
     count += 1
     sleep(0.1)
 
 print("Starting complete tests...")
 for test in tqdm(complete_tests):
-    if not send_request(test[0], test[1], test[2]):
+    if not send_request(test[0], test[1]):
         output += "\nTest " + str(count) + " failed"
     count += 1
     sleep(0.1)
