@@ -106,7 +106,7 @@ void process_request(int &fd, Response &response, Data &data) {
 bool 	check_error_body(Server &server, Response &response, map<string, string> & request_header ) {
 	if (request_header["method"] != "POST")
 		return (false);
-	else if (request_header.find("Content-Type") == request_header.end())
+	else if (request_header.find("Content-Length") == request_header.end())
 		response.setStatus("411 Length Required");
 	else if (atoi(request_header["Content-Length"].c_str()) > server.getClientMaxBodySize() * pow(10, 6))
 		response.setStatus("504 Gateway Timeout");
