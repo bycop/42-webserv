@@ -22,6 +22,7 @@ void print_env() { // TODO: JUST FOR TEST
 	cout << "HTTP_ACCEPT : " << getenv("HTTP_ACCEPT") << endl;
 	cout << "HTTP_USER_AGENT : " << getenv("HTTP_USER_AGENT") << endl;
 	cout << "HTTP_REFERER : " << getenv("HTTP_REFERER") << endl;
+	cout << "HTTP_COOKIE : " << getenv("HTTP_COOKIE") << endl;
 }
 
 void setenv_cgi(map<string, string> & request_header, Server &server) {
@@ -44,6 +45,7 @@ void setenv_cgi(map<string, string> & request_header, Server &server) {
 	setenv("HTTP_ACCEPT",request_header["Accept"].c_str(), 1);
 	setenv("HTTP_USER_AGENT",request_header["User-Agent"].c_str(), 1);
 	setenv("HTTP_REFERER",request_header["Referer"].c_str(), 1);
+	setenv("HTTP_COOKIE",request_header["Cookie"].c_str(), 1);
 //	print_env();
 }
 void launch_backend_file(map<string, string> &request_header, Location &location) {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login form</title>
+</head>
+<body>
+<form id="form" action="/backend/cookie_login.py" method="post" enctype="multipart/form-data">
+    <label for="username">username:</label>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"><br><br>
+    <input type="submit" value="Envoyer">
+</form>
+<button id="logout" onclick="buttonClick()">Logout</button>
+
+</body>
+<script>
+    document.getElementById("logout").style.display = "none";
+    if (get_cookie("username")) {
+        document.getElementById("form").style.display = "none";
+        document.getElementById("logout").style.display = "block";
+    }
+    function delete_cookie(name, path, domain) {
+        if (get_cookie(name)) {
+            document.cookie = name + "=" +
+                ((path) ? ";path=" + path : "") +
+                ((domain) ? ";domain=" + domain : "") +
+                ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        }
+    }
+
+    function get_cookie(name) {
+        return document.cookie.split(';').some(c => {
+            return c.trim().startsWith(name + '=');
+        });
+    }
+
+    function buttonClick() {
+        delete_cookie('username', '/', 'localhost');
+        document.getElementById("form").style.display = "block";
+        document.getElementById("logout").style.display = "none";
+    }
+</script>
+</html>
