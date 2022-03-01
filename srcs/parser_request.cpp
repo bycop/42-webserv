@@ -112,7 +112,7 @@ string read_body_chunk(string &request_body_chunked) {
 }
 
 // THE MAIN FCT OF THE PARSING
-map<string, string> parsing_request_header(Response &response, string &read_request) {
+map<string, string> parsing_request_header(Response &response, string read_request) {
 	map<string, string> request_header;
 	std::istringstream is(read_request);
 	std::string line;
@@ -122,7 +122,7 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	// PARSING HEADER
 	while(std::getline(is, line) && !line.empty()) {
 		pos_del = line.find(':');
-		if (pos_del == string::npos && line.length() < 1) {
+		if (pos_del == 0 || (pos_del == string::npos && line.length() < 1)) {
 			response.setStatus("400 Bad Request");
 			break;
 		}
@@ -137,26 +137,3 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 		read_request.erase(0, read_request.find("\r\n\r\n") + 4);
 	return (request_header);
 }
-
-bool checkErrorContentLength(map<string, string> const& request_header, Response &response) {
-	unsigned long long length;
-	stringstream ss(request_header.find("Content-Length")->second);
-	ss >> length;
-	if (request_header.find("Content-Length") == request_header.end()) {
-		response.setStatus("411 Length Required");
-		return (1);
-	}
-	if (length > 22548578304 || length < 0 || request_header.find("Content-Length")->second.find_first_not_of("0123456789") != string::npos) {
-		response.setStatus("400 Bad Request");
-		return (1);
-	}
-	return (0);
-}
-
-void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
-	if (!checkErrorContentLength(request_header, response) && request_header.find("method")->second == "POST") {
-		if (request_header.find("Transfer-Encoding") != request_header.end() &&
-			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
-			read_request = read_body_chunk(read_request);
-		}
-	}

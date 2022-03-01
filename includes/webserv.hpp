@@ -37,7 +37,7 @@
 using namespace std;
 
 // PARSER_REQUEST.CPP
-map<string, string> parsing_request_header(Response &response, string &read_request);
+map<string, string> parsing_request_header(Response &response, string read_request);
 void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request);
 
 // READ_REQUEST
