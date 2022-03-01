@@ -26,9 +26,9 @@
 #include "create_page.hpp"
 #include "send_page.hpp"
 #include <ctime>
-#define TIMEOUT 1
+#define TIMEOUT 10000
+#define MAX_SIZE_URI 8190
 #include <sys/stat.h>
-
 
 #define PORT 8080
 #define DEFAULT_UPLOAD_FOLDER "upload_file"
@@ -60,6 +60,7 @@ bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);
 const char *detectBase(const string &len);
+void removeWS(string &line, size_t &pos_del);
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);

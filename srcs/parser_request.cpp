@@ -51,13 +51,19 @@ string url_decode(string &text) {
 }
 
 // FIRST_LINE
-void parse_first_line_request(std::istringstream &is, map<string, string> &request) {
+void parse_first_line_request(std::istringstream &is, map<string, string> &request, Response &response) {
 	string part, first_line;
 	size_t start = 0;
 	std::pair<string, string> path_info_translated;
 	getline(is, first_line);
 	if (first_line.empty())
 		return ;
+	if (first_line.size() > MAX_SIZE_URI){
+		response.setStatus("414 Request-URI Too Long");
+		return ;
+	}
+	if (first_line.find("  ") != string::npos)
+			response.setStatus("400 Bad Request");
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
 //	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
@@ -96,12 +102,10 @@ string read_body_chunk(string &request_body_chunked) {
 		string len = request_body_chunked.substr(start, posChunk - start);
 		// CONVERT TO DECIMAL
 		num = ft_atoi_base(len.c_str(), detectBase(len));
-		cout << "num is : " << num << endl;
 		// READ JUST THE CHUNKED ELEMENTS
 		request_body += request_body_chunked.substr(posChunk + 2, num);
 		start +=  num + 5;
 	}
-	cout << "request body is : " << request_body << endl;
 	return (request_body);
 }
 
@@ -112,7 +116,7 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	std::string line;
 	size_t pos_del;
 
-	parse_first_line_request(is, request_header);
+	parse_first_line_request(is, request_header, response);
 	// PARSING HEADER
 	while(std::getline(is, line) && !line.empty()) {
 		pos_del = line.find(':');
@@ -120,9 +124,11 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 			response.setStatus("400 Bad Request");
 			break;
 		}
-//		cout << line << endl; // TODO: TEST
+		removeWS(line, pos_del);
+		if (request_header.find(line.substr(0, pos_del)) != request_header.end() || line.substr(0, pos_del).find(' ') != string::npos)
+			response.setStatus("400 Bad Request");
 		request_header.insert(make_pair(line.substr(0, pos_del), // KEY
-								 	line.substr(pos_del + 2, line.length() - (pos_del + 2) - 1))); // VALUE WITHOUT : AND \n\r
+								 	line.substr(pos_del + 1, line.length() - (pos_del + 2)))); // VALUE WITHOUT : \n\r
 	}
 	pos_del = read_request.find("\r\n\r\n");
 	if (pos_del != string::npos)
@@ -130,13 +136,25 @@ map<string, string> parsing_request_header(Response &response, string &read_requ
 	return (request_header);
 }
 
+bool checkErrorContentLength(map<string, string> const& request_header, Response &response) {
+	unsigned long long length;
+	stringstream ss(request_header.find("Content-Length")->second);
+	ss >> length;
+	if (request_header.find("Content-Length") == request_header.end()) {
+		response.setStatus("411 Length Required");
+		return (1);
+	}
+	if (length > 22548578304 || length < 0 || request_header.find("Content-Length")->second.find_first_not_of("0123456789") != string::npos) {
+		response.setStatus("400 Bad Request");
+		return (1);
+	}
+	return (0);
+}
+
 void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request) {
-	if (request_header.find("method")->second == "POST") {
+	if (!checkErrorContentLength(request_header, response) && request_header.find("method")->second == "POST") {
 		if (request_header.find("Transfer-Encoding") != request_header.end() &&
 			request_header.find("Transfer-Encoding")->second == "chunked") // TRANSFER ENCODING : CHUNKED
 			read_request = read_body_chunk(read_request);
-		else if (request_header.find("Content-Length") == request_header.end()) { // CONTENT LENGTH NOT FOUND
-			response.setStatus("411 Length Required");
 		}
 	}
-}

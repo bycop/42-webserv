@@ -19,6 +19,8 @@ bool checkRights(std::string &path, Response &response) {
 }
 
 int 	checkError(std::string &path, Response &response, std::map<std::string, std::string> request_header, Location &location) {
+	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
+		return (1);
 	if (request_header["version"].empty() || request_header["version"] != "HTTP/1.1")
 		response.setStatus("505 HTTP Version Not Supported");
 	else if (request_header["method"].empty() ||
@@ -30,7 +32,6 @@ int 	checkError(std::string &path, Response &response, std::map<std::string, std
 	else if (!checkRights(path, response))
 		return (1);
 	std::ifstream ifs(path);
-	cout << request_header["method"] << endl;
 	if (response.getStatus() != "200 OK\n" && !response.getStatus().empty())
 		return (1);
 	if (!ifs || path.find("//") != std::string::npos)

@@ -134,3 +134,8 @@ const char *detectBase(const string &len) {
 	return ("0123456789");
 }
 
+void removeWS(string &line, size_t &pos_del) {
+	if (line.size() > pos_del + 1 && pos_del < line.size() && line[pos_del + 1] == ' ')
+		line.erase(pos_del + 1, 1);
+	pos_del = line.find(':');
+}
