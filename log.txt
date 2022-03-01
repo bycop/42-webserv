@@ -1,0 +1,1 @@
+cd upload_file && php-cgi ../backend/test.php

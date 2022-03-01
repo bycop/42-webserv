@@ -57,9 +57,10 @@ void launch_backend_file(map<string, string> &request_header, Location &location
 	if (endsWith(request_header["path"], ".py"))
 		launch_cgi = "python3";
 	else
-		launch_cgi = "php";
+		launch_cgi = "php-cgi";
 	// ADD DIRECTORY
-	launch_cgi += " " + string(getenv("DOCUMENT_ROOT")) + filename;
+//	launch_cgi += " " + string(getenv("DOCUMENT_ROOT")) + filename;
+	launch_cgi += " ../backend/test.php";
 	// CREATE DIRECTORY IF NOT EXIST
 	DIR* dir = opendir(directory.c_str());
 	if (!dir) {
@@ -67,6 +68,9 @@ void launch_backend_file(map<string, string> &request_header, Location &location
 		system(command.c_str());
 	}
 	command = "cd " + directory + " && " + launch_cgi;
+	ofstream myfile;
+	myfile.open ("log.txt");
+	myfile << command;
 	system(command.c_str());
 }
 
@@ -105,6 +109,7 @@ string send_body(map<string, string> &request_header, string &request_body, Loca
 }
 // MISE EN PLACE CGI
 string backend_page(map<string, string> &request_header, string &request_body, Location &location, Server &server) {
-	setenv_cgi(request_header, server);
+//	setenv_cgi(request_header, server);
+	(void)server;
 	return (send_body(request_header, request_body, location));
 }
