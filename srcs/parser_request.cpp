@@ -74,6 +74,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 		request["version"].erase(request["version"].length() - 1, 2);
 	if (!request["path"].empty())
 		request["path"] = url_decode(request["path"]);
+	if (!startsWith(request["path"], "/"))
+		response.setStatus("400 Bad Request");
 }
 
 // Quentin READER YEAAAAH lol
@@ -112,7 +114,7 @@ string read_body_chunk(string &request_body_chunked) {
 }
 
 // THE MAIN FCT OF THE PARSING
-map<string, string> parsing_request_header(Response &response, string &read_request) {
+map<string, string> parsing_request_header(Response &response, string read_request) {
 	map<string, string> request_header;
 	std::istringstream is(read_request);
 	std::string line;
