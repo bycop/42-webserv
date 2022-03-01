@@ -24,7 +24,6 @@ public:
 			cout << "              " << it->first << " " << it->second << endl;
 		cout << "client_max_body_size: " << _client_max_body_size << endl;
 		cout << "redirect_status: " << _redirect_status << endl;
-		cout << "redirect: " << _redirect << endl;
 		cout << "autoindex: " << _autoindex << endl;
 
 		for (unsigned long i = 0; i < _locations.size(); i++) {
@@ -50,7 +49,6 @@ public:
 
 	int getClientMaxBodySize() const { return _client_max_body_size; }
 
-	int getRedirectStatus() const { return _redirect_status; }
 
 	const string &getRedirect() const { return _redirect; }
 
@@ -68,8 +66,6 @@ public:
 	void setDefaultPages(const map<string, string> &defaultPages) { _default_pages = defaultPages; }
 
 	void setClientMaxBodySize(int clientMaxBodySize) { _client_max_body_size = clientMaxBodySize; }
-
-	void setRedirectStatus(int redirectStatus) { _redirect_status = redirectStatus; }
 
 	void setRedirect(const string &redirect) { _redirect = redirect; }
 

@@ -4,6 +4,7 @@
 
 #include "webserv.hpp"
 
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header);
 
 Server findServerForHost(string &header_host, Data &data, Response &response) {
 
@@ -88,19 +89,40 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 void process_request(int &fd, Response &response, Data &data) {
 	cout << "------- Processing the request -------" << endl << endl;
 	map<string, string> request_header;
-	string read_request = readRequest(fd, response);
+	string r_request_body;
 	Server server;
 	Location location;
-	if (response.getStatus() == "200 OK\n") {
-		request_header = parsing_request_header(response, read_request);
-		parsing_request_body(request_header, response, read_request);
-		server = findServerForHost(request_header["Host"], data, response);
-		location = findLocationForServer(request_header["path"], server, response);
-	}
+
+	request_header = parsing_request_header(response, readHeader(fd));
+	server = findServerForHost(request_header["Host"], data, response);
+	location = findLocationForServer(request_header["path"], server, response);
+	process_body(fd, r_request_body, response, server, request_header);
 	bool stat = response.getStatus() == "504 Gateway Timeout\n";
-	display_page(fd, request_header, response, read_request, server, location);
+	display_page(fd, request_header, response, r_request_body, server, location);
 	if (request_header["Connection"] == "close" || stat)
 		end_connexion(data, fd);
+}
+
+bool 	check_error_body(Server &server, Response &response, map<string, string> & request_header ) {
+	if (request_header["method"] != "POST")
+		return (false);
+	else if (request_header.find("Content-Length") == request_header.end())
+		response.setStatus("411 Length Required");
+	else if (atoi(request_header["Content-Length"].c_str()) > server.getClientMaxBodySize() * pow(10, 6))
+		response.setStatus("504 Gateway Timeout");
+	else
+		return (true);
+	return (false);
+}
+
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header) {
+	if (!check_error_body(server, response, request_header))
+		return ;
+	read_request_body = readBody(fd, request_header);
+	std::cout << "REQUEST_BODY :" << endl << read_request_body << endl;
+	if (request_header.find("Transfer-Encoding") != request_header.end() &&
+			request_header.find("Transfer-Encoding")->second == "chunked")
+		read_request_body = defragment_request_body(read_request_body);
 }
 
 void create_connection(int event_fd, int kq, Data &data) {
