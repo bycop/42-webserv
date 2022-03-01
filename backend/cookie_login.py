@@ -1,7 +1,6 @@
 import cgi
 import base
 import os
-from http import cookies
 form = cgi.FieldStorage()
 
 content = ""
@@ -20,6 +19,7 @@ else:
         Lines = file1.readlines()
         count = 0
         for line in Lines:
+            line = line.replace("\n", "")
             if line.split(":")[0] == form["username"].value and line.split(":")[1] == form["password"].value:
                 content = "<p>You're now logged</p>"
                 cookie = "Set-Cookie: username=" + form["username"].value + "; Max-Age=60; Path=/\n"
@@ -28,5 +28,5 @@ else:
 
         if count == len(Lines):
             content = "<p>Incorrect password</p>"
-content += "<a href=\"/pages/session.html\">Go back to form</a>"
+content += "<a href=\"/pages/cookie_login.html\">Go back to form</a>"
 base.print_base(content, cookie)
