@@ -13,7 +13,7 @@ string readHeader(int fd) {
 	while (str_buffer.find("\r\n\r\n") == std::string::npos && read(fd, buffer, 1) > 0){
 		str_buffer += buffer[0];
 	}
-	cout << "Header :" << endl << str_buffer << "|" << endl;
+	cout << "Header :" << endl << str_buffer << endl;
 	return (str_buffer);
 }
 

@@ -92,20 +92,25 @@ void Response::responseCGI(const string& cgi_content, map<string, string> & requ
 //		fillHeader(request_header["path"], request_header, false);
 //		return ;
 //	}
-	size_t pos_spliter = cgi_content.find("\n\n");
+	cout << "1" << endl;
+	size_t pos_spliter;
+	if (endsWith(request_header["path"], ".php"))
+		pos_spliter = cgi_content.find("\r\n\r\n");
+	else
+		pos_spliter = cgi_content.find("\n\n");
 
 	cout << "Cgi content : " << endl;
 	cout << cgi_content << endl;
 	if (pos_spliter == string::npos) {
-		responseError( "502 Bad Gateway", server, request_header);
+		responseError( "502 Bad Gateway", server, request_header, cgi_content);
 		return ;
 	}
 	string header_cgi = cgi_content.substr(0, pos_spliter);
-	cout << "Header CGI : " << endl;
-	cout << header_cgi << endl;
+//	cout << "Header CGI : " << endl;
+//	cout << header_cgi << endl;
 	map<string, string> request_header_cgi = parsing_request_header_cgi(header_cgi);
-	if (request_header_cgi.find("Content-Type") == request_header_cgi.end()) {
-		responseError("502 Bad Gateway", server, request_header);
+	if (request_header_cgi.find("Content-type") == request_header_cgi.end() && request_header_cgi.find("Content-Type") == request_header_cgi.end() ) {
+		responseError("502 Bad Gateway", server, request_header, "Error. We need Content-Type");
 		return;
 	}
 	fillBody(cgi_content.substr(pos_spliter + 2, cgi_content.length() - pos_spliter));
@@ -121,13 +126,13 @@ void Response::addHeaderCgi(map<string, string> &request_header_cgi) {
 		if (request_header_cgi.find("Connection") == request_header_cgi.end())
 			header += it->first + ": " + it->second + '\n';
 	}
-	if (request_header_cgi.find("Content-Length") == request_header_cgi.end())
+	if (it_content_length == request_header_cgi.end())
 		header += "Content-Length: " + atoiString(static_cast<int>(body.length())) + '\n';
 }
 
-void Response::responseError(const char * error_msg, Server &server, map<string, string> &request_header) {
+void Response::responseError(const char * error_msg, Server &server, map<string, string> &request_header, string html_content) {
 	setStatus(error_msg);
-	create_error_page(*this, server);
+	create_error_page(*this, server, html_content);
 	fillHeader(request_header["path"], request_header, false);
 }
 
@@ -137,12 +142,13 @@ map<string, string> Response::parsing_request_header_cgi(const string &header_cg
 	string line;
 	size_t pos_del;
 
+//	cout << "Parsing header cgi : " << endl;
 	while(std::getline(is, line) && !line.empty()) {
 		pos_del = line.find(':');
 		string key = line.substr(0, pos_del);
-
 		// ALREADY IN THE HEADER REPLACE IT
 		map<string, string>::iterator it;
+
 		if ((it = request_header_cgi.find(key)) != request_header_cgi.end())
 			request_header_cgi.erase(it);
 		// INSERT KEY, VALUE

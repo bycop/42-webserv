@@ -36,7 +36,7 @@ public:
     void	fillHeader(string &path, map<string, string> & request_header, bool is_cgi);
 	void 	addHeaderCgi(map<string, string>& request_header_cgi);
 	void	fillBody(string const& content);
-	void	responseError(const char *error_msg, Server &server, map<string, string> &request_header);
+	void	responseError(const char *error_msg, Server &server, map<string, string> &request_header, string html_content = std::string());
 	map<string, string>	parsing_request_header_cgi(const string &cgi_content);
 	void	responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server);
 	static string	findExtension(string &path);
