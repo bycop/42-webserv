@@ -74,6 +74,8 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 		request["version"].erase(request["version"].length() - 1, 2);
 	if (!request["path"].empty())
 		request["path"] = url_decode(request["path"]);
+	if (!startsWith(request["path"], "/"))
+		response.setStatus("400 Bad Request");
 }
 
 // Quentin READER YEAAAAH lol
