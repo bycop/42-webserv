@@ -39,7 +39,6 @@ using namespace std;
 
 // PARSER_REQUEST.CPP
 map<string, string> parsing_request_header(Response &response, string read_request);
-void parsing_request_body(map<string, string> const& request_header, Response &response, string &read_request);
 
 // READ_REQUEST
 string readBody(int fd, map<string, string> & request_header);
@@ -54,18 +53,14 @@ int parser_conf(Data &data, string const& file_path);
 
 // ERROR
 void 	ft_error(const char *err);
-int 	checkError(std::string &path, Response &response, Data &data, std::map<std::string, std::string> request_header);
-int		checkTimeOut(time_t start, int timeOut);
 
 // UTILS
 void display_banner();
 bool endsWith(const string &str, const string &suffix);
 string splitPartsByParts(string const& line, const char delimiter, size_t *start);
 string atoiString(int nb);
-bool IsPathExist(const std::string &s);
 bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);
-const char *detectBase(const string &len);
 void removeWS(string &line, size_t &pos_del);
 string	readFile(std::string const& filename);
 

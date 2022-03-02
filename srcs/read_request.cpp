@@ -4,10 +4,8 @@
 
 #include "webserv.hpp"
 
-// Quentin READER YEAAAAH lol
 string readHeader(int fd) {
 	string str_buffer;
-//	time_t start = time(0);
 	char buffer[2];
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	while (str_buffer.find("\r\n\r\n") == std::string::npos && read(fd, buffer, 1) > 0){
@@ -47,6 +45,5 @@ string defragment_request_body(string &request_body_chunked) {
 		request_body += request_body_chunked.substr(posChunk + 2, num);
 		start +=  num + 5;
 	}
-	cout << "request body is : " << request_body << endl;
 	return (request_body);
 }

@@ -51,9 +51,6 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 		file[1] = header_path;
 		file[2] = (pos = file[1].rfind('.')) != string::npos ? file[1].substr(pos) : "";
 	}
-//	cout << "Directory: " << file[0] << endl;
-//	cout << "Filename: " << file[1] << endl;
-//	cout << "Extension: " << file[2] << endl;
 	for (vector<Location>::iterator it = server.getLocations().begin(); it != server.getLocations().end(); it++) {
 		if (it->getPath() == "/" || file[0] == it->getPath() || file[0] + "/" == it->getPath()) {
 			location = *it;
@@ -86,7 +83,6 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 }
 
 bool checkForStop(Data &data, const string &r_request_body, const map<string, string> &request_header, Response &response) {
-	cout << "Body: " << r_request_body << endl;
 	string token = "token=" + string(STOP_PASSWORD);
 	if (request_header.find("path")->second == "/stop" && r_request_body == token) {
 		data.setIsRunning(false);
@@ -118,8 +114,6 @@ bool 	check_error_body(Server &server, Response &response, map<string, string> &
 	stringstream ss(request_header["Content-Length"]);
 	ss >> length;
 
-	cout << "LENGTH" << endl;
-	cout << length << endl;
 	if (request_header.find("Content-Length") == request_header.end())
 		response.setStatus("411 Length Required");
 	else if (length > 22548578304 || length < 0 || request_header.find("Content-Length")->second.find_first_not_of("0123456789") != string::npos)
@@ -137,7 +131,6 @@ void process_body(int fd, string &read_request_body, Response &response, Server 
 	if (!check_error_body(server, response, request_header))
 		return ;
 	read_request_body = readBody(fd, request_header);
-	std::cout << "REQUEST_BODY :" << endl << read_request_body << endl;
 	if (request_header.find("Transfer-Encoding") != request_header.end() &&
 			request_header.find("Transfer-Encoding")->second == "chunked")
 		read_request_body = defragment_request_body(read_request_body);

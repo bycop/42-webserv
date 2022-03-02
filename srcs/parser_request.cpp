@@ -76,41 +76,6 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 		response.setStatus("400 Bad Request");
 }
 
-// Quentin READER YEAAAAH lol
-string readRequest(int fd, Response &response) {
-	string str_buffer;
-	time_t start = time(0);
-	char buffer[2];
-	fcntl(fd, F_SETFL, O_NONBLOCK);
-	while (read(fd, buffer, 1) > 0){
-		if (checkTimeOut(start, TIMEOUT)) {
-			response.setStatus("504 Gateway Timeout");
-			return (string());
-		}
-		str_buffer += buffer[0];
-	}
-	cout << "REQUEST -- " << endl << "|" << str_buffer << "|"<< endl << " -- REQUEST" << endl;
-	return (str_buffer);
-}
-
-string read_body_chunk(string &request_body_chunked) {
-	int posChunk, num;
-	size_t start = 0;
-	string request_body;
-
-	while(start < request_body_chunked.length()) {
-		// FIND THE NUMBERS TO READ
-		posChunk = request_body_chunked.find("\r\n", start);
-		string len = request_body_chunked.substr(start, posChunk - start);
-		// CONVERT TO DECIMAL
-		num = ft_atoi_base(len.c_str(), detectBase(len));
-		// READ JUST THE CHUNKED ELEMENTS
-		request_body += request_body_chunked.substr(posChunk + 2, num);
-		start +=  num + 5;
-	}
-	return (request_body);
-}
-
 // THE MAIN FCT OF THE PARSING
 map<string, string> parsing_request_header(Response &response, string read_request) {
 	map<string, string> request_header;

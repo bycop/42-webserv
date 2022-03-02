@@ -87,7 +87,6 @@ void Response::setContentType(string &path){
 
 // CGI
 void Response::responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server) {
-	cout << "1" << endl;
 	size_t pos_spliter;
 	if (endsWith(request_header["path"], ".php"))
 		pos_spliter = cgi_content.find("\r\n\r\n");
@@ -133,7 +132,6 @@ map<string, string> Response::parsing_request_header_cgi(const string &header_cg
 	string line;
 	size_t pos_del;
 
-//	cout << "Parsing header cgi : " << endl;
 	while(std::getline(is, line) && !line.empty()) {
 		pos_del = line.find(':');
 		string key = line.substr(0, pos_del);
@@ -162,9 +160,6 @@ void Response::fillHeader(string &path, map<string, string> & request_header, bo
 
 void	Response::response_http(int new_socket) {
 	response = header + '\n' + body;
-//	cout << "- Response :" << endl;
-//	cout << header << endl;
-//	cout << response << endl; // TODO: TEST
 	write(new_socket, const_cast<char *>(response.c_str()), response.length());
 }
 
