@@ -123,7 +123,7 @@ void display_page(int &new_socket, std::map<std::string, std::string> &request_h
 		response.responseCGI(backend_page(request_header, request_body, location, server), request_header, server);
 	else {
 		if ((dir = opendir(const_cast<char *>(pathModify.c_str()))) != NULL)
-			server.isAutoindex() ? create_indexing_page(dir, pathModify, response) : sendAutoIndex(pathModify, response, server, location, dir);
+			server.isAutoindex() ? create_indexing_page(dir, pathModify, response, location) : sendAutoIndex(pathModify, response, server, location, dir);
 		else if (!openFile(pathModify, response))
 				create_error_page(response, server);
 		response.fillHeader(pathModify, request_header, false);

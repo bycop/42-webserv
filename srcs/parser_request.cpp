@@ -66,8 +66,6 @@ void parse_first_line_request(std::istringstream &is, map<string, string> &reque
 			response.setStatus("400 Bad Request");
 	request.insert(make_pair("method", splitPartsByParts(first_line, ' ', &start)));
 	request.insert(make_pair("path", splitPartsByParts(first_line, ' ', &start)));
-//	request.insert(make_pair("path_info", get_path_info_and_del_to_path(request["path"])));
-//	request.insert(make_pair("path_translated", request["path"]));
 	request.insert(make_pair("query", parse_query_string(request["path"])));
 	request.insert(make_pair("version", splitPartsByParts(first_line, ' ', &start)));
 	if (!request["version"].empty())

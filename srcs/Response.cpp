@@ -87,11 +87,6 @@ void Response::setContentType(string &path){
 
 // CGI
 void Response::responseCGI(const string& cgi_content, map<string, string> & request_header, Server &server) {
-//	if (endsWith(request_header["path"], ".php")) {
-//		fillBody(cgi_content);
-//		fillHeader(request_header["path"], request_header, false);
-//		return ;
-//	}
 	cout << "1" << endl;
 	size_t pos_spliter;
 	if (endsWith(request_header["path"], ".php"))
@@ -99,15 +94,11 @@ void Response::responseCGI(const string& cgi_content, map<string, string> & requ
 	else
 		pos_spliter = cgi_content.find("\n\n");
 
-	cout << "Cgi content : " << endl;
-	cout << cgi_content << endl;
 	if (pos_spliter == string::npos) {
 		responseError( "502 Bad Gateway", server, request_header, cgi_content);
 		return ;
 	}
 	string header_cgi = cgi_content.substr(0, pos_spliter);
-//	cout << "Header CGI : " << endl;
-//	cout << header_cgi << endl;
 	map<string, string> request_header_cgi = parsing_request_header_cgi(header_cgi);
 	if (request_header_cgi.find("Content-type") == request_header_cgi.end() && request_header_cgi.find("Content-Type") == request_header_cgi.end() ) {
 		responseError("502 Bad Gateway", server, request_header, "Error. We need Content-Type");

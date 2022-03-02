@@ -107,6 +107,8 @@ bool 	check_error_body(Server &server, Response &response, map<string, string> &
 	stringstream ss(request_header["Content-Length"]);
 	ss >> length;
 
+	cout << "LENGTH" << endl;
+	cout << length << endl;
 	if (request_header.find("Content-Length") == request_header.end())
 		response.setStatus("411 Length Required");
 	else if (length > 22548578304 || length < 0 || request_header.find("Content-Length")->second.find_first_not_of("0123456789") != string::npos)
@@ -119,6 +121,8 @@ bool 	check_error_body(Server &server, Response &response, map<string, string> &
 }
 
 void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> &request_header) {
+	if (request_header["method"] != "POST")
+		return ;
 	if (!check_error_body(server, response, request_header))
 		return ;
 	read_request_body = readBody(fd, request_header);
