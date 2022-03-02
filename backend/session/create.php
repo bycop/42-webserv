@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         echo "<a href='create.php'>Create a session variable</a>";
     } else {
         if (isset($_SESSION['name']))
-            echo "<h1>Your name has been modify</h1>";
+            echo "<h1>Your name has been modified</h1>";
         else
-            echo "<h1>Your name has been register</h1>";
+            echo "<h1>Your name has been registered</h1>";
         $_SESSION["name"] = $_POST["name"];
         echo "<p>Your name is : " . $_SESSION['name'] . "</p>";
         echo "<p>Go to <a href='index.php'>index</a> to see a surprise....</p>";
