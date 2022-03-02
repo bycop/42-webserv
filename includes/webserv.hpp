@@ -66,6 +66,8 @@ bool startsWith(const string &str, const string &prefix);
 int			ft_atoi_base(const char *str, const char *base);
 const char *detectBase(const string &len);
 void removeWS(string &line, size_t &pos_del);
+string	readFile(std::string const& filename);
+
 // KEVENT
 void createEvent(int kq, int fd);
 void init_kqueue(vector<int> &server_socket, int &kq);
@@ -73,7 +75,7 @@ void init_kqueue(vector<int> &server_socket, int &kq);
 void create_connection(int event_fd, int kq, Data &data);
 void end_connexion(Data &data, int socket_fd);
 void process_request(int &fd, Response &response, Data &data);
-
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> &request_header);
 
 template <typename T>
 bool contains(vector<T> &vec, const T& elem )

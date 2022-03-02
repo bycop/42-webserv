@@ -4,7 +4,6 @@
 
 #include "webserv.hpp"
 
-void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header);
 
 Server findServerForHost(string &header_host, Data &data, Response &response) {
 
@@ -119,7 +118,7 @@ bool 	check_error_body(Server &server, Response &response, map<string, string> &
 	return (false);
 }
 
-void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header) {
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> &request_header) {
 	if (!check_error_body(server, response, request_header))
 		return ;
 	read_request_body = readBody(fd, request_header);
