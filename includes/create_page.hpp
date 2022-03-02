@@ -8,6 +8,5 @@
 #include "webserv.hpp"
 
 void create_indexing_page(DIR *dir, std::string &path, Response &response);
-void create_error_page(Response &response, Server &server);
-
+void create_error_page(Response &response, Server &server, string html_content = std::string());
 #endif //WEBSERV_CREATE_HTML_HPP

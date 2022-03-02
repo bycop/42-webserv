@@ -33,7 +33,7 @@ void create_indexing_page(DIR *dir, std::string &path, Response &response){
 	response.fillBody(mypage.str());
 }
 
-void create_error_page(Response &response, Server &server) {
+void create_error_page(Response &response, Server &server, string html_content) {
 	string path = "./pages/";
 	map<string, string> pages = server.getDefaultPages();
 	for (map<string, string>::iterator mit = pages.begin(); mit != pages.end(); mit++){
@@ -42,12 +42,14 @@ void create_error_page(Response &response, Server &server) {
 			return;
 		}
 	}
+	if (html_content.empty())
+		html_content = response.getStatus();
 	string status = response.getStatus();
 	if (!openFile(path + (response.getStatus().substr(0, 3) + ".html"), response)) {
 		std::ostringstream mypage;
 		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << status
 			   << "</title>\n</head>\n" << std::endl;
-		mypage << "<body><h1>Error " << status << "\n</h1></body></html>";
+		mypage << "<body><h1>Error " << html_content << "\n</h1></body></html>";
 		response.fillBody(mypage.str());
 	}
 }

@@ -4,7 +4,6 @@
 
 #include "webserv.hpp"
 
-void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header);
 
 Server findServerForHost(string &header_host, Data &data, Response &response) {
 
@@ -104,10 +103,14 @@ void process_request(int &fd, Response &response, Data &data) {
 }
 
 bool 	check_error_body(Server &server, Response &response, map<string, string> & request_header ) {
-	if (request_header["method"] != "POST")
-		return (false);
-	else if (request_header.find("Content-Length") == request_header.end())
+	long long length;
+	stringstream ss(request_header["Content-Length"]);
+	ss >> length;
+
+	if (request_header.find("Content-Length") == request_header.end())
 		response.setStatus("411 Length Required");
+	else if (length > 22548578304 || length < 0 || request_header.find("Content-Length")->second.find_first_not_of("0123456789") != string::npos)
+		response.setStatus("400 Bad Request");
 	else if (atoi(request_header["Content-Length"].c_str()) > server.getClientMaxBodySize() * pow(10, 6))
 		response.setStatus("504 Gateway Timeout");
 	else
@@ -115,7 +118,7 @@ bool 	check_error_body(Server &server, Response &response, map<string, string> &
 	return (false);
 }
 
-void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> request_header) {
+void process_body(int fd, string &read_request_body, Response &response, Server server, map<string, string> &request_header) {
 	if (!check_error_body(server, response, request_header))
 		return ;
 	read_request_body = readBody(fd, request_header);

@@ -38,6 +38,25 @@ string splitPartsByParts(string const& line, const char delimiter, size_t *start
 	return (part);
 }
 
+string	readFile(std::string const& filename) {
+	std::ifstream ifs(filename);
+	int length;
+	char *buf;
+
+	if (!ifs.is_open()) {
+		std::cout << "ERROR FILESTREAM" << std::endl;
+		return (string());
+	}
+	ifs.seekg(0, ifs.end);
+	length = ifs.tellg();
+	buf = new char[length + 1];
+	ifs.seekg(0, ifs.beg);
+	ifs.read(buf, length);
+	buf[length] = '\0';
+	ifs.close();
+	return (buf);
+}
+
 bool endsWith(const string &str, const string &suffix)
 {
 	return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
