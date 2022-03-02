@@ -4,27 +4,6 @@
 
 #include "webserv.hpp"
 
-void print_env() { // TODO: JUST FOR TEST
-	cout << "ENV : " << endl;
-	cout << "GATEWAY_INTERFACE : " << getenv("GATEWAY_INTERFACE") << endl;
-	cout << "SERVER_NAME : " << getenv("SERVER_NAME") << endl;
-	cout << "SERVER_SOFTWARE : " << getenv("SERVER_SOFTWARE") << endl;
-	cout << "SERVER_PROTOCOL : " << getenv("SERVER_PROTOCOL") << endl;
-	cout << "SERVER_PORT : " << getenv("SERVER_PORT") << endl;
-	cout << "REQUEST_METHOD : " << getenv("REQUEST_METHOD") << endl;
-	cout << "PATH_INFO : " << getenv("PATH_INFO") << endl;
-	cout << "PATH_TRANSLATED : " << getenv("PATH_TRANSLATED") << endl;
-	cout << "SCRIPT_NAME : " << getenv("SCRIPT_NAME") << endl;
-	cout << "DOCUMENT_ROOT : " << getenv("DOCUMENT_ROOT") << endl;
-	cout << "QUERY_STRING : " << getenv("QUERY_STRING") << endl;
-	cout << "CONTENT_TYPE : " << getenv("CONTENT_TYPE") << endl;
-	cout << "CONTENT_LENGTH : " << getenv("CONTENT_LENGTH") << endl;
-	cout << "HTTP_ACCEPT : " << getenv("HTTP_ACCEPT") << endl;
-	cout << "HTTP_USER_AGENT : " << getenv("HTTP_USER_AGENT") << endl;
-	cout << "HTTP_REFERER : " << getenv("HTTP_REFERER") << endl;
-	cout << "HTTP_COOKIE : " << getenv("HTTP_COOKIE") << endl;
-}
-
 void setenv_cgi(map<string, string> & request_header, Server &server) {
 	char tmp[2048];
 	getcwd(tmp, 2048);
@@ -43,9 +22,7 @@ void setenv_cgi(map<string, string> & request_header, Server &server) {
 	string script_filename(tmp);
 	script_filename += request_header["path"].substr(1, request_header["path"].length() - 1);
 	setenv("SCRIPT_FILENAME", script_filename.c_str(),  1);
-	cout << "FILENAME : " << script_filename << endl;
 	setenv("SCRIPT_NAME", request_header["path"].c_str(), 1);
-	setenv("PATH_TRANSLATED", "test.php", 1);
 	setenv("REDIRECT_STATUS", "CGI", 1);
 	setenv("DOCUMENT_ROOT", tmp, 1);
 	setenv("QUERY_STRING", request_header["query"].c_str(), 1);
@@ -55,8 +32,8 @@ void setenv_cgi(map<string, string> & request_header, Server &server) {
 	setenv("HTTP_USER_AGENT",request_header["User-Agent"].c_str(), 1);
 	setenv("HTTP_REFERER",request_header["Referer"].c_str(), 1);
 	setenv("HTTP_COOKIE",request_header["Cookie"].c_str(), 1);
-//	print_env();
 }
+
 void launch_backend_file(map<string, string> &request_header, Location &location) {
 	std::string filename = request_header["path"];
 	string command;
