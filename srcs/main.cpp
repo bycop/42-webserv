@@ -21,8 +21,8 @@ int main(int ac, char **av) {
 	string file_path = (ac == 2) ? av[1] : "webserv.conf";
 	Data data;
 
-//	if (check_command_exist("python") || check_command_exist("php-cgi"))
-//		return (1);
+	if (check_command_exist("python") || check_command_exist("php-cgi"))
+		return (1);
 	if (parser_conf(data, file_path))
 		return (1);
     create_socket(server_socket, data.getServers());

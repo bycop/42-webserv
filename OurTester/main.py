@@ -91,7 +91,10 @@ complete_tests = [
 	["HEAD / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 501], # 16
 	["GET / HTTP/1.1\r\nHost: localhost:8080\r\nbouboubou\r\n", 200], # 17
 	["GET  /  HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 400], # 18
-	["GET {} HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 400] # 19
+	["GET {} HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 400], # 19
+	["GET / HTTP/1.1\r\nHost: test1212\r\n\r\n", 400], # 20
+	["BLABLA / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n", 501], # 21
+	["GET / HTTP/1.1\r\nHost : localhost:8080\r\n\r\n", 400] # 22
 ]
 
 output = ""

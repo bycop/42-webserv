@@ -52,11 +52,12 @@ void create_error_page(Response &response, Server &server, string html_content) 
 	if (html_content.empty())
 		html_content = response.getStatus();
 	string status = response.getStatus();
+	string error = (status != "200 Shutdown\n" ? "Error " : "");
 	if (!openFile(path + (response.getStatus().substr(0, 3) + ".html"), response)) {
 		std::ostringstream mypage;
-		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>Error " << status
+		mypage << "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<title>" << error << status
 			   << "</title>\n</head>\n" << std::endl;
-		mypage << "<body><h1>Error " << html_content << "\n</h1></body></html>";
+		mypage << "<body><h1>" << error << html_content << "\n</h1></body></html>";
 		response.fillBody(mypage.str());
 	}
 }

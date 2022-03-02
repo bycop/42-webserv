@@ -15,7 +15,7 @@ else:
                   "Please try again." + \
                   "</p>"
     else:
-        file1 = open(os.environ['DOCUMENT_ROOT'] + "backend/passwd.txt", 'r')
+        file1 = open(os.environ['DOCUMENT_ROOT'] + "backend/.htpasswd", 'r')
         Lines = file1.readlines()
         count = 0
         for line in Lines:

@@ -85,6 +85,16 @@ Location findLocationForServer(string &header_path, Server &server, Response &re
 	return (location);
 }
 
+bool checkForStop(Data &data, const string &r_request_body, const map<string, string> &request_header, Response &response) {
+	cout << "Body: " << r_request_body << endl;
+	string token = "token=" + string(STOP_PASSWORD);
+	if (request_header.find("path")->second == "/stop" && r_request_body == token) {
+		data.setIsRunning(false);
+		response.setStatus("200 Shutdown");
+	}
+	return (false);
+}
+
 void process_request(int &fd, Response &response, Data &data) {
 	cout << "------- Processing the request -------" << endl << endl;
 	map<string, string> request_header;
@@ -96,6 +106,7 @@ void process_request(int &fd, Response &response, Data &data) {
 	server = findServerForHost(request_header["Host"], data, response);
 	location = findLocationForServer(request_header["path"], server, response);
 	process_body(fd, r_request_body, response, server, request_header);
+	checkForStop(data, r_request_body, request_header, response);
 	bool stat = response.getStatus() == "504 Gateway Timeout\n";
 	display_page(fd, request_header, response, r_request_body, server, location);
 	if (request_header["Connection"] == "close" || stat)

@@ -28,6 +28,7 @@
 #include <ctime>
 #define TIMEOUT 20
 #define MAX_SIZE_URI 8190
+#define STOP_PASSWORD "WarningStopServer"
 #include <sys/stat.h>
 #include <cmath>
 

@@ -68,17 +68,6 @@ vector<string> split_string(string const &line) {
 	return (strings);
 }
 
-bool main_setters(string const &newdata, unsigned long type, Data &data) {
-	switch (type) {
-		case 0:
-			if (!checkTypes(INT, newdata))
-				return (true);
-			data.setWorkers(atoi(newdata.c_str()));
-			break;
-	}
-	return (false);
-}
-
 bool server_setters(string const &newdata, unsigned long type, Server &server) {
 	switch (type) {
 		case 0:
@@ -136,6 +125,8 @@ bool location_setters(string const &newdata, unsigned long type, Location &locat
 			break;
 		case 1:
 			if (!checkTypes(STRING, newdata, "./_-=*!~+"))
+				return (true);
+			if (startsWith(newdata, "./"))
 				return (true);
 			location.setRoot(newdata);
 			break;
@@ -236,8 +227,6 @@ void server_loop(std::ifstream &file, Data &data) {
 int parser_conf(Data &data, string const &file_path) {
 	std::ifstream file(file_path);
 	string line;
-	bool find;
-	string vars[1] = {"workers"};
 
 	if (!file.is_open()) {
 		cerr << "Error: file not found" << endl;
@@ -245,20 +234,10 @@ int parser_conf(Data &data, string const &file_path) {
 	}
 	while (std::getline(file, line) && ++line_readed) {
 		string original = line;
-		find = false;
 		line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-		for (unsigned long i = 0; i < _countof(vars) && !find; i++)
-			if (line.find(vars[i] + ":", 0) == 0) {
-				line = &line[vars[i].length() + 1];
-				if (line.empty())
-					display_error("main", original);
-				else if (main_setters(line, i, data))
-					display_error("main", original, 1);
-				find = true;
-			}
-		if (!find && line.find("server{", 0) == 0)
+		if (line.find("server{", 0) == 0)
 			server_loop(file, data);
-		else if (!find && !line.empty())
+		else if (!line.empty())
 			display_error("main", original);
 	}
 	if (error || !data.mandatory()) {
