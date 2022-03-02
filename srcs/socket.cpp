@@ -70,4 +70,5 @@ void receiving_information(vector<int> &server_socket, Response &response, Data 
 	for (vector<int>::const_iterator it = data.getSocketFdAccepted().begin(); it < data.getSocketFdAccepted().end(); ++it)
 		close(*it);
 	close(server_socket[0]);
+	exit(EXIT_SUCCESS);
 }

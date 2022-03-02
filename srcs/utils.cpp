@@ -54,7 +54,9 @@ string	readFile(std::string const& filename) {
 	ifs.read(buf, length);
 	buf[length] = '\0';
 	ifs.close();
-	return (buf);
+	string tmp(buf);
+	delete [] buf;
+	return (tmp);
 }
 
 bool endsWith(const string &str, const string &suffix)

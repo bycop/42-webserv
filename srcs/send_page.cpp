@@ -62,8 +62,12 @@ bool openFile(std::string path, Response &response){
 }
 
 void add_slash_to_directory(string &path) {
-	if (opendir(const_cast<char *>((path).c_str())) != NULL && path[path.length() - 1] != '/')
+	DIR *dir;
+
+	if ((dir = opendir(const_cast<char *>((path).c_str()))) != NULL && path[path.length() - 1] != '/')
 		path.insert(path.length(), "/");
+	if (dir)
+		closedir(dir);
 }
 
 void deleteFile(string &pathModify, Response &response, map<string, string> &request_header, Server &server) {

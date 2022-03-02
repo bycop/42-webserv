@@ -57,6 +57,8 @@ void launch_backend_file(map<string, string> &request_header, Location &location
 	// CALL COMMAND
 	command = "cd " + directory + " && " + launch_cgi + ">" + getenv("DOCUMENT_ROOT") +  "bin/tmp";
 	system(command.c_str());
+	if (dir)
+		closedir(dir);
 }
 
 string send_body(map<string, string> &request_header, string &request_body, Location &location) {

@@ -7,6 +7,7 @@
 void create_indexing_page(DIR *dir, std::string &path, Response &response, Location &location) {
 	std::ostringstream mypage;
 	string pathTmp = path;
+	DIR *tmpdir;
 
 	if (pathTmp[0] == '.')
 		pathTmp.erase(0, 1);
@@ -27,12 +28,14 @@ void create_indexing_page(DIR *dir, std::string &path, Response &response, Locat
 		if ((pos_root = path_link.find(location.getRoot())) != string::npos) {
 			path_link.erase(pos_root, location.getRoot().length());
 		}
-		if (opendir(const_cast<char *>((path + name).c_str())) != NULL && name != "..")
+		if ((tmpdir = opendir(const_cast<char *>((path + name).c_str()))) != NULL && name != "..")
 			mypage << "<a href=\"" << path_link << "\">" << "<i class=\"fa-solid fa-folder\"></i>  " <<ent->d_name << "/" << "</a><br>";
 		else if (name != "..")
 			mypage << "<a href=\"" << path_link << "\">" << "<i style='font-size: 19px' class=\"fa-solid fa-file-lines\"></i>  " << ent->d_name << "</a><br>";
 		else
 			mypage << "<a href=\"" << path_link << "\">" << "<i style='font-size: 24px' class=\"fa-solid fa-circle-chevron-left\"></i>" << "</a><br><br>";
+		if (tmpdir)
+			closedir(tmpdir);
 	}
 	closedir (dir);
 	mypage << "<br><hr/></body></html>\n";
